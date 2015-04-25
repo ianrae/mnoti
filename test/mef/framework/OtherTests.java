@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mef.framework.auth2.AuthUser;
 import org.mef.framework.replies.Reply;
 import org.mef.framework.sfx.SfxBaseObj;
 import org.mef.framework.sfx.SfxContext;
@@ -11,13 +12,28 @@ import org.mef.framework.sfx.SfxContext;
 public class OtherTests 
 {
 	
-	public static class XPresenter extends SfxBaseObj 
+	public static abstract class XPresenter extends SfxBaseObj 
 	{
-		
+		protected AuthUser authUser;
+		protected Reply baseReply;
+
 		public XPresenter(SfxContext ctx)
 		{
 			super(ctx);
 		}
+		
+		public Reply getBaseReply()
+		{
+			return baseReply;
+		}
+		
+		public boolean doBeforeAction(AuthUser user)
+		{
+			this.authUser = user;
+			return onBeforeAction(user);
+		}
+		
+		protected abstract boolean onBeforeAction(AuthUser user);
 		
 	}
 
@@ -28,29 +44,29 @@ public class OtherTests
 	
 	public static class MyPresenter extends XPresenter
 	{
+		private MyReply reply;
 		
 		public MyPresenter(SfxContext ctx)
 		{
 			super(ctx);
-		}
-		
-		protected MyReply createReply()
-		{
-			return new MyReply();
+			baseReply = reply = new MyReply();
 		}
 
-		public MyReply index() 
+		public void index() 
 		{
-			MyReply reply = createReply();
 			reply.aaa = "abc";
 			reply.setDestination(Reply.VIEW_INDEX);
-			return reply;
+			this.log("index..");
 		}
-		public MyReply newItem()
+		public void newItem()
 		{
-			MyReply reply = createReply();
 			reply.setDestination(Reply.VIEW_NEW);
-			return reply;
+		}
+
+		@Override
+		protected boolean onBeforeAction(AuthUser user) 
+		{
+			return true; //true means continue. false means before-action has filled in a reply
 		}
 		
 	}
@@ -58,26 +74,41 @@ public class OtherTests
 	@Test
 	public void test() 
 	{
-		MyPresenter pres = new MyPresenter(ctx);
-		
-		MyReply reply = pres.index();
+		if (createPresenter())
+		{
+			presenter.index();
+		}
+		MyReply reply = presenter.reply;
 		assertEquals(Reply.VIEW_INDEX, reply.getDestination());
+		assertEquals(false, reply.failed());
 	}
 	@Test
 	public void testNew() 
 	{
-		MyPresenter pres = new MyPresenter(ctx);
-		
-		MyReply reply = pres.newItem();
+		if (createPresenter())
+		{
+			presenter.newItem();
+		}
+		MyReply reply = presenter.reply;
 		assertEquals(Reply.VIEW_NEW, reply.getDestination());
+		assertEquals(false, reply.failed());
 	}
 
 	
+	//-----------------------------
 	private SfxContext ctx;
+	private AuthUser authUser;
+	private MyPresenter presenter;
 	
 	@Before
 	public void init()
 	{
 		ctx = new SfxContext();
+	}
+	
+	private boolean createPresenter()
+	{
+		presenter = new MyPresenter(ctx);
+		return presenter.doBeforeAction(authUser);
 	}
 }
