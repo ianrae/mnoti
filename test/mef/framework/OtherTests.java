@@ -43,16 +43,23 @@ public class OtherTests
 		
 		public void afterAction() //Controller must call this
 		{
-			if (baseReply == null)
+//			if (baseReply == null)
+//			{
+//				return;
+//			}
+
+			this.onAfterAction();
+			
+			boolean genViewModel = (! baseReply.failed() && ! baseReply.isForward());
+			if (genViewModel)
 			{
-				return;
+				generateViewModel();
 			}
-			boolean generateViewModel = (! baseReply.failed() && ! baseReply.isForward());
-			this.onAfterAction(generateViewModel);
 		}
 		
 		protected abstract boolean onBeforeAction();
-		protected abstract void onAfterAction(boolean generateViewModel); 
+		protected abstract void onAfterAction(); 
+		protected abstract void generateViewModel();
 		
 		protected boolean isLoggedIn()
 		{
@@ -132,12 +139,15 @@ public class OtherTests
 
 		//always called
 		@Override
-		public void onAfterAction(boolean generateViewModel) 
+		public void onAfterAction() 
 		{
-			if (generateViewModel)
-			{
-				reply.fakeVM = "bbb";
-			}
+		}
+
+		//only called if not failed and not forwarded
+		@Override
+		protected void generateViewModel() 
+		{
+			reply.fakeVM = "bbb";
 		}
 		
 	}
