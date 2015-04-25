@@ -1,12 +1,13 @@
 package mef.framework;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mef.framework.DAOTests.Car;
 import mef.framework.DAOTests.Foo;
 import mef.framework.helpers.BaseTest;
 
@@ -60,9 +61,16 @@ public class DAOTests extends BaseTest
 		public void setId(Long id) {
 			this.id = id;
 		}
+		public Foo getFooObject() {
+			return fooObject;
+		}
+		public void setFooObject(Foo fooObject) {
+			this.fooObject = fooObject;
+		}
 		private Long id;
 		private String name;
 		private Long fooId;
+		private Foo fooObject;
 		
 	}
 	
@@ -81,17 +89,18 @@ public class DAOTests extends BaseTest
 	
 	public static class MockFooDAO implements IFooDAO
 	{
-		private static long nextId = 1;
+		private long nextId = 1;
+		private Map<Long, Foo> map = new HashMap<Long, Foo>();
 
 		@Override
 		public int size() {
-			return 0;
+			return map.size();
 		}
 
 		@Override
-		public Foo findById(Long id) {
-			// TODO Auto-generated method stub
-			return null;
+		public Foo findById(Long id) 
+		{
+			return map.get(id);
 		}
 
 		@Override
@@ -104,6 +113,7 @@ public class DAOTests extends BaseTest
 		public void save(Foo t) 
 		{
 			t.setId(nextId++);
+			map.put(t.getId(), t);
 		}
 
 		@Override
@@ -125,17 +135,19 @@ public class DAOTests extends BaseTest
 	
 	public static class MockCarDAO implements ICarDAO
 	{
+		private Map<Long, Car> map = new HashMap<Long, Car>();
+		private long nextId = 1;
 
 		@Override
-		public int size() {
-			// TODO Auto-generated method stub
-			return 0;
+		public int size() 
+		{
+			return map.size();
 		}
 
 		@Override
-		public Car findById(Long id) {
-			// TODO Auto-generated method stub
-			return null;
+		public Car findById(Long id) 
+		{
+			return map.get(id);
 		}
 
 		@Override
@@ -145,9 +157,10 @@ public class DAOTests extends BaseTest
 		}
 
 		@Override
-		public void save(Car t) {
-			// TODO Auto-generated method stub
-			
+		public void save(Car t) 
+		{
+			t.setId(this.nextId++);
+			map.put(t.getId(), t);
 		}
 
 		@Override
@@ -240,6 +253,65 @@ public class DAOTests extends BaseTest
 		}
 		
 	}
+	
+	//AR
+	public static class MockCarAR implements ICarDAO
+	{
+		private ICarDAO dao;
+		private WrappedFooDAO wrap;
+		
+		public MockCarAR(ICarDAO dao, WrappedFooDAO wrap)
+		{
+			this.dao = dao;
+			this.wrap = wrap;
+		}
+		
+		@Override
+		public int size() 
+		{
+			return dao.size();
+		}
+
+		@Override
+		public Car findById(Long id) 
+		{
+			Car car = dao.findById(id);
+			if (car != null)
+			{
+				Foo foo = wrap.findById(car.getFooId());
+				if (foo != null)
+				{
+					car.setFooObject(foo);
+				}
+			}
+			return car;
+		}
+
+		@Override
+		public List<Car> all() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void save(Car t) 
+		{
+			dao.save(t);
+		}
+
+		@Override
+		public void update(Car t) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void delete(Car t) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+
 
 	@Test
 	public void test() 
@@ -263,6 +335,26 @@ public class DAOTests extends BaseTest
 		dao.save(car);
 	}
 	
+	@Test
+	public void testCarAR() 
+	{
+		Foo foo = new Foo();
+		WrappedFooDAO daoF = new WrappedFooDAO(new MockFooDAO());
+		daoF.save(foo);
+		chkLong(1L, foo.getId());
+		Foo foo2 = daoF.findById(1L);
+		chkLong(1L, foo2.getId());
+		
+		MockCarAR ar = new MockCarAR(new MockCarDAO(), daoF);
+		Car car = new Car();
+		car.setName("abc");
+		car.setFooId(foo.getId());
+		ar.save(car);
+		
+		Car car2 = ar.findById(1L);
+		assertNotNull(car2);
+		assertNotNull(car2.getFooObject());
+	}
 	
 	//-----------------------------
 	
