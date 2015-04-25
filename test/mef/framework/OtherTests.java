@@ -24,10 +24,9 @@ public class OtherTests
 		protected IAuthorizer auth;
 		protected Reply baseReply;
 
-		public XPresenter(SfxContext ctx, AuthUser authUser, IAuthorizer auth)
+		public XPresenter(SfxContext ctx, IAuthorizer auth)
 		{
 			super(ctx);
-			this.authUser = authUser;
 			this.auth = auth;
 		}
 		
@@ -36,25 +35,24 @@ public class OtherTests
 			return baseReply;
 		}
 		
-		public boolean doBeforeAction()
+		public boolean doBeforeAction(AuthUser authUser)
 		{
+			this.authUser = authUser;
 			return onBeforeAction();
 		}
 		
-		public void afterAction()
+		public void afterAction() //Controller must call this
 		{
 			if (baseReply == null)
 			{
 				return;
 			}
-			if (! baseReply.failed() && ! baseReply.isForward())
-			{
-				this.onAfterAction();
-			}
+			boolean generateViewModel = (! baseReply.failed() && ! baseReply.isForward());
+			this.onAfterAction(generateViewModel);
 		}
 		
 		protected abstract boolean onBeforeAction();
-		protected abstract void onAfterAction(); //Controller must call this
+		protected abstract void onAfterAction(boolean generateViewModel); 
 		
 		protected boolean isLoggedIn()
 		{
@@ -68,6 +66,22 @@ public class OtherTests
 		
 	}
 
+	public interface IFooDAO
+	{
+		int size();
+	}
+	
+	public static class MockFooDAO implements IFooDAO
+	{
+
+		@Override
+		public int size() {
+			return 0;
+		}
+		
+	}
+	
+	
 	public static class MyReply extends Reply
 	{
 		String aaa;
@@ -77,15 +91,18 @@ public class OtherTests
 	public static class MyPresenter extends XPresenter
 	{
 		private MyReply reply;
+		private IFooDAO dao;
 		
-		public MyPresenter(SfxContext ctx, AuthUser authUser, IAuthorizer auth)
+		public MyPresenter(SfxContext ctx, IAuthorizer auth, IFooDAO dao)
 		{
-			super(ctx, authUser, auth);
+			super(ctx, auth);
 			baseReply = reply = new MyReply();
+			this.dao = dao;
 		}
 
 		public void index() 
 		{
+			dao.size(); //...
 			reply.aaa = "abc";
 			reply.setDestination(Reply.VIEW_INDEX);
 			this.log("index..");
@@ -113,11 +130,14 @@ public class OtherTests
 			return this.isLoggedIn();
 		}
 
-		//only called if reply not failed and not forwarding
+		//always called
 		@Override
-		public void onAfterAction() 
+		public void onAfterAction(boolean generateViewModel) 
 		{
-			reply.fakeVM = "bbb";
+			if (generateViewModel)
+			{
+				reply.fakeVM = "bbb";
+			}
 		}
 		
 	}
@@ -191,12 +211,22 @@ public class OtherTests
 	private boolean createPresenter(AuthUser user)
 	{
 		//action composition would do this
+		presenter = new MyPresenter(ctx, authorizer, new MockFooDAO());
 		authUser = user;
-		presenter = new MyPresenter(ctx, authUser, authorizer);
-		boolean b = presenter.doBeforeAction();
+		boolean b = presenter.doBeforeAction(authUser);
 		
 		return b;
 	}
+	
+	/* so the controller would do
+	 *  
+	 *  Result index()
+	 *    if (createPresenter()) //create, DI, and beforeAction
+	 *    {
+	 *       presenter.index();
+	 *    }
+	 *    renderOrForward(); //does presenter.afterAction then render
+	 */
 	
 	private MyReply getReply()
 	{
