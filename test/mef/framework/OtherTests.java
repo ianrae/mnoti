@@ -1,6 +1,7 @@
 package mef.framework;
 
 import static org.junit.Assert.assertEquals;
+import mef.framework.helpers.BaseTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +11,7 @@ import org.mef.framework.replies.Reply;
 import org.mef.framework.sfx.SfxBaseObj;
 import org.mef.framework.sfx.SfxContext;
 
-public class OtherTests 
+public class OtherTests extends BaseTest
 {
 //	//so the action composition just do to Object.createInstance and call parameterless ctor
 //	public static class TheGlobal
@@ -203,7 +204,6 @@ public class OtherTests
 
 	
 	//-----------------------------
-	private SfxContext ctx;
 	private AuthUser authUser;
 	private MyPresenter presenter;
 	private IAuthorizer authorizer;
@@ -211,7 +211,7 @@ public class OtherTests
 	@Before
 	public void init()
 	{
-		ctx = new SfxContext();
+		super.init();
 	}
 	
 	private boolean createPresenter()
