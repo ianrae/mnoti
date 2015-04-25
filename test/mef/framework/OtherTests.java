@@ -12,11 +12,11 @@ import org.mef.framework.sfx.SfxContext;
 
 public class OtherTests 
 {
-	//so the action composition just do to Object.createInstance and call parameterless ctor
-	public static class TheGlobal
-	{
-		public static SfxContext theCtx;
-	}
+//	//so the action composition just do to Object.createInstance and call parameterless ctor
+//	public static class TheGlobal
+//	{
+//		public static SfxContext theCtx;
+//	}
 	
 	public static abstract class XPresenter extends SfxBaseObj 
 	{
@@ -24,25 +24,21 @@ public class OtherTests
 		protected IAuthorizer auth;
 		protected Reply baseReply;
 
-		public XPresenter()
+		public XPresenter(SfxContext ctx, AuthUser authUser, IAuthorizer auth)
 		{
-			super(TheGlobal.theCtx);
+			super(ctx);
+			this.authUser = authUser;
+			this.auth = auth;
 		}
 		
 		public Reply getBaseReply()
 		{
 			return baseReply;
 		}
-		//if controller has DI then it can inject this
-		public void setAuthorizer(IAuthorizer auth)
-		{
-			this.auth = auth;
-		}
 		
-		public boolean doBeforeAction(AuthUser user)
+		public boolean doBeforeAction()
 		{
-			this.authUser = user;
-			return onBeforeAction(user);
+			return onBeforeAction();
 		}
 		
 		public void afterAction()
@@ -57,7 +53,7 @@ public class OtherTests
 			}
 		}
 		
-		protected abstract boolean onBeforeAction(AuthUser user);
+		protected abstract boolean onBeforeAction();
 		protected abstract void onAfterAction(); //Controller must call this
 		
 		protected boolean isLoggedIn()
@@ -82,9 +78,9 @@ public class OtherTests
 	{
 		private MyReply reply;
 		
-		public MyPresenter()
+		public MyPresenter(SfxContext ctx, AuthUser authUser, IAuthorizer auth)
 		{
-			super();
+			super(ctx, authUser, auth);
 			baseReply = reply = new MyReply();
 		}
 
@@ -111,7 +107,7 @@ public class OtherTests
 		}
 
 		@Override
-		protected boolean onBeforeAction(AuthUser user) 
+		protected boolean onBeforeAction() 
 		{
 //			return true; //true means continue. false means before-action has filled in a reply
 			return this.isLoggedIn();
@@ -190,26 +186,14 @@ public class OtherTests
 	
 	private boolean createPresenter()
 	{
-		TheGlobal.theCtx = ctx;
-		
-		//action composition would do this
-		presenter = new MyPresenter();
-		authUser = new AuthUser(); //simulate login
-		presenter.setAuthorizer(authorizer); //somehow using DI
-		boolean b = presenter.doBeforeAction(authUser);
-		
-		
-		return b;
+		return createPresenter(new AuthUser());
 	}
 	private boolean createPresenter(AuthUser user)
 	{
-		TheGlobal.theCtx = ctx;
-		
 		//action composition would do this
-		presenter = new MyPresenter();
 		authUser = user;
-		presenter.setAuthorizer(authorizer); //somehow using DI
-		boolean b = presenter.doBeforeAction(authUser);
+		presenter = new MyPresenter(ctx, authUser, authorizer);
+		boolean b = presenter.doBeforeAction();
 		
 		return b;
 	}
