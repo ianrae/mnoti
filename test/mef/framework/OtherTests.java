@@ -45,12 +45,26 @@ public class OtherTests
 			return onBeforeAction(user);
 		}
 		
+		public void afterAction()
+		{
+			if (baseReply == null)
+			{
+				return;
+			}
+			if (! baseReply.failed() && ! baseReply.isForward())
+			{
+				this.onAfterAction();
+			}
+		}
+		
 		protected abstract boolean onBeforeAction(AuthUser user);
+		protected abstract void onAfterAction(); //Controller must call this
 		
 		protected boolean isLoggedIn()
 		{
 			if (authUser == null)
 			{
+				baseReply.setDestination(Reply.FOWARD_NOT_AUTHENTICATED);
 				return false;
 			}
 			return true;
@@ -61,6 +75,7 @@ public class OtherTests
 	public static class MyReply extends Reply
 	{
 		String aaa;
+		String fakeVM; //viewmodel
 	}
 	
 	public static class MyPresenter extends XPresenter
@@ -83,12 +98,30 @@ public class OtherTests
 		{
 			reply.setDestination(Reply.VIEW_NEW);
 		}
+		public void flaky(boolean b)
+		{
+			if (! b)
+			{
+				reply.setFailed(true);
+			}
+			else
+			{
+				reply.setDestination(Reply.VIEW_NEW);
+			}
+		}
 
 		@Override
 		protected boolean onBeforeAction(AuthUser user) 
 		{
 //			return true; //true means continue. false means before-action has filled in a reply
 			return this.isLoggedIn();
+		}
+
+		//only called if reply not failed and not forwarding
+		@Override
+		public void onAfterAction() 
+		{
+			reply.fakeVM = "bbb";
 		}
 		
 	}
@@ -100,9 +133,10 @@ public class OtherTests
 		{
 			presenter.index();
 		}
-		MyReply reply = presenter.reply;
+		MyReply reply = getReply();
 		assertEquals(Reply.VIEW_INDEX, reply.getDestination());
 		assertEquals(false, reply.failed());
+		assertEquals("bbb", reply.fakeVM);
 	}
 	@Test
 	public void testNew() 
@@ -111,9 +145,34 @@ public class OtherTests
 		{
 			presenter.newItem();
 		}
-		MyReply reply = presenter.reply;
+		MyReply reply = getReply();
 		assertEquals(Reply.VIEW_NEW, reply.getDestination());
 		assertEquals(false, reply.failed());
+		assertEquals("bbb", reply.fakeVM);
+	}
+	@Test
+	public void testNewFailed() 
+	{
+		if (createPresenter(null)) //not logged in
+		{
+			presenter.newItem();
+		}
+		MyReply reply = getReply();
+		assertEquals(Reply.FOWARD_NOT_AUTHENTICATED, reply.getDestination());
+		assertEquals(false, reply.failed());
+		assertEquals(null, reply.fakeVM);
+	}
+	@Test
+	public void testFlaky() 
+	{
+		if (createPresenter())
+		{
+			presenter.flaky(false);
+		}
+		MyReply reply = getReply();
+		assertEquals(true, reply.failed());
+		assertEquals(0, reply.getDestination());
+		assertEquals(null, reply.fakeVM);
 	}
 
 	
@@ -141,5 +200,23 @@ public class OtherTests
 		
 		
 		return b;
+	}
+	private boolean createPresenter(AuthUser user)
+	{
+		TheGlobal.theCtx = ctx;
+		
+		//action composition would do this
+		presenter = new MyPresenter();
+		authUser = user;
+		presenter.setAuthorizer(authorizer); //somehow using DI
+		boolean b = presenter.doBeforeAction(authUser);
+		
+		return b;
+	}
+	
+	private MyReply getReply()
+	{
+		presenter.afterAction(); //Controller's render would call this
+		return presenter.reply;
 	}
 }
