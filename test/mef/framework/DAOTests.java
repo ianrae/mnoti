@@ -61,16 +61,47 @@ public class DAOTests extends BaseTest
 		public void setId(Long id) {
 			this.id = id;
 		}
-		public Foo getFooObject() {
-			return fooObject;
-		}
-		public void setFooObject(Foo fooObject) {
-			this.fooObject = fooObject;
-		}
+//		public Foo getFooObject() {
+//			return fooObject;
+//		}
+//		public void setFooObject(Foo fooObject) {
+//			this.fooObject = fooObject;
+//		}
 		private Long id;
 		private String name;
 		private Long fooId;
-		private Foo fooObject;
+//		private Foo fooObject;
+		
+	}
+	
+	public static interface ICache<T>
+	{
+		void put(long id, T entity);
+		T get(long id);
+		void remove(long id);
+	}
+	
+	public static class MyCache<T> implements ICache<T>
+	{
+		private Map<Long, T> map = new HashMap<Long, T>();
+
+		@Override
+		public void put(long id, T entity) 
+		{
+			map.put(id, entity);
+		}
+
+		@Override
+		public T get(long id) 
+		{
+			return map.get(id);
+		}
+
+		@Override
+		public void remove(long id) 
+		{
+			map.remove(id);
+		}
 		
 	}
 	
@@ -82,6 +113,10 @@ public class DAOTests extends BaseTest
 		void save(T t);
 		void update(T t);
 		void delete(T t);
+		void setCache(ICache<T> cache);
+		ICache<T> getCache();
+		void encache(T t);
+		void decache(T t);
 	}
 	
 	public interface IFooDAO extends IDAO<Foo>
@@ -91,6 +126,7 @@ public class DAOTests extends BaseTest
 	{
 		private long nextId = 1;
 		private Map<Long, Foo> map = new HashMap<Long, Foo>();
+		ICache<Foo> cache;
 
 		@Override
 		public int size() {
@@ -126,6 +162,36 @@ public class DAOTests extends BaseTest
 		public void delete(Foo t) {
 			// TODO Auto-generated method stub
 			
+		}
+
+		@Override
+		public void setCache(ICache<Foo> cache) 
+		{
+			this.cache = cache;
+		}
+
+		@Override
+		public ICache<Foo> getCache() 
+		{
+			return this.cache;
+		}
+
+		@Override
+		public void encache(Foo t) 
+		{
+			if (this.cache != null)
+			{
+				this.cache.put(t.getId(), t);
+			}
+		}
+
+		@Override
+		public void decache(Foo t) 
+		{
+			if (this.cache != null)
+			{
+				this.cache.remove(t.getId());
+			}
 		}
 		
 	}
@@ -174,31 +240,61 @@ public class DAOTests extends BaseTest
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public void setCache(ICache<Car> cache) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public ICache<Car> getCache() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void encache(Car t) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void decache(Car t) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 	
-	//cache
-	public static class FooCache
-	{
-		private Map<Long, Foo> map = new HashMap<Long,Foo>();
-		
-		public void put(Foo foo)
-		{
-			map.put(foo.getId(), foo);
-		}
-		
-		public Foo get(long id)
-		{
-			return map.get(id);
-		}
-		public void remove(long id)
-		{
-			map.remove(id);
-		}
-	}
+//	//cache
+//	public static class FooCache implements ICache<Foo>
+//	{
+//		private Map<Long, Foo> map = new HashMap<Long,Foo>();
+//		
+//		public void put(Foo foo)
+//		{
+//			map.put(foo.getId(), foo);
+//		}
+//		
+//		public Foo get(long id)
+//		{
+//			return map.get(id);
+//		}
+//		public void remove(long id)
+//		{
+//			map.remove(id);
+//		}
+//
+//		@Override
+//		public void put(long id, Foo entity) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//	}
 	
 	public static class WrappedFooDAO implements IFooDAO
 	{
-		private FooCache cache = new FooCache();
+		private MyCache<Foo> cache = new MyCache<Foo>();
 		private IFooDAO dao;
 		
 		public WrappedFooDAO(IFooDAO dao) 
@@ -234,14 +330,14 @@ public class DAOTests extends BaseTest
 		@Override
 		public void save(Foo t) 
 		{
-			cache.put(t);
+			cache.put(t.getId(), t);
 			dao.save(t);
 		}
 
 		@Override
 		public void update(Foo t) 
 		{
-			cache.put(t);
+			cache.put(t.getId(), t);
 			dao.update(t);
 		}
 
@@ -251,67 +347,112 @@ public class DAOTests extends BaseTest
 			cache.remove(t.getId());
 			dao.delete(t);
 		}
-		
-	}
-	
-	//AR
-	public static class MockCarAR implements ICarDAO
-	{
-		private ICarDAO dao;
-		private WrappedFooDAO wrap;
-		
-		public MockCarAR(ICarDAO dao, WrappedFooDAO wrap)
-		{
-			this.dao = dao;
-			this.wrap = wrap;
-		}
-		
+
 		@Override
-		public int size() 
-		{
-			return dao.size();
+		public void setCache(ICache<Foo> cache) {
+			// TODO Auto-generated method stub
+			
 		}
 
 		@Override
-		public Car findById(Long id) 
-		{
-			Car car = dao.findById(id);
-			if (car != null)
-			{
-				Foo foo = wrap.findById(car.getFooId());
-				if (foo != null)
-				{
-					car.setFooObject(foo);
-				}
-			}
-			return car;
-		}
-
-		@Override
-		public List<Car> all() {
+		public ICache<Foo> getCache() {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public void save(Car t) 
-		{
-			dao.save(t);
-		}
-
-		@Override
-		public void update(Car t) {
+		public void encache(Foo t) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public void delete(Car t) {
+		public void decache(Foo t) {
 			// TODO Auto-generated method stub
 			
 		}
+		
 	}
-
+	
+//	//AR
+//	public static class MockCarAR implements ICarDAO
+//	{
+//		private ICarDAO dao;
+//		private WrappedFooDAO wrap;
+//		
+//		public MockCarAR(ICarDAO dao, WrappedFooDAO wrap)
+//		{
+//			this.dao = dao;
+//			this.wrap = wrap;
+//		}
+//		
+//		@Override
+//		public int size() 
+//		{
+//			return dao.size();
+//		}
+//
+//		@Override
+//		public Car findById(Long id) 
+//		{
+//			Car car = dao.findById(id);
+//			if (car != null)
+//			{
+//				Foo foo = wrap.findById(car.getFooId());
+//				car.setFooObject(foo);
+//			}
+//			return car;
+//		}
+//
+//		@Override
+//		public List<Car> all() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//
+//		@Override
+//		public void save(Car t) 
+//		{
+//			dao.save(t);
+//		}
+//
+//		@Override
+//		public void update(Car t) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//
+//		@Override
+//		public void delete(Car t) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//
+//		@Override
+//		public void setCache(ICache<Car> cache) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//
+//		@Override
+//		public ICache<Car> getCache() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//
+//		@Override
+//		public void encache(Car t) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//
+//		@Override
+//		public void decach(Car t) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//	}
+//
 
 	@Test
 	public void test() 
@@ -335,27 +476,27 @@ public class DAOTests extends BaseTest
 		dao.save(car);
 	}
 	
-	@Test
-	public void testCarAR() 
-	{
-		Foo foo = new Foo();
-		WrappedFooDAO daoF = new WrappedFooDAO(new MockFooDAO());
-		daoF.save(foo);
-		chkLong(1L, foo.getId());
-		Foo foo2 = daoF.findById(1L);
-		chkLong(1L, foo2.getId());
-		
-		MockCarAR ar = new MockCarAR(new MockCarDAO(), daoF);
-		Car car = new Car();
-		car.setName("abc");
-		car.setFooId(foo.getId());
-		ar.save(car);
-		
-		Car car2 = ar.findById(1L);
-		assertNotNull(car2);
-		assertNotNull(car2.getFooObject());
-	}
-	
+//	@Test
+//	public void testCarAR() 
+//	{
+//		Foo foo = new Foo();
+//		WrappedFooDAO daoF = new WrappedFooDAO(new MockFooDAO());
+//		daoF.save(foo);
+//		chkLong(1L, foo.getId());
+//		Foo foo2 = daoF.findById(1L);
+//		chkLong(1L, foo2.getId());
+//		
+//		MockCarAR ar = new MockCarAR(new MockCarDAO(), daoF);
+//		Car car = new Car();
+//		car.setName("abc");
+//		car.setFooId(foo.getId());
+//		ar.save(car);
+//		
+//		Car car2 = ar.findById(1L);
+//		assertNotNull(car2);
+//		assertNotNull(car2.getFooObject());
+//	}
+//	
 	//-----------------------------
 	
 	@Before
