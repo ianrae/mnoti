@@ -21,7 +21,11 @@ public class DAOTests extends BaseTest
 		public abstract Long getId();
 		public abstract void setId(Long id);
 	}
-	//!!stringid
+	public static abstract class EntityWithStringId extends Entity
+	{
+		public abstract String getId();
+		public abstract void setId(String id);
+	}
 	public static abstract class EntityWithId extends EntityWithLongId
 	{
 	}
@@ -84,63 +88,66 @@ public class DAOTests extends BaseTest
 		private Long fooId;
 	}
 	
-	public static interface ICache<T>
+	public static interface ICache<K,T>
 	{
-		void put(long id, T entity);
-		T get(long id);
-		void remove(long id);
+		void put(K id, T entity);
+		T get(K id);
+		void remove(K id);
 	}
 	
-	public static class MyCache<T> implements ICache<T>
+	public static class MyCache<K, T> implements ICache<K, T>
 	{
-		private Map<Long, T> map = new HashMap<Long, T>();
+		private Map<K, T> map = new HashMap<K, T>();
 
 		@Override
-		public void put(long id, T entity) 
+		public void put(K id, T entity) 
 		{
 			map.put(id, entity);
 		}
 
 		@Override
-		public T get(long id) 
+		public T get(K id) 
 		{
 			return map.get(id);
 		}
 
 		@Override
-		public void remove(long id) 
+		public void remove(K id) 
 		{
 			map.remove(id);
 		}
 		
 	}
 	
-	public interface IDAO<T>
+	public interface IDAO<K,T>
 	{
 		int size();
 		List<T> all();
 		void save(T t);
 		void update(T t);
 		void delete(T t);
-		void setCache(ICache<T> cache);
-		ICache<T> getCache();
+		void setCache(ICache<K,T> cache);
+		ICache<K,T> getCache();
 		void encache(T t);
 		void decache(T t);
 	}
 	
-	public interface IDAOWithLongId<T> extends IDAO<T>
+	public interface IDAOWithLongId<T> extends IDAO<Long,T>
 	{
 		T findById(Long id);
 	}
+	public interface IDAOWithId<T> extends IDAOWithLongId<T>
+	{
+	}
 	
-	public interface IFooDAO extends IDAOWithLongId<Foo>
+	public interface IFooDAO extends IDAOWithId<Foo>
 	{}
 	
 	public static class MockFooDAO implements IFooDAO
 	{
 		private long nextId = 1;
 		private Map<Long, Foo> map = new HashMap<Long, Foo>();
-		ICache<Foo> cache;
+		ICache<Long,Foo> cache;
 
 		@Override
 		public int size() {
@@ -189,13 +196,13 @@ public class DAOTests extends BaseTest
 		}
 
 		@Override
-		public void setCache(ICache<Foo> cache) 
+		public void setCache(ICache<Long,Foo> cache) 
 		{
 			this.cache = cache;
 		}
 
 		@Override
-		public ICache<Foo> getCache() 
+		public ICache<Long,Foo> getCache() 
 		{
 			return this.cache;
 		}
@@ -220,7 +227,7 @@ public class DAOTests extends BaseTest
 		
 	}
 	
-	public interface ICarDAO extends IDAOWithLongId<Car>
+	public interface ICarDAO extends IDAOWithId<Car>
 	{}
 	
 	public static class MockCarDAO implements ICarDAO
@@ -266,13 +273,13 @@ public class DAOTests extends BaseTest
 		}
 
 		@Override
-		public void setCache(ICache<Car> cache) {
+		public void setCache(ICache<Long,Car> cache) {
 			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
-		public ICache<Car> getCache() {
+		public ICache<Long,Car> getCache() {
 			// TODO Auto-generated method stub
 			return null;
 		}
@@ -302,8 +309,8 @@ public class DAOTests extends BaseTest
 	public void testCar() 
 	{
 		Foo foo = new Foo();
-		IDAO<Foo> dao = new MockFooDAO();
-		dao.setCache(new MyCache<Foo>());
+		IDAO<Long,Foo> dao = new MockFooDAO();
+		dao.setCache(new MyCache<Long, Foo>());
 		dao.save(foo);
 		chkLong(1L, foo.getId());
 		
@@ -319,7 +326,7 @@ public class DAOTests extends BaseTest
 	{
 		Foo foo = new Foo();
 		IDAOWithLongId<Foo> daoF = new MockFooDAO();
-		daoF.setCache(new MyCache<Foo>());
+		daoF.setCache(new MyCache<Long,Foo>());
 		daoF.save(foo);
 		chkLong(1L, foo.getId());
 		Foo foo2 = daoF.findById(1L);
