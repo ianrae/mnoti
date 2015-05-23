@@ -27,7 +27,6 @@ public class ObjManagerTests extends BaseTest
 	@JsonFilter("myFilter")
 	public static class BaseObject
 	{
-		@JsonIgnore
 		protected Set<String> setlist = new HashSet<String>();
 
 		@JsonIgnore
@@ -44,6 +43,17 @@ public class ObjManagerTests extends BaseTest
 		{
 			setlist.clear();
 		}
+		
+		private Long id;
+
+		@JsonIgnore
+		public Long getId() {
+			return id;
+		}
+		public void setId(Long id) {
+			this.id = id;
+		}
+		
 	}
 
 	public static class Scooter extends BaseObject
@@ -81,6 +91,7 @@ public class ObjManagerTests extends BaseTest
 	{
 		String getTypeName();
 		String renderObject(BaseObject obj) throws Exception ;
+		String renderPartialObject(BaseObject obj) throws Exception; 
 	}
 
 	public static class ObjectMgr<T extends BaseObject> implements IObjectMgr
@@ -144,6 +155,12 @@ public class ObjManagerTests extends BaseTest
 		{
 			String type = clazz.getSimpleName().toLowerCase();
 			return type;
+		}
+
+		@Override
+		public String renderPartialObject(BaseObject obj) throws Exception 
+		{
+			return this.renderSetList((T) obj);
 		}
 	}
 

@@ -22,6 +22,12 @@ import org.junit.Test;
 
 public class CommitMgrTests extends BaseTest 
 {
+	public static interface ICommitObserver
+	{
+		boolean willAccept(Stream stream, Commit commit);
+		void observe(Stream stream, Commit commit);
+	}
+	
 	public static class CommitMgr
 	{
 		private ICommitDAO dao;
@@ -109,6 +115,8 @@ public class CommitMgrTests extends BaseTest
 			this.streamDAO.save(stream);
 			
 			Long objectId = stream.getId();
+			obj.setId(objectId);
+			
 			Commit commit = new Commit();
 			commit.setAction('I');
 			commit.setStreamId(objectId);
@@ -125,6 +133,101 @@ public class CommitMgrTests extends BaseTest
 			stream.setSnapshotId(snapshotId);
 			this.streamDAO.update(stream);
 		}
+		
+		public void updateObject(IObjectMgr mgr, BaseObject obj)
+		{
+			Stream stream = streamDAO.findById(obj.getId());
+			if (stream == null)
+			{
+				return; //!!
+			}
+			
+			Long objectId = stream.getId();
+			Commit commit = new Commit();
+			commit.setAction('U');
+			commit.setStreamId(objectId);
+			String json = "";
+			try {
+				json = mgr.renderPartialObject(obj);
+			} catch (Exception e) {
+				e.printStackTrace();  //!!handle later!!
+			}
+			commit.setJson(json);
+			this.dao.save(commit);
+		}
+		public void deleteObject(IObjectMgr mgr, BaseObject obj)
+		{
+			Stream stream = streamDAO.findById(obj.getId());
+			if (stream == null)
+			{
+				return; //!!
+			}
+			
+			Long objectId = stream.getId();
+			Commit commit = new Commit();
+			commit.setAction('D');
+			commit.setStreamId(objectId);
+			String json = "";
+			commit.setJson(json);
+			this.dao.save(commit);
+		}
+		
+		public void observeAll(ICommitObserver observer)
+		{
+			List<Commit> L = loadAll();
+			for(Commit commit : L)
+			{
+				Long streamId = commit.getStreamId();
+				Stream stream = null;
+				if (streamId != null)
+				{
+					stream = streamDAO.findById(streamId);
+				}
+				
+				if (observer.willAccept(stream, commit))
+				{
+					observer.observe(stream, commit);
+				}
+			}
+		}
+	}
+	
+	public static class CountObserver implements ICommitObserver
+	{
+		String type;
+		public int count;
+		
+		public CountObserver(String type)
+		{
+			this.type = type;
+		}
+		
+		@Override
+		public boolean willAccept(Stream stream, Commit commit) 
+		{
+			if (stream != null && ! stream.getType().equals(type))
+			{
+				return false;
+			}
+			
+			char action = commit.getAction();
+			return (action == 'I' || action == 'D');
+		}
+
+		@Override
+		public void observe(Stream stream, Commit commit) 
+		{
+			char action = commit.getAction();
+			if (action == 'I')
+			{
+				count++;
+			}
+			else if (action == 'D')
+			{
+				count--;
+			}
+		}
+		
 	}
 	
 	@Test
@@ -164,20 +267,40 @@ public class CommitMgrTests extends BaseTest
 		List<Commit> L = mgr.loadAll();
 		assertEquals(2, L.size());
 		
-		assertEquals(1, streamDAO.size());
+		chkStreamSize(streamDAO, 1);
 		Stream stream = streamDAO.findById(1L);
 		assertEquals("scooter", stream.getType());
 		assertEquals(1L, stream.getId().longValue());
 		assertEquals(2L, stream.getSnapshotId().longValue());
 		
-//		assertEquals(2, L.size());
-//		Commit commit = L.get(1);
-//		assertEquals(2L, commit.getId().longValue());
-//		assertEquals('-', commit.getAction());
+		scooter.clearSetList();
+		scooter.setA(444);
+		mgr.updateObject(omgr, scooter);
+		L = mgr.loadAll();
+		assertEquals(3, L.size());
+		chkStreamSize(streamDAO, 1);
 		
+		CountObserver observer = new CountObserver("scooter");
+		mgr.observeAll(observer);
+		assertEquals(1, observer.count);
+		
+		mgr.deleteObject(omgr, scooter);
+		L = mgr.loadAll();
+		assertEquals(4, L.size());
+		chkStreamSize(streamDAO, 1);
+
 		mgr.dump();
+		observer = new CountObserver("scooter");
+		mgr.observeAll(observer);
+		assertEquals(0, observer.count);
+		
 	}
 
+	private void chkStreamSize(IStreamDAO streamDAO, int expected)
+	{
+		assertEquals(expected, streamDAO.size());
+	}
+	
 	protected static String fix(String s)
 	{
 		s = s.replace('\'', '"');
