@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 public class ObjManagerTests extends BaseTest 
 {
 	@JsonFilter("myFilter")
-	public static class BaseObject
+	public static abstract class BaseObject
 	{
 		protected Set<String> setlist = new HashSet<String>();
 
@@ -53,6 +53,8 @@ public class ObjManagerTests extends BaseTest
 		public void setId(Long id) {
 			this.id = id;
 		}
+		
+		public abstract BaseObject clone(BaseObject obj);
 		
 	}
 
@@ -83,6 +85,16 @@ public class ObjManagerTests extends BaseTest
 		public void setS(String s) {
 			setlist.add("s");
 			this.s = s;
+		}
+		@Override
+		public BaseObject clone(BaseObject objParam) 
+		{
+			Scooter obj = (Scooter)objParam;
+			Scooter copy = new Scooter();
+			copy.a = obj.a;
+			copy.b = obj.b;
+			copy.s = obj.s;
+			return copy;
 		}
 
 	}

@@ -1,0 +1,197 @@
+package mesf.core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import mesf.ObjManagerTests;
+import mesf.ObjManagerTests.BaseObject;
+import mesf.ObjManagerTests.IObjectMgr;
+
+public class CommitMgr
+{
+	private ICommitDAO dao;
+	private IStreamDAO streamDAO;
+	private long maxId; //per current epoch
+
+	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO)
+	{
+		this.dao = dao;
+		this.streamDAO = streamDAO;
+	}
+	
+	public long getMaxId()
+	{
+		if (maxId != 0L)
+		{
+			return maxId;
+		}
+		
+		List<Commit> L = loadAll();
+		if (L.size() == 0)
+		{
+			return 0L;
+		}
+		else
+		{
+			Commit last = L.get(L.size() - 1);
+			maxId = last.getId();
+			return maxId;
+		}
+	}
+	public long freshenMaxId()
+	{
+		maxId = 0L;
+		return getMaxId();
+	}
+	
+	public List<Commit> loadAll()
+	{
+		return dao.all();
+	}
+	public List<Commit> loadAllFrom(long startId)
+	{
+		List<Commit> L = new ArrayList<>();
+		for(Commit commit : loadAll())
+		{
+			if (commit.getId().longValue() >= startId)
+			{
+				L.add(commit);
+			}
+		}
+		return L;
+	}
+	
+	public Commit loadByCommitId(Long id)
+	{
+		return dao.findById(id);
+	}
+	
+	public Commit loadSnapshotCommit(Long streamId)
+	{
+		Stream stream = streamDAO.findById(streamId);
+		if (stream == null)
+		{
+			return null; //!!
+		}
+		
+		Commit commit = dao.findById(stream.getSnapshotId());
+		return commit;
+	}
+	public List<Commit> loadStream(String type, Long id)
+	{
+		Stream stream = streamDAO.findById(id);
+		if (stream == null)
+		{
+			return null; //!!
+		}
+		
+		List<Commit> rawL = loadAllFrom(stream.getSnapshotId());
+		List<Commit> L = new ArrayList<>();
+		for(Commit commit : rawL)
+		{
+			if (commit.getStreamId().equals(id))
+			{
+				L.add(commit);
+			}
+		}
+		return L;
+	}
+	
+	public void writeNoOp()
+	{
+		Commit commit = new Commit();
+		commit.setAction('-');
+		this.dao.save(commit);
+	}
+	
+	public void dump()
+	{
+		for(Commit commit : loadAll())
+		{
+			String s = String.format("[%d] %c %d json:%s", commit.getId(), commit.getAction(), commit.getStreamId(), commit.getJson());
+			System.out.println(s);
+		}
+	}
+	
+	public void insertObject(IObjectMgr mgr, BaseObject obj)
+	{
+		Stream stream = new Stream();
+		stream.setType(mgr.getTypeName());
+		this.streamDAO.save(stream);
+		
+		Long objectId = stream.getId();
+		obj.setId(objectId);
+		
+		Commit commit = new Commit();
+		commit.setAction('I');
+		commit.setStreamId(objectId);
+		String json = "";
+		try {
+			json = mgr.renderObject(obj);
+		} catch (Exception e) {
+			e.printStackTrace();  //!!handle later!!
+		}
+		commit.setJson(json);
+		this.dao.save(commit);
+		
+		Long snapshotId = commit.getId();
+		stream.setSnapshotId(snapshotId);
+		this.streamDAO.update(stream);
+	}
+	
+	public void updateObject(IObjectMgr mgr, BaseObject obj)
+	{
+		Stream stream = streamDAO.findById(obj.getId());
+		if (stream == null)
+		{
+			return; //!!
+		}
+		
+		Long objectId = stream.getId();
+		Commit commit = new Commit();
+		commit.setAction('U');
+		commit.setStreamId(objectId);
+		String json = "";
+		try {
+			json = mgr.renderPartialObject(obj);
+		} catch (Exception e) {
+			e.printStackTrace();  //!!handle later!!
+		}
+		commit.setJson(json);
+		this.dao.save(commit);
+	}
+	public void deleteObject(IObjectMgr mgr, BaseObject obj)
+	{
+		Stream stream = streamDAO.findById(obj.getId());
+		if (stream == null)
+		{
+			return; //!!
+		}
+		
+		Long objectId = stream.getId();
+		Commit commit = new Commit();
+		commit.setAction('D');
+		commit.setStreamId(objectId);
+		String json = "";
+		commit.setJson(json);
+		this.dao.save(commit);
+	}
+	
+	public void observeList(List<Commit> L, ICommitObserver observer)
+	{
+		for(Commit commit : L)
+		{
+			Long streamId = commit.getStreamId();
+			Stream stream = null;
+			if (streamId != null)
+			{
+				stream = streamDAO.findById(streamId);
+			}
+			
+			if (observer.willAccept(stream, commit))
+			{
+				observer.observe(stream, commit);
+			}
+		}
+	}
+}
