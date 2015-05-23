@@ -3,19 +3,27 @@ package mesf;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import mef.framework.helpers.BaseTest;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 public class JacksonTests extends BaseTest 
 {
+	@JsonFilter("myFilter")
 	public static class Taxi
 	{
 		public int a;
@@ -58,11 +66,36 @@ public class JacksonTests extends BaseTest
 		assertEquals(26, taxi.b);
 		assertEquals("abc", taxi.s);
 		chkTaxi(taxi, 15,26,"abc");
-		
+
 		ObjectReader r = mapper.readerForUpdating(taxi);
 		json = "{'a':150,'s':'def'}";
 		r.readValue(fix(json));
 		chkTaxi(taxi, 150,26,"def");
+	}
+
+	@Test
+	public void testWriteFilter() throws Exception
+	{
+		log("sdf");
+		String json = "{'a':15,'b':26,'s':'abc'}";
+		ObjectMapper mapper = new ObjectMapper();
+		Taxi taxi = mapper.readValue(fix(json), Taxi.class);	
+		chkTaxi(taxi, 15,26,"abc");
+
+		SimpleFilterProvider sfp = new SimpleFilterProvider();
+		// create a  set that holds name of User properties that must be serialized
+		Set userFilterSet = new HashSet<String>();
+		userFilterSet.add("a");
+		userFilterSet.add("s");
+
+		sfp.addFilter("myFilter",SimpleBeanPropertyFilter.filterOutAllExcept(userFilterSet));
+
+		// create an objectwriter which will apply the filters 
+		ObjectWriter writer = mapper.writer(sfp);
+
+		String json2 = writer.writeValueAsString(taxi);
+		String s = fix("{'a':15,'s':'abc'}");
+		assertEquals(s, json2);
 	}
 
 	//-----------------------------
@@ -71,7 +104,7 @@ public class JacksonTests extends BaseTest
 		assertEquals(expectedA, taxi.a);
 		assertEquals(expectedB, taxi.b);
 		assertEquals(expectedStr, taxi.s);
-		
+
 	}
 	protected static String fix(String s)
 	{
