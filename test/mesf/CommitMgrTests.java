@@ -3,7 +3,9 @@ package mesf;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
 import mesf.ObjManagerTests.BaseObject;
@@ -172,9 +174,8 @@ public class CommitMgrTests extends BaseTest
 			this.dao.save(commit);
 		}
 		
-		public void observeAll(ICommitObserver observer)
+		public void observeList(List<Commit> L, ICommitObserver observer)
 		{
-			List<Commit> L = loadAll();
 			for(Commit commit : L)
 			{
 				Long streamId = commit.getStreamId();
@@ -227,7 +228,80 @@ public class CommitMgrTests extends BaseTest
 				count--;
 			}
 		}
+	}
+	
+	public static class ObjectManagerRegistry
+	{
+		Map<Class, IObjectMgr> map = new HashMap<>();
 		
+		public ObjectManagerRegistry()
+		{
+			
+		}
+		public void register(Class clazz, IObjectMgr mgr)
+		{
+			map.put(clazz, mgr);
+		}
+		public IObjectMgr findByType(String type) 
+		{
+			for(Class clazz : map.keySet())
+			{
+				IObjectMgr mgr = map.get(clazz);
+				if (mgr.getTypeName().equals(type))
+				{
+					return mgr;
+				}
+			}
+			return null;
+		}
+	}
+	
+	public static class ObjectViewCache
+	{
+		Map<Long, BaseObject> map = new HashMap<>();
+		private IStreamDAO streamDAO;
+		private CommitMgr commitMgr;
+		private ObjectManagerRegistry registry;
+		
+		public ObjectViewCache(CommitMgr commitMgr, IStreamDAO streamDAO, ObjectManagerRegistry registry)
+		{
+			this.commitMgr = commitMgr;
+			this.streamDAO = streamDAO;
+			this.registry = registry;
+		}
+		
+		public BaseObject loadObject(String type, Long objectId) throws Exception
+		{
+			Stream stream = streamDAO.findById(objectId);
+			if (stream == null)
+			{
+				return null;
+			}
+			
+			IObjectMgr mgr = registry.findByType(type);
+			List<Commit> L = commitMgr.loadStream(type, objectId);
+			BaseObject obj = null;
+			for(Commit commit : L)
+			{
+				switch(commit.getAction())
+				{
+				case 'I':
+				case 'S':
+					obj = mgr.rehydrate(commit.getJson());
+					break;
+				case 'U':
+					mgr.mergeHydrate(obj, commit.getJson());
+					break;
+				case 'D':
+					obj = null;
+					break;
+				default:
+					break;
+				}
+			}
+			
+			return obj;
+		}
 	}
 	
 	@Test
@@ -281,7 +355,7 @@ public class CommitMgrTests extends BaseTest
 		chkStreamSize(streamDAO, 1);
 		
 		CountObserver observer = new CountObserver("scooter");
-		mgr.observeAll(observer);
+		mgr.observeList(mgr.loadAll(), observer);
 		assertEquals(1, observer.count);
 		
 		mgr.deleteObject(omgr, scooter);
@@ -291,9 +365,40 @@ public class CommitMgrTests extends BaseTest
 
 		mgr.dump();
 		observer = new CountObserver("scooter");
-		mgr.observeAll(observer);
+		mgr.observeList(mgr.loadAll(), observer);
 		assertEquals(0, observer.count);
+	}
+	
+	
+	@Test
+	public void testViewCache() throws Exception
+	{
+		ICommitDAO dao = new MockCommitDAO();
+		IStreamDAO streamDAO = new MockStreamDAO();
+		CommitMgr mgr = new CommitMgr(dao, streamDAO);
 		
+		String json = "{'a':15,'b':26,'s':'abc'}";
+		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
+		Scooter scooter = omgr.createFromJson(fix(json));		
+
+		mgr.writeNoOp();
+		mgr.insertObject(omgr, scooter);
+		List<Commit> L = mgr.loadAll();
+		assertEquals(2, L.size());
+		scooter.clearSetList();
+		scooter.setA(444);
+		mgr.updateObject(omgr, scooter);
+		L = mgr.loadAll();
+		assertEquals(3, L.size());
+		chkStreamSize(streamDAO, 1);
+		
+		mgr.dump();
+		ObjectManagerRegistry registry = new ObjectManagerRegistry();
+		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
+		ObjectViewCache objcache = new ObjectViewCache(mgr, streamDAO, registry);
+		
+		BaseObject obj = objcache.loadObject("scooter", scooter.getId());
+		assertEquals(1L, obj.getId().longValue());
 	}
 
 	private void chkStreamSize(IStreamDAO streamDAO, int expected)

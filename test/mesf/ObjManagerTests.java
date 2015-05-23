@@ -92,6 +92,8 @@ public class ObjManagerTests extends BaseTest
 		String getTypeName();
 		String renderObject(BaseObject obj) throws Exception ;
 		String renderPartialObject(BaseObject obj) throws Exception; 
+		BaseObject rehydrate(String json) throws Exception;
+		void mergeHydrate(BaseObject obj, String json) throws Exception;
 	}
 
 	public static class ObjectMgr<T extends BaseObject> implements IObjectMgr
@@ -161,6 +163,19 @@ public class ObjManagerTests extends BaseTest
 		public String renderPartialObject(BaseObject obj) throws Exception 
 		{
 			return this.renderSetList((T) obj);
+		}
+
+		@Override
+		public BaseObject rehydrate(String json) throws Exception 
+		{
+			BaseObject obj = this.createFromJson(json);
+			return obj;
+		}
+
+		@Override
+		public void mergeHydrate(BaseObject obj, String json) throws Exception 
+		{
+			mergeJson((T) obj, json);
 		}
 	}
 
