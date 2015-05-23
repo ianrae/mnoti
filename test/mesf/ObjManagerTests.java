@@ -21,13 +21,31 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 public class ObjManagerTests extends BaseTest 
 {
+	public static class BaseObject
+	{
+		protected Set<String> setlist = new HashSet<String>();
+		
+		public List<String> getSetList()
+		{
+			List<String> L = new ArrayList<>();
+			for(String s : setlist)
+			{
+				L.add(s);
+			}
+			return L;
+		}
+		public void clearSetList()
+		{
+			setlist.clear();
+		}
+	}
+	
 	@JsonFilter("myFilter")
-	public static class Scooter
+	public static class Scooter extends BaseObject
 	{
 		private int a;
 		private int b;
 		private String s;
-		private Set<String> setlist = new HashSet<String>();
 		
 		public int getA() {
 			return a;
@@ -52,41 +70,32 @@ public class ObjManagerTests extends BaseTest
 			this.s = s;
 		}
 		
-		public List<String> getSetList()
-		{
-			List<String> L = new ArrayList<>();
-			for(String s : setlist)
-			{
-				L.add(s);
-			}
-			return L;
-		}
-		public void clearSetList()
-		{
-			setlist.clear();
-		}
 	}
 	
-	public static class ScooterMgr
+	public static class ObjectMgr<T extends BaseObject>
 	{
-		public ScooterMgr()
-		{}
+		private Class<?> clazz;
 
-		public Scooter createFromJson(String json) throws Exception
+		public ObjectMgr(Class<?> clazz)
+		{
+			this.clazz = clazz;
+		}
+
+		public T createFromJson(String json) throws Exception
 		{
 			ObjectMapper mapper = new ObjectMapper();
-			Scooter scooter = mapper.readValue(json, Scooter.class);	
+			T scooter = (T) mapper.readValue(json, clazz);	
 			return scooter;
 		}
 		
-		public void mergeJson(Scooter scooter, String json) throws Exception
+		public void mergeJson(T scooter, String json) throws Exception
 		{
 			ObjectMapper mapper = new ObjectMapper();
 			ObjectReader r = mapper.readerForUpdating(scooter);
 			r.readValue(json);
 		}
 
-		public String renderSetList(Scooter scooter) throws Exception 
+		public String renderSetList(T scooter) throws Exception 
 		{
 			ObjectMapper mapper = new ObjectMapper();
 			SimpleFilterProvider sfp = new SimpleFilterProvider();
@@ -113,11 +122,10 @@ public class ObjManagerTests extends BaseTest
 		log("sdf");
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		
-		ScooterMgr mgr = new ScooterMgr();
+		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
-		assertEquals(15, scooter.a);
-		assertEquals(26, scooter.b);
-		assertEquals("abc", scooter.s);
+		chkScooter(scooter, 15,26,"abc");
+		
 		assertEquals(3, scooter.getSetList().size());
 		scooter.clearSetList();
 		assertEquals(0, scooter.getSetList().size());
@@ -128,7 +136,7 @@ public class ObjManagerTests extends BaseTest
 	{
 		log("sdf");
 		String json = "{'a':15,'s':'def'}";
-		ScooterMgr mgr = new ScooterMgr();
+		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		assertEquals(15, scooter.a);
 		assertEquals(0, scooter.b);
@@ -140,14 +148,11 @@ public class ObjManagerTests extends BaseTest
 	{
 		log("sdf");
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		ScooterMgr mgr = new ScooterMgr();
+		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
-		assertEquals(15, scooter.a);
-		assertEquals(26, scooter.b);
-		assertEquals("abc", scooter.s);
 		chkScooter(scooter, 15,26,"abc");
 
-		json = "{'a':150,'s':'def'}";
+		json = "{'a':150,'s':'def'}"; //some properties
 		mgr.mergeJson(scooter, fix(json));
 		chkScooter(scooter, 150,26,"def");
 	}
@@ -157,7 +162,7 @@ public class ObjManagerTests extends BaseTest
 	{
 		log("sdf");
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		ScooterMgr mgr = new ScooterMgr();
+		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		chkScooter(scooter, 15,26,"abc");
 		
@@ -165,7 +170,7 @@ public class ObjManagerTests extends BaseTest
 		scooter.setA(100);
 		scooter.setB(200);
 
-		String json2 = mgr.renderSetList(scooter);
+		String json2 = mgr.renderSetList(scooter); //renders only fields that were changed
 		String s = fix("{'a':100,'b':200}");
 		assertEquals(s, json2);
 	}
