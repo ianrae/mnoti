@@ -8,6 +8,8 @@ import java.util.List;
 import mef.framework.helpers.BaseTest;
 import mesf.ObjManagerTests.BaseObject;
 import mesf.ObjManagerTests.IObjectMgr;
+import mesf.ObjManagerTests.ObjectMgr;
+import mesf.ObjManagerTests.Scooter;
 import mesf.core.Commit;
 import mesf.core.ICommitDAO;
 import mesf.core.IStreamDAO;
@@ -95,7 +97,7 @@ public class CommitMgrTests extends BaseTest
 		{
 			for(Commit commit : loadAll())
 			{
-				String s = String.format("[%d] %c <%d> json:%s", commit.getId(), commit.getAction(), commit.getStreamId(), commit.getJson());
+				String s = String.format("[%d] %c %d json:%s", commit.getId(), commit.getAction(), commit.getStreamId(), commit.getJson());
 				System.out.println(s);
 			}
 		}
@@ -103,7 +105,7 @@ public class CommitMgrTests extends BaseTest
 		public void insertObject(IObjectMgr mgr, BaseObject obj)
 		{
 			Stream stream = new Stream();
-			stream.setType("zx");
+			stream.setType(mgr.getTypeName());
 			this.streamDAO.save(stream);
 			
 			Long objectId = stream.getId();
@@ -147,22 +149,31 @@ public class CommitMgrTests extends BaseTest
 	}
 
 	@Test
-	public void test() throws Exception
+	public void testInsert() throws Exception
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		CommitMgr mgr = new CommitMgr(dao, streamDAO);
 		
+		String json = "{'a':15,'b':26,'s':'abc'}";
+		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
+		Scooter scooter = omgr.createFromJson(fix(json));		
+
+		mgr.writeNoOp();
+		mgr.insertObject(omgr, scooter);
 		List<Commit> L = mgr.loadAll();
-		assertEquals(0, L.size());
-		
-		mgr.writeNoOp();
-		mgr.writeNoOp();
-		L = mgr.loadAll();
 		assertEquals(2, L.size());
-		Commit commit = L.get(1);
-		assertEquals(2L, commit.getId().longValue());
-		assertEquals('-', commit.getAction());
+		
+		assertEquals(1, streamDAO.size());
+		Stream stream = streamDAO.findById(1L);
+		assertEquals("scooter", stream.getType());
+		assertEquals(1L, stream.getId().longValue());
+		assertEquals(2L, stream.getSnapshotId().longValue());
+		
+//		assertEquals(2, L.size());
+//		Commit commit = L.get(1);
+//		assertEquals(2L, commit.getId().longValue());
+//		assertEquals('-', commit.getAction());
 		
 		mgr.dump();
 	}

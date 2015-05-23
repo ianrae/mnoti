@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -22,10 +24,13 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 public class ObjManagerTests extends BaseTest 
 {
+	@JsonFilter("myFilter")
 	public static class BaseObject
 	{
+		@JsonIgnore
 		protected Set<String> setlist = new HashSet<String>();
 
+		@JsonIgnore
 		public List<String> getSetList()
 		{
 			List<String> L = new ArrayList<>();
@@ -41,7 +46,6 @@ public class ObjManagerTests extends BaseTest
 		}
 	}
 
-	@JsonFilter("myFilter")
 	public static class Scooter extends BaseObject
 	{
 		private int a;
@@ -75,6 +79,7 @@ public class ObjManagerTests extends BaseTest
 
 	public interface IObjectMgr
 	{
+		String getTypeName();
 		String renderObject(BaseObject obj) throws Exception ;
 	}
 
@@ -126,12 +131,19 @@ public class ObjManagerTests extends BaseTest
 		{
 			ObjectMapper mapper = new ObjectMapper();
 			SimpleFilterProvider dummy = new SimpleFilterProvider();
-			dummy.setFailOnUnknownId(false);			
+			dummy.setFailOnUnknownId(false);		
 
 			// create an objectwriter which will apply the filters 
 			ObjectWriter writer = mapper.writer(dummy);
 			String json = writer.writeValueAsString(obj);
 			return json;
+		}
+
+		@Override
+		public String getTypeName() 
+		{
+			String type = clazz.getSimpleName().toLowerCase();
+			return type;
 		}
 	}
 
@@ -207,7 +219,8 @@ public class ObjManagerTests extends BaseTest
 		scooter.setB(200);
 
 		String json2 = mgr.renderObject(scooter);
-		String s = fix("{'a':100,'b':200,'s':'abc','setList':['a','b']}");
+//		String s = fix("{'a':100,'b':200,'s':'abc','setList':['a','b']}");
+		String s = fix("{'a':100,'b':200,'s':'abc'}");
 		assertEquals(s, json2);
 	}
 
