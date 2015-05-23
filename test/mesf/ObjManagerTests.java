@@ -1,63 +1,18 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import mef.framework.helpers.BaseTest;
+import mesf.core.BaseObject;
+import mesf.core.ObjectMgr;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 public class ObjManagerTests extends BaseTest 
 {
-	@JsonFilter("myFilter")
-	public static abstract class BaseObject
-	{
-		protected Set<String> setlist = new HashSet<String>();
-
-		@JsonIgnore
-		public List<String> getSetList()
-		{
-			List<String> L = new ArrayList<>();
-			for(String s : setlist)
-			{
-				L.add(s);
-			}
-			return L;
-		}
-		public void clearSetList()
-		{
-			setlist.clear();
-		}
-		
-		private Long id;
-
-		@JsonIgnore
-		public Long getId() {
-			return id;
-		}
-		public void setId(Long id) {
-			this.id = id;
-		}
-		
-		public abstract BaseObject clone(BaseObject obj);
-		
-	}
-
 	public static class Scooter extends BaseObject
 	{
 		private int a;
@@ -87,108 +42,15 @@ public class ObjManagerTests extends BaseTest
 			this.s = s;
 		}
 		@Override
-		public BaseObject clone(BaseObject objParam) 
+		public BaseObject clone() 
 		{
-			Scooter obj = (Scooter)objParam;
 			Scooter copy = new Scooter();
-			copy.a = obj.a;
-			copy.b = obj.b;
-			copy.s = obj.s;
+			copy.a = this.a;
+			copy.b = this.b;
+			copy.s = this.s;
 			return copy;
 		}
 
-	}
-
-	public interface IObjectMgr
-	{
-		String getTypeName();
-		String renderObject(BaseObject obj) throws Exception ;
-		String renderPartialObject(BaseObject obj) throws Exception; 
-		BaseObject rehydrate(String json) throws Exception;
-		void mergeHydrate(BaseObject obj, String json) throws Exception;
-	}
-
-	public static class ObjectMgr<T extends BaseObject> implements IObjectMgr
-	{
-		private Class<?> clazz;
-
-		public ObjectMgr(Class<?> clazz)
-		{
-			this.clazz = clazz;
-		}
-
-		public T createFromJson(String json) throws Exception
-		{
-			ObjectMapper mapper = new ObjectMapper();
-			T scooter = (T) mapper.readValue(json, clazz);	
-			return scooter;
-		}
-
-		public void mergeJson(T scooter, String json) throws Exception
-		{
-			ObjectMapper mapper = new ObjectMapper();
-			ObjectReader r = mapper.readerForUpdating(scooter);
-			r.readValue(json);
-		}
-
-		public String renderSetList(T scooter) throws Exception 
-		{
-			ObjectMapper mapper = new ObjectMapper();
-			SimpleFilterProvider sfp = new SimpleFilterProvider();
-			// create a  set that holds name of User properties that must be serialized
-			Set<String> userFilterSet = new HashSet<String>();
-			for(String s : scooter.getSetList())
-			{
-				userFilterSet.add(s);
-			}
-
-			sfp.addFilter("myFilter",SimpleBeanPropertyFilter.filterOutAllExcept(userFilterSet));
-
-			// create an objectwriter which will apply the filters 
-			ObjectWriter writer = mapper.writer(sfp);
-
-			String json = writer.writeValueAsString(scooter);
-			return json;
-		}
-
-		@Override
-		public String renderObject(BaseObject obj) throws Exception 
-		{
-			ObjectMapper mapper = new ObjectMapper();
-			SimpleFilterProvider dummy = new SimpleFilterProvider();
-			dummy.setFailOnUnknownId(false);		
-
-			// create an objectwriter which will apply the filters 
-			ObjectWriter writer = mapper.writer(dummy);
-			String json = writer.writeValueAsString(obj);
-			return json;
-		}
-
-		@Override
-		public String getTypeName() 
-		{
-			String type = clazz.getSimpleName().toLowerCase();
-			return type;
-		}
-
-		@Override
-		public String renderPartialObject(BaseObject obj) throws Exception 
-		{
-			return this.renderSetList((T) obj);
-		}
-
-		@Override
-		public BaseObject rehydrate(String json) throws Exception 
-		{
-			BaseObject obj = this.createFromJson(json);
-			return obj;
-		}
-
-		@Override
-		public void mergeHydrate(BaseObject obj, String json) throws Exception 
-		{
-			mergeJson((T) obj, json);
-		}
 	}
 
 	@Test

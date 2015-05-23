@@ -7,17 +7,17 @@ import java.util.List;
 import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
-import mesf.ObjManagerTests.BaseObject;
-import mesf.ObjManagerTests.IObjectMgr;
-import mesf.ObjManagerTests.ObjectMgr;
 import mesf.ObjManagerTests.Scooter;
+import mesf.core.BaseObject;
 import mesf.core.Commit;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.ICommitObserver;
+import mesf.core.IObjectMgr;
 import mesf.core.IStreamDAO;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
+import mesf.core.ObjectMgr;
 import mesf.core.Stream;
 
 import org.junit.Before;
@@ -200,6 +200,29 @@ public class CommitMgrTests extends BaseTest
 		{
 			BaseObject obj = map.get(objectId);
 			return obj;
+		}
+	}
+	
+	
+	public static class ObjectHydrater
+	{
+		private ObjectViewCache objcache;
+		
+		public ObjectHydrater(ObjectViewCache objcache)
+		{
+			this.objcache = objcache;
+		}
+		
+		public BaseObject loadObject(String type, Long objectId) throws Exception
+		{
+			//objcache should be immutable objects, so for our commands make a copy
+			BaseObject obj = objcache.loadObject(type, objectId);
+			if (obj != null)
+			{
+				BaseObject clone = obj.clone();
+				return clone;
+			}
+			return null;
 		}
 	}
 	

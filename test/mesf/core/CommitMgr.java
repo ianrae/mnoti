@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mesf.ObjManagerTests;
-import mesf.ObjManagerTests.BaseObject;
-import mesf.ObjManagerTests.IObjectMgr;
 
+//will create one of these per web request, but all will share underlying thread-safe commit cache
 public class CommitMgr
 {
 	private ICommitDAO dao;
