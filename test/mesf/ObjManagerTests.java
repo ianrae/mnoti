@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -24,7 +25,7 @@ public class ObjManagerTests extends BaseTest
 	public static class BaseObject
 	{
 		protected Set<String> setlist = new HashSet<String>();
-		
+
 		public List<String> getSetList()
 		{
 			List<String> L = new ArrayList<>();
@@ -39,14 +40,14 @@ public class ObjManagerTests extends BaseTest
 			setlist.clear();
 		}
 	}
-	
+
 	@JsonFilter("myFilter")
 	public static class Scooter extends BaseObject
 	{
 		private int a;
 		private int b;
 		private String s;
-		
+
 		public int getA() {
 			return a;
 		}
@@ -69,10 +70,15 @@ public class ObjManagerTests extends BaseTest
 			setlist.add("s");
 			this.s = s;
 		}
-		
+
 	}
-	
-	public static class ObjectMgr<T extends BaseObject>
+
+	public interface IObjectMgr
+	{
+		String renderObject(BaseObject obj) throws Exception ;
+	}
+
+	public static class ObjectMgr<T extends BaseObject> implements IObjectMgr
 	{
 		private Class<?> clazz;
 
@@ -87,7 +93,7 @@ public class ObjManagerTests extends BaseTest
 			T scooter = (T) mapper.readValue(json, clazz);	
 			return scooter;
 		}
-		
+
 		public void mergeJson(T scooter, String json) throws Exception
 		{
 			ObjectMapper mapper = new ObjectMapper();
@@ -114,6 +120,19 @@ public class ObjManagerTests extends BaseTest
 			String json = writer.writeValueAsString(scooter);
 			return json;
 		}
+
+		@Override
+		public String renderObject(BaseObject obj) throws Exception 
+		{
+			ObjectMapper mapper = new ObjectMapper();
+			SimpleFilterProvider dummy = new SimpleFilterProvider();
+			dummy.setFailOnUnknownId(false);			
+
+			// create an objectwriter which will apply the filters 
+			ObjectWriter writer = mapper.writer(dummy);
+			String json = writer.writeValueAsString(obj);
+			return json;
+		}
 	}
 
 	@Test
@@ -121,11 +140,11 @@ public class ObjManagerTests extends BaseTest
 	{
 		log("sdf");
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		
+
 		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		chkScooter(scooter, 15,26,"abc");
-		
+
 		assertEquals(3, scooter.getSetList().size());
 		scooter.clearSetList();
 		assertEquals(0, scooter.getSetList().size());
@@ -165,13 +184,30 @@ public class ObjManagerTests extends BaseTest
 		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		chkScooter(scooter, 15,26,"abc");
-		
+
 		scooter.clearSetList();
 		scooter.setA(100);
 		scooter.setB(200);
 
 		String json2 = mgr.renderSetList(scooter); //renders only fields that were changed
 		String s = fix("{'a':100,'b':200}");
+		assertEquals(s, json2);
+	}
+
+	@Test
+	public void testRender() throws Exception
+	{
+		String json = "{'a':15,'b':26,'s':'abc'}";
+		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
+		Scooter scooter = mgr.createFromJson(fix(json));
+		chkScooter(scooter, 15,26,"abc");
+
+		scooter.clearSetList();
+		scooter.setA(100);
+		scooter.setB(200);
+
+		String json2 = mgr.renderObject(scooter);
+		String s = fix("{'a':100,'b':200,'s':'abc','setList':['a','b']}");
 		assertEquals(s, json2);
 	}
 

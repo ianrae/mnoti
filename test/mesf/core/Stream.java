@@ -3,6 +3,7 @@ package mesf.core;
 public class Stream 
 {
 	private Long id;
+	private String type;
 	private Long snapshotId;
 
 	public Long getId() {
@@ -10,6 +11,13 @@ public class Stream
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	public Long getSnapshotId() {
 		return snapshotId;
