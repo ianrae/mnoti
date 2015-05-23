@@ -18,7 +18,7 @@ import org.mef.framework.sfx.SfxContext;
 
 public class ObjTableTests extends BaseTest 
 {
-	public static class ObjectStream
+	public static class Stream
 	{
 		private Long id;
 		private Long snapshotId;
@@ -38,25 +38,25 @@ public class ObjTableTests extends BaseTest
 	}
 
 
-	public interface IObjectStreamDAO  extends IDAO
+	public interface IStreamDAO  extends IDAO
 	{
-		ObjectStream findById(long id);
-		List<ObjectStream> all();
-		void save(ObjectStream entity);        
-		void update(ObjectStream entity);
-		public Query1<ObjectStream> query();
+		Stream findById(long id);
+		List<Stream> all();
+		void save(Stream entity);        
+		void update(Stream entity);
+		public Query1<Stream> query();
 	}	
 
-	public class MockObjectStreamDAO implements IObjectStreamDAO
+	public class MockStreamDAO implements IStreamDAO
 	{
-		protected List<ObjectStream> _L = new ArrayList<ObjectStream>();
-		protected EntityDB<ObjectStream> _entityDB = new EntityDB<ObjectStream>();
-		public QueryContext<ObjectStream> queryctx; 
+		protected List<Stream> _L = new ArrayList<Stream>();
+		protected EntityDB<Stream> _entityDB = new EntityDB<Stream>();
+		public QueryContext<Stream> queryctx; 
 
 		@Override
 		public void init(SfxContext ctx)
 		{
-			this.queryctx = new QueryContext<ObjectStream>(ctx, ObjectStream.class);
+			this.queryctx = new QueryContext<Stream>(ctx, Stream.class);
 
 //			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
 //			EntityDBQueryProcessor<ObjectStream> proc = new EntityDBQueryProcessor<ObjectStream>(ctx, _L);
@@ -64,10 +64,10 @@ public class ObjTableTests extends BaseTest
 		}
 
 		@Override
-		public Query1<ObjectStream> query() 
+		public Query1<Stream> query() 
 		{
 			queryctx.queryL = new ArrayList<QStep>();
-			return new Query1<ObjectStream>(queryctx);
+			return new Query1<Stream>(queryctx);
 		}
 
 
@@ -78,9 +78,9 @@ public class ObjTableTests extends BaseTest
 		}
 
 		@Override
-		public ObjectStream findById(long id) 
+		public Stream findById(long id) 
 		{
-			ObjectStream entity = this.findActualById(id);
+			Stream entity = this.findActualById(id);
 			if (entity != null)
 			{
 				return entity; //!!new ObjectStream(entity); //return copy
@@ -88,9 +88,9 @@ public class ObjTableTests extends BaseTest
 			return null; //not found
 		}
 
-		protected ObjectStream findActualById(long id) 
+		protected Stream findActualById(long id) 
 		{
-			for(ObjectStream entity : _L)
+			for(Stream entity : _L)
 			{
 				if (entity.getId() == id)
 				{
@@ -101,7 +101,7 @@ public class ObjTableTests extends BaseTest
 		}
 
 		@Override
-		public List<ObjectStream> all() 
+		public List<Stream> all() 
 		{
 			return _L; //ret copy??!!
 		}
@@ -109,7 +109,7 @@ public class ObjTableTests extends BaseTest
 		@Override
 		public void delete(long id) 
 		{
-			ObjectStream entity = this.findActualById(id);
+			Stream entity = this.findActualById(id);
 			if (entity != null)
 			{
 				_L.remove(entity);
@@ -117,7 +117,7 @@ public class ObjTableTests extends BaseTest
 		}
 
 		@Override
-		public void save(ObjectStream entity) 
+		public void save(Stream entity) 
 		{
 			if (entity.getId() == null)
 			{
@@ -145,7 +145,7 @@ public class ObjTableTests extends BaseTest
 		private Long nextAvailIdNumber() 
 		{
 			long used = 0;
-			for(ObjectStream entity : _L)
+			for(Stream entity : _L)
 			{
 				if (entity.getId() > used)
 				{
@@ -156,7 +156,7 @@ public class ObjTableTests extends BaseTest
 		}
 
 		@Override
-		public void update(ObjectStream entity) 
+		public void update(Stream entity) 
 		{
 			this.delete(entity.getId());
 			this.save(entity);
@@ -169,12 +169,12 @@ public class ObjTableTests extends BaseTest
 	public void test() throws Exception
 	{
 		log("sdf");
-		IObjectStreamDAO dao = new MockObjectStreamDAO();
+		IStreamDAO dao = new MockStreamDAO();
 		assertEquals(0, dao.size());
-		List<ObjectStream> L = dao.all();
+		List<Stream> L = dao.all();
 		assertEquals(0, L.size());
 		
-		ObjectStream obj = new ObjectStream();
+		Stream obj = new Stream();
 		obj.setSnapshotId(10L);
 		
 		dao.save(obj);
