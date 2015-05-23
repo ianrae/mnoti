@@ -34,11 +34,37 @@ public class CommitMgrTests extends BaseTest
 	{
 		private ICommitDAO dao;
 		private IStreamDAO streamDAO;
+		private long maxId; //per current epoch
 
 		public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO)
 		{
 			this.dao = dao;
 			this.streamDAO = streamDAO;
+		}
+		
+		public long getMaxId()
+		{
+			if (maxId != 0L)
+			{
+				return maxId;
+			}
+			
+			List<Commit> L = loadAll();
+			if (L.size() == 0)
+			{
+				return 0L;
+			}
+			else
+			{
+				Commit last = L.get(L.size() - 1);
+				maxId = last.getId();
+				return maxId;
+			}
+		}
+		public long freshenMaxId()
+		{
+			maxId = 0L;
+			return getMaxId();
 		}
 		
 		List<Commit> loadAll()
@@ -256,7 +282,7 @@ public class CommitMgrTests extends BaseTest
 		}
 	}
 	
-	public static class ObjectViewCache
+	public static class ObjectViewCache implements ICommitObserver
 	{
 		Map<Long, BaseObject> map = new HashMap<>();
 		private IStreamDAO streamDAO;
@@ -272,6 +298,16 @@ public class CommitMgrTests extends BaseTest
 		
 		public BaseObject loadObject(String type, Long objectId) throws Exception
 		{
+			BaseObject obj = map.get(objectId);
+			if (obj != null)
+			{
+				return obj;
+			}
+			obj = doLoadObject(type, objectId);
+			return obj;
+		}
+		private BaseObject doLoadObject(String type, Long objectId) throws Exception
+		{
 			Stream stream = streamDAO.findById(objectId);
 			if (stream == null)
 			{
@@ -281,25 +317,82 @@ public class CommitMgrTests extends BaseTest
 			IObjectMgr mgr = registry.findByType(type);
 			List<Commit> L = commitMgr.loadStream(type, objectId);
 			BaseObject obj = null;
+			
 			for(Commit commit : L)
 			{
-				switch(commit.getAction())
-				{
-				case 'I':
-				case 'S':
-					obj = mgr.rehydrate(commit.getJson());
-					break;
-				case 'U':
-					mgr.mergeHydrate(obj, commit.getJson());
-					break;
-				case 'D':
-					obj = null;
-					break;
-				default:
-					break;
+				try {
+					obj = doObserve(objectId, commit, mgr, obj);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			
+			return obj;
+		}
+
+		public Object getSize() 
+		{
+			return map.size();
+		}
+
+		@Override
+		public boolean willAccept(Stream stream, Commit commit) 
+		{
+			if (stream == null)
+			{
+				return false;
+			}
+			return map.containsKey(stream.getId());
+		}
+
+		@Override
+		public void observe(Stream stream, Commit commit) 
+		{
+			Long objectId = stream.getId();
+			BaseObject obj = map.get(objectId);
+			
+			IObjectMgr mgr = registry.findByType(stream.getType());
+			try {
+				obj = doObserve(objectId, commit, mgr, obj);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		private BaseObject doObserve(Long objectId, Commit commit, IObjectMgr mgr, BaseObject obj) throws Exception
+		{
+			switch(commit.getAction())
+			{
+			case 'I':
+			case 'S':
+				obj = mgr.rehydrate(commit.getJson());
+				if (obj != null)
+				{
+					obj.setId(objectId);
+					map.put(objectId, obj);
+				}
+				break;
+			case 'U':
+				mgr.mergeHydrate(obj, commit.getJson());
+				break;
+			case 'D':
+				obj = null;
+				break;
+			default:
+				break;
+			}
+			
+			if (obj != null)
+			{
+				obj.clearSetList();
+			}
+			return obj;
+		}
+
+		public BaseObject getIfLoaded(Long objectId) 
+		{
+			BaseObject obj = map.get(objectId);
 			return obj;
 		}
 	}
@@ -399,11 +492,38 @@ public class CommitMgrTests extends BaseTest
 		
 		BaseObject obj = objcache.loadObject("scooter", scooter.getId());
 		assertEquals(1L, obj.getId().longValue());
+		chkScooter((Scooter) obj, 444, 26, "abc");
+
+		BaseObject obj2 = objcache.loadObject("scooter", scooter.getId());
+		assertEquals(1L, obj2.getId().longValue());
+		chkScooter((Scooter) obj2, 444, 26, "abc");
+		
+		assertEquals(1, objcache.getSize());
+		
+		//commit more
+		long maxId = mgr.getMaxId();
+		scooter.clearSetList();
+		scooter.setA(555);
+		mgr.updateObject(omgr, scooter);
+		mgr.dump();
+		
+		L = mgr.loadAllFrom(maxId + 1);
+		assertEquals(1, L.size());
+		mgr.observeList(mgr.loadAll(), objcache);
+		Scooter scoot2 = (Scooter) objcache.getIfLoaded(scooter.getId());
+		assertEquals(555, scoot2.getA());
 	}
 
+	//--helpers--
 	private void chkStreamSize(IStreamDAO streamDAO, int expected)
 	{
 		assertEquals(expected, streamDAO.size());
+	}
+	private void chkScooter(Scooter scooter, int expectedA, int expectedB, String expectedStr)
+	{
+		assertEquals(expectedA, scooter.getA());
+		assertEquals(expectedB, scooter.getB());
+		assertEquals(expectedStr, scooter.getS());
 	}
 	
 	protected static String fix(String s)
