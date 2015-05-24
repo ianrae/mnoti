@@ -2,6 +2,7 @@ package mesf;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,14 +44,21 @@ public class IteratorTests extends BaseTest
 	    }
 	}
 	
+	public interface ISegCacheLoader<T>
+	{
+		List<T> loadRange(int startIndex, int n);
+	}
+	
 	public static class SegmentedCache<T>
 	{
 		private Map<Integer, List<T>> map = new HashMap<>();
 		private int segSize;
+		private ISegCacheLoader<T> loader;
 		
-		public SegmentedCache(int segSize)
+		public SegmentedCache(int segSize, ISegCacheLoader<T> loader)
 		{
 			this.segSize = segSize;
+			this.loader = loader;
 		}
 		
 		public void putList(int startIndex, List<T> L)
@@ -60,17 +68,70 @@ public class IteratorTests extends BaseTest
 		
 		public T getOne(int index)
 		{
-			int seg = (index / segSize);
+			int seg = (index / segSize) * segSize;
 			
 			List<T> L = map.get(seg);
+			
+			if (L == null)
+			{
+				L = loader.loadRange(seg, segSize);
+				if (L != null)
+				{
+					map.put(new Integer(seg), L);
+				}
+			}
+			
+			
 			if (L != null)
 			{
 				int k = index % segSize;
+				if (k >= L.size())
+				{
+					return null;
+				}
 				return L.get(k);
 			}
 			return null;
 		}
+		
+		public List<T> getRange(int startIndex, int n)
+		{
+			List<T> resultL = new ArrayList<>();
+			
+			for(int i = startIndex; i < (startIndex + n); i++)
+			{
+				T val = getOne(i);
+				if (val == null)
+				{
+					return resultL;
+				}
+				resultL.add(val);
+			}
+			return resultL;
+		}
 	}
+	
+	public static class MyLoader implements ISegCacheLoader<String>
+	{
+		public List<String> list = new ArrayList<>();
+		
+		public List<String> loadRange(int startIndex, int n)
+		{
+			System.out.println(String.format("LD %d.%d", startIndex,n));
+			List<String> resultL = new ArrayList<>();
+			
+			for(int i = 0; i < list.size(); i++)
+			{
+				if (i >= startIndex && i < (startIndex + n))
+				{
+					resultL.add(list.get(i));
+				}
+			}
+			
+			return resultL;
+		}
+	}
+	
 	
 	@Test
 	public void test() 
@@ -89,19 +150,73 @@ public class IteratorTests extends BaseTest
 	@Test
 	public void testSeg() 
 	{
-		SegmentedCache<String> cache = new SegmentedCache<String>(4);
-		String[] ar = new String[] { "ab", "cd", "ef", "gh"};
+		MyLoader loader = new MyLoader();
+		SegmentedCache<String> cache = new SegmentedCache<String>(4, loader);
+		String[] ar = new String[] { "0", "1", "2", "3"};
 		cache.putList(0, Arrays.asList(ar));
 		
 		String s = cache.getOne(0);
-		assertEquals("ab", cache.getOne(0));
-		assertEquals("cd", cache.getOne(1));
-		assertEquals("ef", cache.getOne(2));
-		assertEquals("gh", cache.getOne(3));
-		assertEquals(null, cache.getOne(4));
+		chkCache(cache, "0", 0);
+		chkCache(cache, "1", 1);
+		chkCache(cache, "2", 2);
+		chkCache(cache, "3", 3);
+		chkCache(cache, null, 4);
+
+		String[] ar2 = new String[] { "4", "5", "6", "7"};
+		cache.putList(4, Arrays.asList(ar2));
 		
+		for(int i = 4; i < 8; i++)
+		{
+			Integer n = i;
+			chkCache(cache, n.toString(), i);
+		}
+		chkCache(cache, null, 8);
+		
+		String[] ar3 = new String[] { "8"};
+		cache.putList(8, Arrays.asList(ar3));
+		
+		for(int i = 8; i < 9; i++)
+		{
+			Integer n = i;
+			chkCache(cache, n.toString(), i);
+		}
+		chkCache(cache, null, 9);
+		
+		List<String> tmpL = cache.getRange(6, 5);
+		for(String ss : tmpL)
+		{
+			log(ss);
+		}
 	}
 	
+	@Test
+	public void testSeg2() 
+	{
+		MyLoader loader = new MyLoader();
+		SegmentedCache<String> cache = new SegmentedCache<String>(4, loader);
+		String[] ar = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+		loader.list = Arrays.asList(ar);
+		
+		for(int i = 0; i < 10; i++)
+		{
+			Integer n = i;
+			chkCache(cache, n.toString(), i);
+		}
+		chkCache(cache, null, 10);
+		
+		List<String> tmpL = cache.getRange(6, 5);
+		for(String ss : tmpL)
+		{
+			log(ss);
+		}
+	}
+	
+	//--helpers--
+	private void chkCache(SegmentedCache<String> cache, String expected, int index)
+	{
+		assertEquals(expected, cache.getOne(index));
+		
+	}
 
 	@Before
 	public void init()
