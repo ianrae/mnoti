@@ -275,6 +275,13 @@ public class CommitMgrTests extends BaseTest
 			
 			commitMgr.updateObject(mgr, obj);
 		}
+		protected void deleteObject(BaseObject obj)
+		{
+			String type = this.getObjectType(obj);
+			IObjectMgr mgr = registry.findByType(type);
+			
+			commitMgr.deleteObject(mgr, obj);
+		}
 		protected String getObjectType(BaseObject obj)
 		{
 			String type = registry.findTypeForClass(obj.getClass());
@@ -301,6 +308,9 @@ public class CommitMgrTests extends BaseTest
 	{
 		public String s;
 	}
+	public static class DeleteScooterCmd extends ObjectCommand
+	{
+	}
 	
 	public static class MyCmdProc extends CommandProcessor
 	{
@@ -321,16 +331,36 @@ public class CommitMgrTests extends BaseTest
 				{
 					doUpdateScooterCmd((UpdateScooterCmd)cmd);
 				}
+				else if (cmd instanceof DeleteScooterCmd)
+				{
+					doDeleteScooterCmd((DeleteScooterCmd)cmd);
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
-		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
+		private void doDeleteScooterCmd(DeleteScooterCmd cmd) throws Exception 
+		{
+			Scooter scooter = loadTheObject(cmd.getObjectId());
+			if (scooter == null)
+			{
+				return; //!!
+			}
+			
+			deleteObject(scooter);
+		}
+
+		private Scooter loadTheObject(long objectId) throws Exception 
 		{
 			String type = this.registry.findTypeForClass(Scooter.class);
-			Scooter scooter = (Scooter) this.hydrater.loadObject(type, cmd.getObjectId());
+			Scooter scooter = (Scooter) this.hydrater.loadObject(type, objectId);
+			return scooter;
+		}
+		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
+		{
+			Scooter scooter = loadTheObject(cmd.getObjectId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -349,8 +379,6 @@ public class CommitMgrTests extends BaseTest
 			
 			insertObject(scooter);
 		}
-		
-		
 	}
 	
 	@Test
@@ -491,6 +519,11 @@ public class CommitMgrTests extends BaseTest
 		ucmd.s = "more";
 		ucmd.objectId = 1L;
 		proc.process(ucmd);
+		
+		DeleteScooterCmd dcmd = new DeleteScooterCmd();
+		dcmd.objectId = 1L;
+		proc.process(dcmd);
+		
 		commitMgr.dump();
 	}
 	
