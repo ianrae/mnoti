@@ -38,6 +38,7 @@ public abstract class BaseObject
 		this.id = id;
 	}
 	
+	
 	public abstract BaseObject clone();
 	
 }

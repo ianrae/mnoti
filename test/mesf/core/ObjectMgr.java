@@ -68,7 +68,7 @@ public class ObjectMgr<T extends BaseObject> implements IObjectMgr
 	@Override
 	public String getTypeName() 
 	{
-		String type = clazz.getSimpleName().toLowerCase();
+		String type = clazz.getSimpleName().toLowerCase(); //default name. if class name changes we can still use same name
 		return type;
 	}
 

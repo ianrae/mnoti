@@ -8,9 +8,6 @@ import mesf.core.ObjectMgr;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 public class ObjManagerTests extends BaseTest 
 {
 	public static class Scooter extends BaseObject
@@ -45,6 +42,7 @@ public class ObjManagerTests extends BaseTest
 		public BaseObject clone() 
 		{
 			Scooter copy = new Scooter();
+			copy.setId(getId()); //!
 			copy.a = this.a;
 			copy.b = this.b;
 			copy.s = this.s;

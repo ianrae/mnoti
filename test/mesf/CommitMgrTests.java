@@ -86,6 +86,19 @@ public class CommitMgrTests extends BaseTest
 			}
 			return null;
 		}
+		//used when creating new obj
+		public String findTypeForClass(Class targetClazz)
+		{
+			for(Class clazz : map.keySet())
+			{
+				if (clazz == targetClazz)
+				{
+					IObjectMgr mgr = map.get(clazz);
+					return mgr.getTypeName();
+				}
+			}
+			return null;
+		}
 	}
 	
 	public static class ObjectViewCache implements ICommitObserver
@@ -203,7 +216,7 @@ public class CommitMgrTests extends BaseTest
 		}
 	}
 	
-	
+	//used by commands
 	public static class ObjectHydrater
 	{
 		private ObjectViewCache objcache;
@@ -224,6 +237,120 @@ public class CommitMgrTests extends BaseTest
 			}
 			return null;
 		}
+	}
+	
+	public interface ICommand
+	{
+		long getObjectId(); //may be 0 if inserting
+	}
+	
+	public static abstract class CommandProcessor
+	{
+		protected CommitMgr commitMgr;
+		protected ObjectViewCache objcache;
+		protected ObjectHydrater hydrater;
+		protected ObjectManagerRegistry registry;
+
+		public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache)
+		{
+			this.commitMgr = commitMgr;
+			this.registry = registry;
+			this.objcache = objcache;
+			this.hydrater = new ObjectHydrater(objcache);
+		}
+		
+		public abstract void process(ICommand cmd);
+		
+		protected void insertObject(BaseObject obj)
+		{
+			String type = this.getObjectType(obj);
+			IObjectMgr mgr = registry.findByType(type);
+			
+			commitMgr.insertObject(mgr, obj);
+		}
+		protected void updateObject(BaseObject obj)
+		{
+			String type = this.getObjectType(obj);
+			IObjectMgr mgr = registry.findByType(type);
+			
+			commitMgr.updateObject(mgr, obj);
+		}
+		protected String getObjectType(BaseObject obj)
+		{
+			String type = registry.findTypeForClass(obj.getClass());
+			return type;
+		}
+	}
+	
+	public static class ObjectCommand implements ICommand
+	{
+		protected long objectId;
+
+		@Override
+		public long getObjectId() 
+		{
+			return objectId;
+		}
+	}
+	public static class InsertScooterCmd extends ObjectCommand
+	{
+		public int a;
+		public String s;
+	}
+	public static class UpdateScooterCmd extends ObjectCommand
+	{
+		public String s;
+	}
+	
+	public static class MyCmdProc extends CommandProcessor
+	{
+		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache)
+		{
+			super(commitMgr, registry, objcache);
+		}
+
+		@Override
+		public void process(ICommand cmd) 
+		{
+			try {
+				if (cmd instanceof InsertScooterCmd)
+				{
+					doInsertScooterCmd((InsertScooterCmd)cmd);
+				}
+				else if (cmd instanceof UpdateScooterCmd)
+				{
+					doUpdateScooterCmd((UpdateScooterCmd)cmd);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
+		{
+			String type = this.registry.findTypeForClass(Scooter.class);
+			Scooter scooter = (Scooter) this.hydrater.loadObject(type, cmd.getObjectId());
+			if (scooter == null)
+			{
+				return; //!!
+			}
+			
+			scooter.setS(cmd.s);
+			updateObject(scooter);
+		}
+
+		private void doInsertScooterCmd(InsertScooterCmd cmd) throws Exception
+		{
+			Scooter scooter = new Scooter();
+			scooter.setA(cmd.a);
+			scooter.setB(10);
+			scooter.setS(cmd.s);
+			
+			insertObject(scooter);
+		}
+		
+		
 	}
 	
 	@Test
@@ -343,6 +470,30 @@ public class CommitMgrTests extends BaseTest
 		assertEquals(555, scoot2.getA());
 	}
 
+	@Test
+	public void testCmd() throws Exception
+	{
+		ICommitDAO dao = new MockCommitDAO();
+		IStreamDAO streamDAO = new MockStreamDAO();
+		CommitMgr commitMgr = new CommitMgr(dao, streamDAO);
+
+		ObjectManagerRegistry registry = new ObjectManagerRegistry();
+		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
+		ObjectViewCache objcache = new ObjectViewCache(commitMgr, streamDAO, registry);
+		
+		MyCmdProc proc = new MyCmdProc(commitMgr, registry, objcache);
+		InsertScooterCmd cmd = new InsertScooterCmd();
+		cmd.a = 15;
+		cmd.s = "bob";
+		proc.process(cmd);
+		
+		UpdateScooterCmd ucmd = new UpdateScooterCmd();
+		ucmd.s = "more";
+		ucmd.objectId = 1L;
+		proc.process(ucmd);
+		commitMgr.dump();
+	}
+	
 	//--helpers--
 	private void chkStreamSize(IStreamDAO streamDAO, int expected)
 	{
