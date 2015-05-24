@@ -1,0 +1,120 @@
+package mesf.core;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ObjectViewCache implements ICommitObserver
+{
+	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
+	private IStreamDAO streamDAO;
+	private CommitMgr commitMgr;
+	private ObjectManagerRegistry registry;
+	
+	public ObjectViewCache(CommitMgr commitMgr, IStreamDAO streamDAO, ObjectManagerRegistry registry)
+	{
+		this.commitMgr = commitMgr;
+		this.streamDAO = streamDAO;
+		this.registry = registry;
+	}
+	
+	public synchronized BaseObject loadObject(String type, Long objectId) throws Exception
+	{
+		BaseObject obj = map.get(objectId);
+		if (obj != null)
+		{
+			return obj;
+		}
+		obj = doLoadObject(type, objectId);
+		return obj;
+	}
+	private BaseObject doLoadObject(String type, Long objectId) throws Exception
+	{
+		Stream stream = streamDAO.findById(objectId);
+		if (stream == null)
+		{
+			return null;
+		}
+		
+		IObjectMgr mgr = registry.findByType(type);
+		List<Commit> L = commitMgr.loadStream(type, objectId);
+		BaseObject obj = null;
+		
+		for(Commit commit : L)
+		{
+			try {
+				obj = doObserve(objectId, commit, mgr, obj);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return obj;
+	}
+
+	public synchronized Object getSize() 
+	{
+		return map.size();
+	}
+
+	@Override
+	public synchronized boolean willAccept(Stream stream, Commit commit) 
+	{
+		if (stream == null)
+		{
+			return false;
+		}
+		return map.containsKey(stream.getId()); //only care about object we have already in cache
+	}
+
+	@Override
+	public synchronized void observe(Stream stream, Commit commit) 
+	{
+		Long objectId = stream.getId();
+		BaseObject obj = map.get(objectId);
+		
+		IObjectMgr mgr = registry.findByType(stream.getType());
+		try {
+			obj = doObserve(objectId, commit, mgr, obj);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private BaseObject doObserve(Long objectId, Commit commit, IObjectMgr mgr, BaseObject obj) throws Exception
+	{
+		switch(commit.getAction())
+		{
+		case 'I':
+		case 'S':
+			obj = mgr.rehydrate(commit.getJson());
+			if (obj != null)
+			{
+				obj.setId(objectId);
+				map.put(objectId, obj);
+			}
+			break;
+		case 'U':
+			mgr.mergeHydrate(obj, commit.getJson());
+			break;
+		case 'D':
+			obj = null;
+			break;
+		default:
+			break;
+		}
+		
+		if (obj != null)
+		{
+			obj.clearSetList();
+		}
+		return obj;
+	}
+
+	public synchronized BaseObject getIfLoaded(Long objectId) 
+	{
+		BaseObject obj = map.get(objectId);
+		return obj;
+	}
+}

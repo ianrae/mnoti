@@ -3,22 +3,24 @@ package mesf;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
 import mesf.ObjManagerTests.Scooter;
+import mesf.cmd.CommandProcessor;
+import mesf.cmd.ICommand;
+import mesf.cmd.ObjectCommand;
 import mesf.core.BaseObject;
 import mesf.core.Commit;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.ICommitObserver;
-import mesf.core.IObjectMgr;
 import mesf.core.IStreamDAO;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
+import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
+import mesf.core.ObjectViewCache;
 import mesf.core.Stream;
 
 import org.junit.Before;
@@ -90,243 +92,6 @@ public class CommitMgrTests extends BaseTest
 	}
 	
 	
-	public static class ObjectManagerRegistry
-	{
-		Map<Class, IObjectMgr> map = new HashMap<>();
-		
-		public ObjectManagerRegistry()
-		{
-			
-		}
-		public void register(Class clazz, IObjectMgr mgr)
-		{
-			map.put(clazz, mgr);
-		}
-		public IObjectMgr findByType(String type) 
-		{
-			for(Class clazz : map.keySet())
-			{
-				IObjectMgr mgr = map.get(clazz);
-				if (mgr.getTypeName().equals(type))
-				{
-					return mgr;
-				}
-			}
-			return null;
-		}
-		//used when creating new obj
-		public String findTypeForClass(Class targetClazz)
-		{
-			for(Class clazz : map.keySet())
-			{
-				if (clazz == targetClazz)
-				{
-					IObjectMgr mgr = map.get(clazz);
-					return mgr.getTypeName();
-				}
-			}
-			return null;
-		}
-	}
-	
-	public static class ObjectViewCache implements ICommitObserver
-	{
-		Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
-		private IStreamDAO streamDAO;
-		private CommitMgr commitMgr;
-		private ObjectManagerRegistry registry;
-		
-		public ObjectViewCache(CommitMgr commitMgr, IStreamDAO streamDAO, ObjectManagerRegistry registry)
-		{
-			this.commitMgr = commitMgr;
-			this.streamDAO = streamDAO;
-			this.registry = registry;
-		}
-		
-		public synchronized BaseObject loadObject(String type, Long objectId) throws Exception
-		{
-			BaseObject obj = map.get(objectId);
-			if (obj != null)
-			{
-				return obj;
-			}
-			obj = doLoadObject(type, objectId);
-			return obj;
-		}
-		private BaseObject doLoadObject(String type, Long objectId) throws Exception
-		{
-			Stream stream = streamDAO.findById(objectId);
-			if (stream == null)
-			{
-				return null;
-			}
-			
-			IObjectMgr mgr = registry.findByType(type);
-			List<Commit> L = commitMgr.loadStream(type, objectId);
-			BaseObject obj = null;
-			
-			for(Commit commit : L)
-			{
-				try {
-					obj = doObserve(objectId, commit, mgr, obj);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			return obj;
-		}
-
-		public synchronized Object getSize() 
-		{
-			return map.size();
-		}
-
-		@Override
-		public synchronized boolean willAccept(Stream stream, Commit commit) 
-		{
-			if (stream == null)
-			{
-				return false;
-			}
-			return map.containsKey(stream.getId()); //only care about object we have already in cache
-		}
-
-		@Override
-		public synchronized void observe(Stream stream, Commit commit) 
-		{
-			Long objectId = stream.getId();
-			BaseObject obj = map.get(objectId);
-			
-			IObjectMgr mgr = registry.findByType(stream.getType());
-			try {
-				obj = doObserve(objectId, commit, mgr, obj);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		private BaseObject doObserve(Long objectId, Commit commit, IObjectMgr mgr, BaseObject obj) throws Exception
-		{
-			switch(commit.getAction())
-			{
-			case 'I':
-			case 'S':
-				obj = mgr.rehydrate(commit.getJson());
-				if (obj != null)
-				{
-					obj.setId(objectId);
-					map.put(objectId, obj);
-				}
-				break;
-			case 'U':
-				mgr.mergeHydrate(obj, commit.getJson());
-				break;
-			case 'D':
-				obj = null;
-				break;
-			default:
-				break;
-			}
-			
-			if (obj != null)
-			{
-				obj.clearSetList();
-			}
-			return obj;
-		}
-
-		public synchronized BaseObject getIfLoaded(Long objectId) 
-		{
-			BaseObject obj = map.get(objectId);
-			return obj;
-		}
-	}
-	
-	//used by commands
-	public static class ObjectHydrater
-	{
-		private ObjectViewCache objcache;
-		
-		public ObjectHydrater(ObjectViewCache objcache)
-		{
-			this.objcache = objcache;
-		}
-		
-		public BaseObject loadObject(String type, Long objectId) throws Exception
-		{
-			//objcache should be immutable objects, so for our commands make a copy
-			BaseObject obj = objcache.loadObject(type, objectId);
-			if (obj != null)
-			{
-				BaseObject clone = obj.clone();
-				return clone;
-			}
-			return null;
-		}
-	}
-	
-	public interface ICommand
-	{
-		long getObjectId(); //may be 0 if inserting
-	}
-	
-	public static abstract class CommandProcessor
-	{
-		protected CommitMgr commitMgr;
-		protected ObjectViewCache objcache;
-		protected ObjectHydrater hydrater;
-		protected ObjectManagerRegistry registry;
-
-		public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache)
-		{
-			this.commitMgr = commitMgr;
-			this.registry = registry;
-			this.objcache = objcache;
-			this.hydrater = new ObjectHydrater(objcache);
-		}
-		
-		public abstract void process(ICommand cmd);
-		
-		protected void insertObject(BaseObject obj)
-		{
-			String type = this.getObjectType(obj);
-			IObjectMgr mgr = registry.findByType(type);
-			
-			commitMgr.insertObject(mgr, obj);
-		}
-		protected void updateObject(BaseObject obj)
-		{
-			String type = this.getObjectType(obj);
-			IObjectMgr mgr = registry.findByType(type);
-			
-			commitMgr.updateObject(mgr, obj);
-		}
-		protected void deleteObject(BaseObject obj)
-		{
-			String type = this.getObjectType(obj);
-			IObjectMgr mgr = registry.findByType(type);
-			
-			commitMgr.deleteObject(mgr, obj);
-		}
-		protected String getObjectType(BaseObject obj)
-		{
-			String type = registry.findTypeForClass(obj.getClass());
-			return type;
-		}
-	}
-	
-	public static class ObjectCommand implements ICommand
-	{
-		protected long objectId;
-
-		@Override
-		public long getObjectId() 
-		{
-			return objectId;
-		}
-	}
 	public static class InsertScooterCmd extends ObjectCommand
 	{
 		public int a;
