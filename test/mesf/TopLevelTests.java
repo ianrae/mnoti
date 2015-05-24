@@ -12,6 +12,7 @@ import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.core.Commit;
+import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.IStreamDAO;
@@ -83,31 +84,53 @@ public class TopLevelTests extends BaseTest
 	@Test
 	public void test() throws Exception
 	{
+		//create long-running objects
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
+		CommitCache cache = new CommitCache(dao);
 		maxId = 0L;
 		
-		MyTopLevel toplevel = createTopLevel(dao, streamDAO);
+		MyTopLevel toplevel = createTopLevel(dao, streamDAO, cache);
 		log(String.format("1st: %d", maxId));
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";
 		toplevel.process(cmd);
 		
-		toplevel = createTopLevel(dao, streamDAO);
+		toplevel = createTopLevel(dao, streamDAO, cache);
 		log(String.format("2nd: %d", maxId));
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		
-		toplevel = createTopLevel(dao, streamDAO);
+		toplevel = createTopLevel(dao, streamDAO, cache);
 		log(String.format("3rd: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again";
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		
+		toplevel = createTopLevel(dao, streamDAO, cache);
+		log(String.format("4th: %d", maxId));
+		ucmd = new UpdateScooterCmd();
+		ucmd.s = "again2";
+		ucmd.objectId = 1L;
+		toplevel.process(ucmd);
+		
+		toplevel = createTopLevel(dao, streamDAO, cache);
+		log(String.format("5th: %d", maxId));
+		ucmd = new UpdateScooterCmd();
+		ucmd.s = "again3";
+		ucmd.objectId = 1L;
+		toplevel.process(ucmd);
+		
+		toplevel = createTopLevel(dao, streamDAO, cache);
+		log(String.format("6th: %d", maxId));
+		ucmd = new UpdateScooterCmd();
+		ucmd.s = "again4";
+		ucmd.objectId = 1L;
+		toplevel.process(ucmd);
 		
 		
 		
@@ -115,9 +138,9 @@ public class TopLevelTests extends BaseTest
 //		commitMgr.dump();
 	}
 
-	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO)
+	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache)
 	{
-		CommitMgr commitMgr = new CommitMgr(dao, streamDAO);
+		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, cache);
 		
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));

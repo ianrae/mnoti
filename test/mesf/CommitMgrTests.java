@@ -12,6 +12,7 @@ import mesf.cmd.ICommand;
 import mesf.cmd.ObjectCommand;
 import mesf.core.BaseObject;
 import mesf.core.Commit;
+import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.ICommitObserver;
@@ -179,7 +180,7 @@ public class CommitMgrTests extends BaseTest
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO);
+		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao));
 		
 		List<Commit> L = mgr.loadAll();
 		assertEquals(0, L.size());
@@ -200,7 +201,7 @@ public class CommitMgrTests extends BaseTest
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO);
+		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao));
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
@@ -247,7 +248,7 @@ public class CommitMgrTests extends BaseTest
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO);
+		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao));
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
@@ -300,7 +301,7 @@ public class CommitMgrTests extends BaseTest
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr commitMgr = new CommitMgr(dao, streamDAO);
+		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, new CommitCache(dao));
 
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));

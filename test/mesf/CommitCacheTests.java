@@ -23,7 +23,7 @@ public class CommitCacheTests extends BaseTest
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO);
+		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao));
 		int n = 6;
 		for(int i = 0; i < n; i++)
 		{

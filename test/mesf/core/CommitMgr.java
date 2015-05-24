@@ -13,11 +13,11 @@ public class CommitMgr
 	private long maxId; //per current epoch
 	private CommitCache cache;
 
-	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO)
+	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache)
 	{
 		this.dao = dao;
 		this.streamDAO = streamDAO;
-		this.cache = new CommitCache(dao);
+		this.cache = cache;
 	}
 	
 	public long getMaxId()

@@ -14,10 +14,10 @@ public class CommitCache
 		@Override
 		public List<Commit> loadRange(long startIndex, long n) 
 		{
-			System.out.println(String.format("LD %d.%d", startIndex,n));
 			//there is no el[0] so shift down
 			//0,4 means load records 1..4
 			List<Commit> L = dao.loadRange(startIndex + 1, n);
+			System.out.println(String.format("LD %d.%d (got %d)", startIndex,n, L.size()));
 			return L;
 		}
 		

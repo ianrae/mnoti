@@ -43,15 +43,18 @@ public class SegmentedCache<T>
 			
 			if (startIndex + n < maxId)
 			{
-				System.out.println(String.format("REM %d.%d", startIndex, n));
+				System.out.println(String.format("LAST %d.%d", startIndex, n));
 //				map.remove(max);
 				
 				//calculate # new commits we haven't yet loaded and load them
 				long missing = maxId - (startIndex + n);
 				
-				List<T> newL = loader.loadRange(startIndex + n, missing);
-				List<T> L = map.get(max);
-				L.addAll(newL);
+				if (missing + n <= this.segSize)
+				{
+					List<T> newL = loader.loadRange(startIndex + n, missing);
+					List<T> L = map.get(max);
+					L.addAll(newL);
+				}
 			}
 		}
 	}
