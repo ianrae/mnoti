@@ -7,6 +7,7 @@ import java.util.List;
 import mef.framework.helpers.BaseTest;
 import mesf.CommitMgrTests.InsertScooterCmd;
 import mesf.CommitMgrTests.MyCmdProc;
+import mesf.CommitMgrTests.UpdateScooterCmd;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
@@ -70,27 +71,44 @@ public class TopLevelTests extends BaseTest
 		{
 			proc.process(cmd);
 		}
+
+		public long getMaxId() 
+		{
+			return commitMgr.getMaxId();
+		}
 	}
 	
+	long maxId = 0L;
 	
 	@Test
 	public void test() throws Exception
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr commitMgr = new CommitMgr(dao, streamDAO);
+		maxId = 0L;
 		
-		ObjectManagerRegistry registry = new ObjectManagerRegistry();
-		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		
-		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO);
-		toplevel.init(0L);
-	
-		log("1st");
+		MyTopLevel toplevel = createTopLevel(dao, streamDAO);
+		log(String.format("1st: %d", maxId));
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";
 		toplevel.process(cmd);
+		
+		toplevel = createTopLevel(dao, streamDAO);
+		log(String.format("2nd: %d", maxId));
+		UpdateScooterCmd ucmd = new UpdateScooterCmd();
+		ucmd.s = "more";
+		ucmd.objectId = 1L;
+		toplevel.process(ucmd);
+		
+		toplevel = createTopLevel(dao, streamDAO);
+		log(String.format("3rd: %d", maxId));
+		ucmd = new UpdateScooterCmd();
+		ucmd.s = "again";
+		ucmd.objectId = 1L;
+		toplevel.process(ucmd);
+		
+		
 		
 		
 //		log("a");
@@ -105,6 +123,8 @@ public class TopLevelTests extends BaseTest
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		
 		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO);
+		toplevel.init(maxId);
+		maxId = toplevel.getMaxId();
 		return toplevel;
 	}
 	

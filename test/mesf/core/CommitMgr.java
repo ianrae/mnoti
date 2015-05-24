@@ -158,6 +158,7 @@ public class CommitMgr
 		}
 		commit.setJson(json);
 		this.dao.save(commit);
+		System.out.println(String.format("UPD [%d] %d %s", commit.getId(), objectId, mgr.getTypeName()));
 	}
 	public void deleteObject(IObjectMgr mgr, BaseObject obj)
 	{
@@ -174,6 +175,7 @@ public class CommitMgr
 		String json = "";
 		commit.setJson(json);
 		this.dao.save(commit);
+		System.out.println(String.format("DEL [%d] %d %s", commit.getId(), objectId, mgr.getTypeName()));
 	}
 	
 	public void observeList(List<Commit> L, ICommitObserver observer)
