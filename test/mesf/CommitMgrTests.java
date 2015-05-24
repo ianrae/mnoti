@@ -2,6 +2,7 @@ package mesf;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +63,33 @@ public class CommitMgrTests extends BaseTest
 		}
 	}
 	
+	public static class MultiObserver implements ICommitObserver
+	{
+		List<ICommitObserver> L = new ArrayList<>();
+		
+		public MultiObserver()
+		{}
+
+		@Override
+		public boolean willAccept(Stream stream, Commit commit)
+		{
+			return true;
+		}
+
+		@Override
+		public void observe(Stream stream, Commit commit) 
+		{
+			for(ICommitObserver observer : L)
+			{
+				if (observer.willAccept(stream, commit))
+				{
+					observer.observe(stream, commit);
+				}
+			}
+		}
+	}
+	
+	
 	public static class ObjectManagerRegistry
 	{
 		Map<Class, IObjectMgr> map = new HashMap<>();
@@ -103,7 +131,7 @@ public class CommitMgrTests extends BaseTest
 	
 	public static class ObjectViewCache implements ICommitObserver
 	{
-		Map<Long, BaseObject> map = new HashMap<>();
+		Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
 		private IStreamDAO streamDAO;
 		private CommitMgr commitMgr;
 		private ObjectManagerRegistry registry;
