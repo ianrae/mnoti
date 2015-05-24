@@ -2,6 +2,7 @@ package mesf.core;
 
 import java.util.List;
 
+//thread-safe long running cache of commit DTOs
 public class CommitCache
 {
 	class CommitLoader implements ISegCacheLoader<Commit>
@@ -31,14 +32,14 @@ public class CommitCache
 		segcache = new SegmentedCache<Commit>(4, new CommitLoader());
 	}
 	
-	public List<Commit> loadRange(long startIndex, long n) 
+	public synchronized List<Commit> loadRange(long startIndex, long n) 
 	{
 		List<Commit> L = segcache.getRange(startIndex, n);
 		return L;
 	}
 	
-	public void clearLastSegment()
+	public synchronized void clearLastSegment(long maxId)
 	{
-		segcache.clearLastSegment();
+		segcache.clearLastSegment(maxId);
 	}
 }

@@ -22,7 +22,7 @@ public class SegmentedCache<T>
 		map.put(new Long(startIndex), L);
 	}
 	
-	public void clearLastSegment()
+	public void clearLastSegment(long maxId)
 	{
 		long max = -1;
 		for(Long seg : map.keySet())
@@ -33,9 +33,19 @@ public class SegmentedCache<T>
 			}
 		}
 		
-		if (max >= 0)
+		//max=4  5,6,7 so n=3
+		//maxId=8 (we added one commit)
+		
+		if (max >= 0) //found last segment
 		{
-			map.remove(max);
+			long startIndex = max;
+			int n = map.get(max).size();
+			
+			if (startIndex + n < maxId)
+			{
+				System.out.println(String.format("REM %d.%d", startIndex, n));
+				map.remove(max);
+			}
 		}
 	}
 	public T getOne(long index)

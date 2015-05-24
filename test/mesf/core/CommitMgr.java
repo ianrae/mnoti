@@ -33,8 +33,9 @@ public class CommitMgr
 	public long freshenMaxId()
 	{
 		maxId = 0L;
-		cache.clearLastSegment();
-		return getMaxId();
+		getMaxId();
+		cache.clearLastSegment(maxId);
+		return maxId;
 	}
 	
 	public List<Commit> loadAll()
