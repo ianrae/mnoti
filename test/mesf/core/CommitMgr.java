@@ -47,7 +47,9 @@ public class CommitMgr
 	public List<Commit> loadAllFrom(long startId)
 	{
 		getMaxId();
-		List<Commit> L = cache.loadRange(startId - 1, maxId);
+		long startIndex = startId - 1; //no 0 id
+		long n = maxId - startIndex;
+		List<Commit> L = cache.loadRange(startIndex, n);
 		return L;
 	}
 	

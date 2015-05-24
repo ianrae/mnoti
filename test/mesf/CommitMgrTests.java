@@ -143,7 +143,7 @@ public class CommitMgrTests extends BaseTest
 			this.registry = registry;
 		}
 		
-		public BaseObject loadObject(String type, Long objectId) throws Exception
+		public synchronized BaseObject loadObject(String type, Long objectId) throws Exception
 		{
 			BaseObject obj = map.get(objectId);
 			if (obj != null)
@@ -178,13 +178,13 @@ public class CommitMgrTests extends BaseTest
 			return obj;
 		}
 
-		public Object getSize() 
+		public synchronized Object getSize() 
 		{
 			return map.size();
 		}
 
 		@Override
-		public boolean willAccept(Stream stream, Commit commit) 
+		public synchronized boolean willAccept(Stream stream, Commit commit) 
 		{
 			if (stream == null)
 			{
@@ -194,7 +194,7 @@ public class CommitMgrTests extends BaseTest
 		}
 
 		@Override
-		public void observe(Stream stream, Commit commit) 
+		public synchronized void observe(Stream stream, Commit commit) 
 		{
 			Long objectId = stream.getId();
 			BaseObject obj = map.get(objectId);
@@ -237,7 +237,7 @@ public class CommitMgrTests extends BaseTest
 			return obj;
 		}
 
-		public BaseObject getIfLoaded(Long objectId) 
+		public synchronized BaseObject getIfLoaded(Long objectId) 
 		{
 			BaseObject obj = map.get(objectId);
 			return obj;
