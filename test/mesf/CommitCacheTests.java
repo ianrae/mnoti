@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
-import mesf.core.BaseObject;
 import mesf.core.Commit;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
@@ -13,7 +12,6 @@ import mesf.core.ISegCacheLoader;
 import mesf.core.IStreamDAO;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
-import mesf.core.ObjectMgr;
 import mesf.core.SegmentedCache;
 
 import org.junit.Before;
@@ -33,7 +31,9 @@ public class CommitCacheTests extends BaseTest
 			public List<Commit> loadRange(long startIndex, long n) 
 			{
 				System.out.println(String.format("LD %d.%d", startIndex,n));
-				List<Commit> L = dao.loadRange(startIndex, n);
+				//there is no el[0] so shift down
+				//0,4 means load records 1..4
+				List<Commit> L = dao.loadRange(startIndex + 1, n);
 				return L;
 			}
 			
@@ -61,7 +61,7 @@ public class CommitCacheTests extends BaseTest
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		CommitMgr mgr = new CommitMgr(dao, streamDAO);
-		int n = 5;
+		int n = 6;
 		for(int i = 0; i < n; i++)
 		{
 			mgr.writeNoOp();
@@ -71,13 +71,13 @@ public class CommitCacheTests extends BaseTest
 		assertEquals(n, dao.size());
 		
 		CommitCache cache = new CommitCache(dao);
-		List<Commit> L = cache.loadRange(0, 5);
+		List<Commit> L = cache.loadRange(0, n);
 		for(Commit commit : L)
 		{
 			log(commit.getId().toString());
 		}
 		log("again..");
-		L = cache.loadRange(0, 5);
+		L = cache.loadRange(0, n);
 		for(Commit commit : L)
 		{
 			log(commit.getId().toString());
