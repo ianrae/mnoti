@@ -8,27 +8,26 @@ public class ObjectViewCache implements ICommitObserver
 {
 	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
 	private IStreamDAO streamDAO;
-	private CommitMgr commitMgr;
+//	private CommitMgr commitMgr;
 	private ObjectManagerRegistry registry;
 	
-	public ObjectViewCache(CommitMgr commitMgr, IStreamDAO streamDAO, ObjectManagerRegistry registry)
+	public ObjectViewCache(IStreamDAO streamDAO, ObjectManagerRegistry registry)
 	{
-		this.commitMgr = commitMgr;
 		this.streamDAO = streamDAO;
 		this.registry = registry;
 	}
 	
-	public synchronized BaseObject loadObject(String type, Long objectId) throws Exception
+	public synchronized BaseObject loadObject(String type, Long objectId, CommitMgr commitMgr) throws Exception
 	{
 		BaseObject obj = map.get(objectId);
 		if (obj != null)
 		{
 			return obj;
 		}
-		obj = doLoadObject(type, objectId);
+		obj = doLoadObject(type, objectId, commitMgr);
 		return obj;
 	}
-	private BaseObject doLoadObject(String type, Long objectId) throws Exception
+	private BaseObject doLoadObject(String type, Long objectId, CommitMgr commitMgr) throws Exception
 	{
 		Stream stream = streamDAO.findById(objectId);
 		if (stream == null)

@@ -149,7 +149,7 @@ public class CommitMgrTests extends BaseTest
 		private Scooter loadTheObject(long objectId) throws Exception 
 		{
 			String type = this.registry.findTypeForClass(Scooter.class);
-			Scooter scooter = (Scooter) this.hydrater.loadObject(type, objectId);
+			Scooter scooter = (Scooter) this.hydrater.loadObject(type, objectId, commitMgr);
 			return scooter;
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
@@ -269,13 +269,13 @@ public class CommitMgrTests extends BaseTest
 		mgr.dump();
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectViewCache objcache = new ObjectViewCache(mgr, streamDAO, registry);
+		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
 		
-		BaseObject obj = objcache.loadObject("scooter", scooter.getId());
+		BaseObject obj = objcache.loadObject("scooter", scooter.getId(), mgr);
 		assertEquals(1L, obj.getId().longValue());
 		chkScooter((Scooter) obj, 444, 26, "abc");
 
-		BaseObject obj2 = objcache.loadObject("scooter", scooter.getId());
+		BaseObject obj2 = objcache.loadObject("scooter", scooter.getId(), mgr);
 		assertEquals(1L, obj2.getId().longValue());
 		chkScooter((Scooter) obj2, 444, 26, "abc");
 		
@@ -305,7 +305,7 @@ public class CommitMgrTests extends BaseTest
 
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectViewCache objcache = new ObjectViewCache(commitMgr, streamDAO, registry);
+		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
 		
 		MyCmdProc proc = new MyCmdProc(commitMgr, registry, objcache);
 		InsertScooterCmd cmd = new InsertScooterCmd();

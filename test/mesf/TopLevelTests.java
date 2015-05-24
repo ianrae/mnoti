@@ -34,11 +34,11 @@ public class TopLevelTests extends BaseTest
 		protected ObjectViewCache objcache;
 		protected ObjectManagerRegistry registry;
 
-		public TopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO)
+		public TopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectViewCache objcache)
 		{
 			this.commitMgr = commitMgr;
 			this.registry = registry;
-			this.objcache = new ObjectViewCache(commitMgr, streamDAO, registry);
+			this.objcache = objcache;
 			
 			createProc();
 		}
@@ -57,9 +57,9 @@ public class TopLevelTests extends BaseTest
 	public static class MyTopLevel extends TopLevel
 	{
 
-		public MyTopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO)
+		public MyTopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectViewCache objcache)
 		{
-			super(commitMgr, registry, streamDAO);
+			super(commitMgr, registry, streamDAO, objcache);
 		}
 
 		@Override
@@ -80,6 +80,7 @@ public class TopLevelTests extends BaseTest
 	}
 	
 	long maxId = 0L;
+	ObjectManagerRegistry registry;
 	
 	@Test
 	public void test() throws Exception
@@ -88,44 +89,48 @@ public class TopLevelTests extends BaseTest
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		CommitCache cache = new CommitCache(dao);
+		
+		registry = new ObjectManagerRegistry();
+		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
+		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
 		maxId = 0L;
 		
-		MyTopLevel toplevel = createTopLevel(dao, streamDAO, cache);
+		MyTopLevel toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("1st: %d", maxId));
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";
 		toplevel.process(cmd);
 		
-		toplevel = createTopLevel(dao, streamDAO, cache);
+		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("2nd: %d", maxId));
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		
-		toplevel = createTopLevel(dao, streamDAO, cache);
+		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("3rd: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again";
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		
-		toplevel = createTopLevel(dao, streamDAO, cache);
+		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("4th: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again2";
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		
-		toplevel = createTopLevel(dao, streamDAO, cache);
+		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("5th: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again3";
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		
-		toplevel = createTopLevel(dao, streamDAO, cache);
+		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("6th: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again4";
@@ -138,14 +143,12 @@ public class TopLevelTests extends BaseTest
 //		commitMgr.dump();
 	}
 
-	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache)
+	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectViewCache objcache)
 	{
 		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, cache);
 		
-		ObjectManagerRegistry registry = new ObjectManagerRegistry();
-		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		
-		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO);
+		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO, objcache);
 		toplevel.init(maxId);
 		maxId = toplevel.getMaxId();
 		return toplevel;
