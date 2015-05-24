@@ -46,29 +46,29 @@ public class IteratorTests extends BaseTest
 	
 	public interface ISegCacheLoader<T>
 	{
-		List<T> loadRange(int startIndex, int n);
+		List<T> loadRange(long startIndex, long n);
 	}
 	
 	public static class SegmentedCache<T>
 	{
-		private Map<Integer, List<T>> map = new HashMap<>();
-		private int segSize;
+		private Map<Long, List<T>> map = new HashMap<>();
+		private long segSize;
 		private ISegCacheLoader<T> loader;
 		
-		public SegmentedCache(int segSize, ISegCacheLoader<T> loader)
+		public SegmentedCache(long segSize, ISegCacheLoader<T> loader)
 		{
 			this.segSize = segSize;
 			this.loader = loader;
 		}
 		
-		public void putList(int startIndex, List<T> L)
+		public void putList(long startIndex, List<T> L)
 		{
-			map.put(new Integer(startIndex), L);
+			map.put(new Long(startIndex), L);
 		}
 		
-		public T getOne(int index)
+		public T getOne(long index)
 		{
-			int seg = (index / segSize) * segSize;
+			long seg = (index / segSize) * segSize;
 			
 			List<T> L = map.get(seg);
 			
@@ -77,28 +77,28 @@ public class IteratorTests extends BaseTest
 				L = loader.loadRange(seg, segSize);
 				if (L != null)
 				{
-					map.put(new Integer(seg), L);
+					map.put(new Long(seg), L);
 				}
 			}
 			
 			
 			if (L != null)
 			{
-				int k = index % segSize;
+				long k = index % segSize;
 				if (k >= L.size())
 				{
 					return null;
 				}
-				return L.get(k);
+				return L.get((int) k);
 			}
 			return null;
 		}
 		
-		public List<T> getRange(int startIndex, int n)
+		public List<T> getRange(long startIndex, long n)
 		{
 			List<T> resultL = new ArrayList<>();
 			
-			for(int i = startIndex; i < (startIndex + n); i++)
+			for(long i = startIndex; i < (startIndex + n); i++)
 			{
 				T val = getOne(i);
 				if (val == null)
@@ -115,16 +115,16 @@ public class IteratorTests extends BaseTest
 	{
 		public List<String> list = new ArrayList<>();
 		
-		public List<String> loadRange(int startIndex, int n)
+		public List<String> loadRange(long startIndex, long n)
 		{
 			System.out.println(String.format("LD %d.%d", startIndex,n));
 			List<String> resultL = new ArrayList<>();
 			
-			for(int i = 0; i < list.size(); i++)
+			for(long i = 0; i < list.size(); i++)
 			{
 				if (i >= startIndex && i < (startIndex + n))
 				{
-					resultL.add(list.get(i));
+					resultL.add(list.get((int) i));
 				}
 			}
 			
@@ -165,9 +165,9 @@ public class IteratorTests extends BaseTest
 		String[] ar2 = new String[] { "4", "5", "6", "7"};
 		cache.putList(4, Arrays.asList(ar2));
 		
-		for(int i = 4; i < 8; i++)
+		for(long i = 4; i < 8; i++)
 		{
-			Integer n = i;
+			Long n = i;
 			chkCache(cache, n.toString(), i);
 		}
 		chkCache(cache, null, 8);
@@ -175,9 +175,9 @@ public class IteratorTests extends BaseTest
 		String[] ar3 = new String[] { "8"};
 		cache.putList(8, Arrays.asList(ar3));
 		
-		for(int i = 8; i < 9; i++)
+		for(long i = 8; i < 9; i++)
 		{
-			Integer n = i;
+			Long n = i;
 			chkCache(cache, n.toString(), i);
 		}
 		chkCache(cache, null, 9);
@@ -197,9 +197,9 @@ public class IteratorTests extends BaseTest
 		String[] ar = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 		loader.list = Arrays.asList(ar);
 		
-		for(int i = 0; i < 10; i++)
+		for(long i = 0; i < 10; i++)
 		{
-			Integer n = i;
+			Long n = i;
 			chkCache(cache, n.toString(), i);
 		}
 		chkCache(cache, null, 10);
@@ -212,7 +212,7 @@ public class IteratorTests extends BaseTest
 	}
 	
 	//--helpers--
-	private void chkCache(SegmentedCache<String> cache, String expected, int index)
+	private void chkCache(SegmentedCache<String> cache, String expected, long index)
 	{
 		assertEquals(expected, cache.getOne(index));
 		
