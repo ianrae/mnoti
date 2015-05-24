@@ -556,7 +556,14 @@ public class CommitMgrTests extends BaseTest
 		dcmd.objectId = 1L;
 		proc.process(dcmd);
 		
+		long oldMaxId = commitMgr.getMaxId();
+		commitMgr.freshenMaxId();
 		commitMgr.dump();
+		
+		List<Commit> L = commitMgr.loadAllFrom(oldMaxId + 1);
+		CountObserver observer = new CountObserver("scooter");
+		commitMgr.observeList(L, observer);
+		log(String.format("n %d", observer.count));
 	}
 	
 	//--helpers--

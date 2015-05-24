@@ -45,14 +45,8 @@ public class CommitMgr
 	}
 	public List<Commit> loadAllFrom(long startId)
 	{
-		List<Commit> L = new ArrayList<>();
-		for(Commit commit : loadAll())
-		{
-			if (commit.getId().longValue() >= startId)
-			{
-				L.add(commit);
-			}
-		}
+		getMaxId();
+		List<Commit> L = cache.loadRange(startId - 1, maxId);
 		return L;
 	}
 	
