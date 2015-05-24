@@ -135,6 +135,7 @@ public class CommitMgr
 		Long snapshotId = commit.getId();
 		stream.setSnapshotId(snapshotId);
 		this.streamDAO.update(stream);
+		System.out.println(String.format("INS [%d] %d %s", snapshotId, objectId, mgr.getTypeName()));
 	}
 	
 	public void updateObject(IObjectMgr mgr, BaseObject obj)

@@ -5,9 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
+import mesf.CommitMgrTests.InsertScooterCmd;
 import mesf.CommitMgrTests.MyCmdProc;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
+import mesf.cmd.ICommand;
 import mesf.core.Commit;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
@@ -43,6 +45,8 @@ public class TopLevelTests extends BaseTest
 
 		public void init(long oldMaxId)
 		{
+			commitMgr.freshenMaxId(); //efficently load new ones
+			
 			List<Commit> L = commitMgr.loadAllFrom(oldMaxId + 1);
 			commitMgr.observeList(L, objcache);
 		}
@@ -61,7 +65,11 @@ public class TopLevelTests extends BaseTest
 		{
 			this.proc = new MyCmdProc(commitMgr, registry, objcache);
 		}
-		
+
+		public void process(ICommand cmd) 
+		{
+			proc.process(cmd);
+		}
 	}
 	
 	
@@ -76,12 +84,29 @@ public class TopLevelTests extends BaseTest
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		
 		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO);
-		
 		toplevel.init(0L);
-//		assertEquals(0, 1);
+	
+		log("1st");
+		InsertScooterCmd cmd = new InsertScooterCmd();
+		cmd.a = 15;
+		cmd.s = "bob";
+		toplevel.process(cmd);
 		
+		
+//		log("a");
+//		commitMgr.dump();
 	}
 
+	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO)
+	{
+		CommitMgr commitMgr = new CommitMgr(dao, streamDAO);
+		
+		ObjectManagerRegistry registry = new ObjectManagerRegistry();
+		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
+		
+		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO);
+		return toplevel;
+	}
 	
 	//--helpers--
 	private void chkStreamSize(IStreamDAO streamDAO, int expected)
