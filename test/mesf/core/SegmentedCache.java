@@ -22,6 +22,22 @@ public class SegmentedCache<T>
 		map.put(new Long(startIndex), L);
 	}
 	
+	public void clearLastSegment()
+	{
+		long max = -1;
+		for(Long seg : map.keySet())
+		{
+			if (seg > max)
+			{
+				max = seg;
+			}
+		}
+		
+		if (max >= 0)
+		{
+			map.remove(max);
+		}
+	}
 	public T getOne(long index)
 	{
 		long seg = (index / segSize) * segSize;

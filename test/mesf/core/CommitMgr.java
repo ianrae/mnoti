@@ -11,11 +11,13 @@ public class CommitMgr
 	private ICommitDAO dao;
 	private IStreamDAO streamDAO;
 	private long maxId; //per current epoch
+	private CommitCache cache;
 
 	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO)
 	{
 		this.dao = dao;
 		this.streamDAO = streamDAO;
+		this.cache = new CommitCache(dao);
 	}
 	
 	public long getMaxId()
@@ -25,27 +27,21 @@ public class CommitMgr
 			return maxId;
 		}
 		
-		List<Commit> L = loadAll();
-		if (L.size() == 0)
-		{
-			return 0L;
-		}
-		else
-		{
-			Commit last = L.get(L.size() - 1);
-			maxId = last.getId();
-			return maxId;
-		}
+		maxId = dao.findMaxId();
+		return maxId;
 	}
 	public long freshenMaxId()
 	{
 		maxId = 0L;
+		cache.clearLastSegment();
 		return getMaxId();
 	}
 	
 	public List<Commit> loadAll()
 	{
-		return dao.all();
+		getMaxId();
+		List<Commit> L = cache.loadRange(0, maxId);
+		return L;
 	}
 	public List<Commit> loadAllFrom(long startId)
 	{
@@ -62,7 +58,13 @@ public class CommitMgr
 	
 	public Commit loadByCommitId(Long id)
 	{
-		return dao.findById(id);
+		List<Commit> L = this.cache.loadRange(id - 1, 1);
+		if (L.size() == 0)
+		{
+			return null;
+		}
+		return L.get(0);
+//		return dao.findById(id);
 	}
 	
 	public Commit loadSnapshotCommit(Long streamId)
@@ -73,7 +75,7 @@ public class CommitMgr
 			return null; //!!
 		}
 		
-		Commit commit = dao.findById(stream.getSnapshotId());
+		Commit commit = loadByCommitId(stream.getSnapshotId());
 		return commit;
 	}
 	public List<Commit> loadStream(String type, Long id)

@@ -455,6 +455,7 @@ public class CommitMgrTests extends BaseTest
 		scooter.clearSetList();
 		scooter.setA(444);
 		mgr.updateObject(omgr, scooter);
+		mgr.freshenMaxId(); //update maxid
 		L = mgr.loadAll();
 		assertEquals(3, L.size());
 		chkStreamSize(streamDAO, 1);
@@ -464,6 +465,7 @@ public class CommitMgrTests extends BaseTest
 		assertEquals(1, observer.count);
 		
 		mgr.deleteObject(omgr, scooter);
+		mgr.freshenMaxId(); //update maxid
 		L = mgr.loadAll();
 		assertEquals(4, L.size());
 		chkStreamSize(streamDAO, 1);
@@ -493,6 +495,7 @@ public class CommitMgrTests extends BaseTest
 		scooter.clearSetList();
 		scooter.setA(444);
 		mgr.updateObject(omgr, scooter);
+		mgr.freshenMaxId();
 		L = mgr.loadAll();
 		assertEquals(3, L.size());
 		chkStreamSize(streamDAO, 1);
@@ -519,6 +522,7 @@ public class CommitMgrTests extends BaseTest
 		mgr.updateObject(omgr, scooter);
 		mgr.dump();
 		
+		mgr.freshenMaxId();
 		L = mgr.loadAllFrom(maxId + 1);
 		assertEquals(1, L.size());
 		mgr.observeList(mgr.loadAll(), objcache);
