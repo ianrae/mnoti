@@ -4,12 +4,12 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
+import mesf.core.ISegCacheLoader;
+import mesf.core.SegmentedCache;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,73 +42,6 @@ public class IteratorTests extends BaseTest
 	            }
 	        };
 	    }
-	}
-	
-	public interface ISegCacheLoader<T>
-	{
-		List<T> loadRange(long startIndex, long n);
-	}
-	
-	public static class SegmentedCache<T>
-	{
-		private Map<Long, List<T>> map = new HashMap<>();
-		private long segSize;
-		private ISegCacheLoader<T> loader;
-		
-		public SegmentedCache(long segSize, ISegCacheLoader<T> loader)
-		{
-			this.segSize = segSize;
-			this.loader = loader;
-		}
-		
-		public void putList(long startIndex, List<T> L)
-		{
-			map.put(new Long(startIndex), L);
-		}
-		
-		public T getOne(long index)
-		{
-			long seg = (index / segSize) * segSize;
-			
-			List<T> L = map.get(seg);
-			
-			if (L == null)
-			{
-				L = loader.loadRange(seg, segSize);
-				if (L != null)
-				{
-					map.put(new Long(seg), L);
-				}
-			}
-			
-			
-			if (L != null)
-			{
-				long k = index % segSize;
-				if (k >= L.size())
-				{
-					return null;
-				}
-				return L.get((int) k);
-			}
-			return null;
-		}
-		
-		public List<T> getRange(long startIndex, long n)
-		{
-			List<T> resultL = new ArrayList<>();
-			
-			for(long i = startIndex; i < (startIndex + n); i++)
-			{
-				T val = getOne(i);
-				if (val == null)
-				{
-					return resultL;
-				}
-				resultL.add(val);
-			}
-			return resultL;
-		}
 	}
 	
 	public static class MyLoader implements ISegCacheLoader<String>

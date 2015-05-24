@@ -124,4 +124,35 @@ public class MockCommitDAO implements ICommitDAO
 			this.save(entity);
 		}
 
+		@Override
+		public Long findMaxId() 
+		{
+			List<Commit> L = all();
+			if (L.size() == 0)
+			{
+				return 0L;
+			}
+			Commit commit = L.get(L.size() - 1);
+			return commit.getId();
+		}
+
+		@Override
+		public List<Commit> loadRange(long startId, long n) 
+		{
+			List<Commit> resultL = new ArrayList<>();
+			
+			for(Commit entity : _L)
+			{
+				if (entity.getId() >= startId)
+				{
+					resultL.add(entity);
+					if (resultL.size() >= n)
+					{
+						return resultL;
+					}
+				}
+			}
+			return resultL;
+		}
+
 	}
