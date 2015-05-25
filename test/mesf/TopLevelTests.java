@@ -138,7 +138,7 @@ public class TopLevelTests extends BaseTest
 		toplevel.process(ucmd);
 		
 		
-		
+		objcache.dumpStats();
 //		log("a");
 //		commitMgr.dump();
 	}

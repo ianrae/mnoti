@@ -10,6 +10,8 @@ public class ObjectViewCache implements ICommitObserver
 	private IStreamDAO streamDAO;
 //	private CommitMgr commitMgr;
 	private ObjectManagerRegistry registry;
+	private long numHits;
+	private long numMisses;
 	
 	public ObjectViewCache(IStreamDAO streamDAO, ObjectManagerRegistry registry)
 	{
@@ -17,13 +19,21 @@ public class ObjectViewCache implements ICommitObserver
 		this.registry = registry;
 	}
 	
+	public synchronized void dumpStats()
+	{
+		System.out.println(String.format("OVC: hits:%d, misses:%d", numHits, numMisses));
+	}
+	
 	public synchronized BaseObject loadObject(String type, Long objectId, CommitMgr commitMgr) throws Exception
 	{
 		BaseObject obj = map.get(objectId);
 		if (obj != null)
 		{
+			numHits++;
 			return obj;
 		}
+		
+		numMisses++;
 		obj = doLoadObject(type, objectId, commitMgr);
 		return obj;
 	}
