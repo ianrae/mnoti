@@ -25,7 +25,7 @@ import mesf.core.ObjectViewCache;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TopLevelTests extends BaseTest 
+public class OldTopLevelTests extends BaseTest 
 {
 	public static abstract class TopLevel
 	{

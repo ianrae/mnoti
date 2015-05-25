@@ -155,4 +155,22 @@ public class MockCommitDAO implements ICommitDAO
 			return resultL;
 		}
 
+		@Override
+		public List<Commit> loadStream(long startId, long streamId) 
+		{
+			List<Commit> resultL = new ArrayList<>();
+			
+			for(Commit entity : _L)
+			{
+				if (entity.getId() >= startId)
+				{
+					if (entity.getStreamId() == streamId)
+					{
+						resultL.add(entity);
+					}
+				}
+			}
+			return resultL;
+		}
+
 	}

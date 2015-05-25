@@ -25,15 +25,7 @@ public class StreamLoader
 			return null; //!!
 		}
 		
-		List<Commit> rawL = dao.loadRange(stream.getSnapshotId(), maxId);
-		List<Commit> L = new ArrayList<>();
-		for(Commit commit : rawL)
-		{
-			if (commit.getStreamId().equals(objectId))
-			{
-				L.add(commit);
-			}
-		}
+		List<Commit> L = dao.loadStream(stream.getSnapshotId(), objectId);
 		return L;
 	}
 }

@@ -10,7 +10,6 @@ public class ObjectViewCache implements ICommitObserver
 {
 	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
 	private IStreamDAO streamDAO;
-//	private CommitMgr commitMgr;
 	private ObjectManagerRegistry registry;
 	private long numHits;
 	private long numMisses;

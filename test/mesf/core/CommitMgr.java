@@ -1,9 +1,6 @@
 package mesf.core;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import mesf.ObjManagerTests;
 
 //will create one of these per web request, but all will share underlying thread-safe commit cache
 public class CommitMgr
@@ -75,12 +72,12 @@ public class CommitMgr
 		Commit commit = loadByCommitId(stream.getSnapshotId());
 		return commit;
 	}
-	public List<Commit> loadStream(String type, Long objectId)
-	{
-		StreamLoader loader = new StreamLoader(dao, streamDAO, maxId);
-		List<Commit> L = loader.loadStream(type, objectId);
-		return L;
-	}
+//	public List<Commit> loadStream(String type, Long objectId)
+//	{
+//		StreamLoader loader = new StreamLoader(dao, streamDAO, maxId);
+//		List<Commit> L = loader.loadStream(type, objectId);
+//		return L;
+//	}
 	
 	public void writeNoOp()
 	{
