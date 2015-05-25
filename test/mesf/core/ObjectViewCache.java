@@ -28,7 +28,7 @@ public class ObjectViewCache implements ICommitObserver
 		System.out.println(trail.getTrail());
 	}
 	
-	public synchronized BaseObject loadObject(String type, Long objectId, CommitMgr commitMgr) throws Exception
+	public synchronized BaseObject loadObject(String type, Long objectId, StreamLoader sloader) throws Exception
 	{
 		BaseObject obj = map.get(objectId);
 		if (obj != null)
@@ -38,10 +38,10 @@ public class ObjectViewCache implements ICommitObserver
 		}
 		
 		numMisses++;
-		obj = doLoadObject(type, objectId, commitMgr);
+		obj = doLoadObject(type, objectId, sloader);
 		return obj;
 	}
-	private BaseObject doLoadObject(String type, Long objectId, CommitMgr commitMgr) throws Exception
+	private BaseObject doLoadObject(String type, Long objectId,  StreamLoader sloader) throws Exception
 	{
 		Stream stream = streamDAO.findById(objectId);
 		if (stream == null)
@@ -50,7 +50,7 @@ public class ObjectViewCache implements ICommitObserver
 		}
 		
 		IObjectMgr mgr = registry.findByType(type);
-		List<Commit> L = commitMgr.loadStream(type, objectId);
+		List<Commit> L = sloader.loadStream(type, objectId);
 		BaseObject obj = null;
 		
 		for(Commit commit : L)

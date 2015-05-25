@@ -75,23 +75,10 @@ public class CommitMgr
 		Commit commit = loadByCommitId(stream.getSnapshotId());
 		return commit;
 	}
-	public List<Commit> loadStream(String type, Long id)
+	public List<Commit> loadStream(String type, Long objectId)
 	{
-		Stream stream = streamDAO.findById(id);
-		if (stream == null)
-		{
-			return null; //!!
-		}
-		
-		List<Commit> rawL = loadAllFrom(stream.getSnapshotId());
-		List<Commit> L = new ArrayList<>();
-		for(Commit commit : rawL)
-		{
-			if (commit.getStreamId().equals(id))
-			{
-				L.add(commit);
-			}
-		}
+		StreamLoader loader = new StreamLoader(dao, streamDAO, maxId);
+		List<Commit> L = loader.loadStream(type, objectId);
 		return L;
 	}
 	
@@ -194,5 +181,11 @@ public class CommitMgr
 				observer.observe(stream, commit);
 			}
 		}
+	}
+
+	public StreamLoader createStreamLoader() 
+	{
+		StreamLoader sloader = new StreamLoader(dao, streamDAO, this.maxId);
+		return sloader;
 	}
 }

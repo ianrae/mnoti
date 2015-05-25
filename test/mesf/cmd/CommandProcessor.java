@@ -6,6 +6,7 @@ import mesf.core.IObjectMgr;
 import mesf.core.ObjectHydrater;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectViewCache;
+import mesf.core.StreamLoader;
 
 public abstract class CommandProcessor
 {
@@ -13,6 +14,7 @@ public abstract class CommandProcessor
 	protected ObjectViewCache objcache;
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
+	protected StreamLoader sloader;
 
 	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache)
 	{
@@ -20,6 +22,7 @@ public abstract class CommandProcessor
 		this.registry = registry;
 		this.objcache = objcache;
 		this.hydrater = new ObjectHydrater(objcache);
+		this.sloader = commitMgr.createStreamLoader();
 	}
 	
 	public abstract void process(ICommand cmd);

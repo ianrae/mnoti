@@ -11,10 +11,10 @@ public class ObjectHydrater
 		this.objcache = objcache;
 	}
 	
-	public BaseObject loadObject(String type, Long objectId, CommitMgr commitMgr) throws Exception
+	public BaseObject loadObject(String type, Long objectId, StreamLoader sloader) throws Exception
 	{
 		//objcache should be immutable objects, so for our commands make a copy
-		BaseObject obj = objcache.loadObject(type, objectId, commitMgr);
+		BaseObject obj = objcache.loadObject(type, objectId, sloader);
 		if (obj != null)
 		{
 			BaseObject clone = obj.clone();
