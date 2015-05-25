@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mef.framework.sfx.SfxTrail;
+
 public class ObjectViewCache implements ICommitObserver
 {
 	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
@@ -12,6 +14,7 @@ public class ObjectViewCache implements ICommitObserver
 	private ObjectManagerRegistry registry;
 	private long numHits;
 	private long numMisses;
+	private SfxTrail trail = new SfxTrail();
 	
 	public ObjectViewCache(IStreamDAO streamDAO, ObjectManagerRegistry registry)
 	{
@@ -22,6 +25,7 @@ public class ObjectViewCache implements ICommitObserver
 	public synchronized void dumpStats()
 	{
 		System.out.println(String.format("OVC: hits:%d, misses:%d", numHits, numMisses));
+		System.out.println(trail.getTrail());
 	}
 	
 	public synchronized BaseObject loadObject(String type, Long objectId, CommitMgr commitMgr) throws Exception
@@ -93,6 +97,8 @@ public class ObjectViewCache implements ICommitObserver
 	}
 	private BaseObject doObserve(Long objectId, Commit commit, IObjectMgr mgr, BaseObject obj) throws Exception
 	{
+		this.trail.add(commit.getId().toString()); //remove later!!
+		
 		switch(commit.getAction())
 		{
 		case 'I':
