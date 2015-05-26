@@ -33,12 +33,13 @@ public abstract class CommandProcessor
 	
 	public abstract void process(ICommand cmd);
 	
-	protected void insertObject(BaseObject obj)
+	protected void insertObject(ObjectCommand cmd, BaseObject obj)
 	{
 		String type = this.getObjectType(obj);
 		IObjectMgr mgr = registry.findByType(type);
 		
-		commitMgr.insertObject(mgr, obj);
+		//!break rules here and we modify command. Since controller needs to know id of newly created object
+		cmd.objectId = commitMgr.insertObject(mgr, obj);
 	}
 	protected void updateObject(BaseObject obj)
 	{

@@ -203,6 +203,7 @@ public class TopLevelTests extends BaseTest
 		cmd.s = "bob";
 		toplevel.process(cmd);
 		assertEquals(0, perm.view1.size()); //haven't done yet
+		assertEquals(1L, cmd.objectId); //!! we set this in proc (only on insert)
 		
 		log(String.format("2nd"));
 		toplevel = perm.createTopLevel();

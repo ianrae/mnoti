@@ -95,7 +95,7 @@ public class CommitMgr
 		}
 	}
 	
-	public void insertObject(IObjectMgr mgr, BaseObject obj)
+	public long insertObject(IObjectMgr mgr, BaseObject obj)
 	{
 		Stream stream = new Stream();
 		stream.setType(mgr.getTypeName());
@@ -120,6 +120,7 @@ public class CommitMgr
 		stream.setSnapshotId(snapshotId);
 		this.streamDAO.update(stream);
 		System.out.println(String.format("INS [%d] %d %s", snapshotId, objectId, mgr.getTypeName()));
+		return objectId;
 	}
 	
 	public void updateObject(IObjectMgr mgr, BaseObject obj)

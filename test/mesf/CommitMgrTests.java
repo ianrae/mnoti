@@ -174,7 +174,7 @@ public class CommitMgrTests extends BaseTest
 			scooter.setB(10);
 			scooter.setS(cmd.s);
 			
-			insertObject(scooter);
+			insertObject(cmd, scooter);
 		}
 	}
 	
