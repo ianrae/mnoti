@@ -1,6 +1,10 @@
-package mesf.core;
+package mesf.view;
 
 import java.util.List;
+
+import mesf.core.Commit;
+import mesf.core.ICommitDAO;
+import mesf.core.IStreamDAO;
 
 
 public class ViewLoader

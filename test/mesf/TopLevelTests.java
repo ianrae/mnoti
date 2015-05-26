@@ -2,7 +2,6 @@ package mesf;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import mesf.core.Commit;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
-import mesf.core.ICommitObserver;
 import mesf.core.IStreamDAO;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
@@ -27,92 +25,15 @@ import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectViewCache;
 import mesf.core.Stream;
-import mesf.core.ViewLoader;
+import mesf.view.BaseView;
+import mesf.view.ViewLoader;
+import mesf.view.ViewManager;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class TopLevelTests extends BaseTest 
 {
-	public static class BaseView implements ICommitObserver
-	{
-		private long lastCommitId;
-		public Object obj;
-		
-		public BaseView()
-		{
-		}
-		
-		@Override
-		public boolean willAccept(Stream stream, Commit commit) 
-		{
-			return false;
-		}
-
-		@Override
-		public void observe(Stream stream, Commit commit) 
-		{
-		}
-	}
-	
-	public static class ViewManager implements ICommitObserver
-	{
-		protected List<BaseView> viewObserversL = new ArrayList<>();
-		private IStreamDAO streamDAO;
-
-		public ViewManager(IStreamDAO streamDAO)
-		{
-			this.streamDAO = streamDAO;
-		}
-		
-		protected void registerViewObserver(BaseView view)
-		{
-			this.viewObserversL.add(view);
-		}
-		
-		@Override
-		public boolean willAccept(Stream stream, Commit commit) 
-		{
-			return true;
-		}
-
-		@Override
-		public void observe(Stream stream, Commit commit) 
-		{
-			for(BaseView view : this.viewObserversL)
-			{
-				if (view.willAccept(stream, commit))
-				{
-					view.observe(stream, commit);
-				}
-			}
-		}
-		
-		public synchronized Object loadView(BaseView view, ViewLoader vloader) throws Exception
-		{
-			List<Commit> L = vloader.loadCommits(view.lastCommitId + 1);
-			
-			for(Commit commit : L)
-			{
-				Long streamId = commit.getStreamId();
-				Stream stream = null;
-				if (streamId != null)
-				{
-					stream = streamDAO.findById(streamId);
-				}
-				
-				observe(stream, commit);
-			}
-			
-			if (L.size() > 0)
-			{
-				Commit last = L.get(L.size() - 1);
-				view.lastCommitId = last.getId();
-			}
-			return view.obj;
-		}
-	}
-	
 	public static abstract class Permanent
 	{
 		protected ICommitDAO dao;
