@@ -33,13 +33,63 @@ import org.junit.Test;
 
 public class TopLevelTests extends BaseTest 
 {
+	public static class BaseView
+	{
+		private long lastCommitId;
+		private ICommitObserver view;
+		
+		public BaseView(ICommitObserver view)
+		{
+			this.view = view;
+		}
+		
+		public ICommitObserver getView()
+		{
+			return view;
+		}
+	}
+	
+	public static class ViewManager implements ICommitObserver
+	{
+		protected List<BaseView> viewObserversL = new ArrayList<>();
+
+		public ViewManager()
+		{
+		}
+		
+		protected void registerViewObserver(ICommitObserver observer)
+		{
+			BaseView view = new BaseView(observer);
+			this.viewObserversL.add(view);
+		}
+		
+		@Override
+		public boolean willAccept(Stream stream, Commit commit) 
+		{
+			return true;
+		}
+
+		@Override
+		public void observe(Stream stream, Commit commit) 
+		{
+			for(BaseView view : this.viewObserversL)
+			{
+				ICommitObserver observer = view.getView();
+				if (observer.willAccept(stream, commit))
+				{
+					observer.observe(stream, commit);
+				}
+			}
+		}
+	}
+	
 	public static abstract class Permanent
 	{
 		protected ICommitDAO dao;
 		protected IStreamDAO streamDAO;
 		protected ObjectManagerRegistry registry;
 		protected ObjectViewCache objcache;
-		protected List<ICommitObserver> viewObserversL = new ArrayList<>();
+		protected ViewManager viewMgr;
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
 		{
@@ -48,6 +98,7 @@ public class TopLevelTests extends BaseTest
 			this.registry = registry;
 			ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);	
 			this.objcache = objcache;
+			this.viewMgr = new ViewManager();
 		}
 		
 		public void start()
@@ -69,10 +120,7 @@ public class TopLevelTests extends BaseTest
 			}
 
 			objcache.observe(stream, commit);
-			for(ICommitObserver observer : this.viewObserversL)
-			{
-				observer.observe(stream, commit);
-			}
+			viewMgr.observe(stream, commit);
 		}
 
 		public TopLevel createTopLevel() 
@@ -96,7 +144,7 @@ public class TopLevelTests extends BaseTest
 		
 		protected void registerViewObserver(ICommitObserver observer)
 		{
-			this.viewObserversL.add(observer);
+			viewMgr.registerViewObserver(observer);
 		}
 	}
 	
