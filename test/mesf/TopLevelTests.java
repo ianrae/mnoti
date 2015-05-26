@@ -1,15 +1,17 @@
 package mesf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
 import mesf.CommitMgrTests.InsertScooterCmd;
 import mesf.CommitMgrTests.MyCmdProc;
 import mesf.CommitMgrTests.UpdateScooterCmd;
 import mesf.ObjManagerTests.Scooter;
-import mesf.OldTopLevelTests.MyTopLevel;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.core.BaseObject;
@@ -17,7 +19,7 @@ import mesf.core.Commit;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
-import mesf.core.IObjectMgr;
+import mesf.core.ICommitObserver;
 import mesf.core.IStreamDAO;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
@@ -37,6 +39,7 @@ public class TopLevelTests extends BaseTest
 		protected IStreamDAO streamDAO;
 		protected ObjectManagerRegistry registry;
 		protected ObjectViewCache objcache;
+		protected List<ICommitObserver> viewObserversL = new ArrayList<>();
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
 		{
@@ -66,6 +69,10 @@ public class TopLevelTests extends BaseTest
 			}
 
 			objcache.observe(stream, commit);
+			for(ICommitObserver observer : this.viewObserversL)
+			{
+				observer.observe(stream, commit);
+			}
 		}
 
 		public TopLevel createTopLevel() 
@@ -80,27 +87,17 @@ public class TopLevelTests extends BaseTest
 		}
 		
 		abstract protected CommandProcessor createProc(CommitMgr mgr);
-	}
-	
-	public static class MyPerm extends Permanent
-	{
-
-		public MyPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry) 
-		{
-			super(dao, streamDAO, registry);
-		}
-
-		@Override
-		protected CommandProcessor createProc(CommitMgr commitMgr)
-		{
-			return new MyCmdProc(commitMgr, registry, objcache);
-		}
+		
 
 		public BaseObject getObjectFromCache(long objectId) 
 		{
 			return objcache.getIfLoaded(objectId);
 		}
 		
+		protected void registerViewObserver(ICommitObserver observer)
+		{
+			this.viewObserversL.add(observer);
+		}
 	}
 	
 	public static class TopLevel
@@ -120,6 +117,65 @@ public class TopLevelTests extends BaseTest
 		}
 	}
 	
+	public static class MyView implements ICommitObserver
+	{
+		public Map<Long,Scooter> map = new HashMap<>();
+		
+		public int size()
+		{
+			return map.size();
+		}
+
+		@Override
+		public boolean willAccept(Stream stream, Commit commit) 
+		{
+			if (stream != null && stream.getType().equals("scooter"))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public void observe(Stream stream, Commit commit) 
+		{
+			switch(commit.getAction())
+			{
+			case 'I':
+			case 'S':
+				map.put(commit.getStreamId(), null);
+				break;
+			case 'U':
+				break;
+			case 'D':
+				map.remove(commit.getStreamId());
+				break;
+			default:
+				break;
+			}
+		}
+		
+	}
+	
+	public static class MyPerm extends Permanent
+	{
+		public MyView view1;
+		
+		public MyPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry) 
+		{
+			super(dao, streamDAO, registry);
+			
+			view1 = new MyView();
+			registerViewObserver(view1);
+		}
+		
+		@Override
+		protected CommandProcessor createProc(CommitMgr commitMgr)
+		{
+			return new MyCmdProc(commitMgr, registry, objcache);
+		}
+	}
+	
 	@Test
 	public void test() throws Exception
 	{
@@ -132,6 +188,7 @@ public class TopLevelTests extends BaseTest
 		
 		MyPerm perm = new MyPerm(dao, streamDAO, registry);
 		perm.start();
+		assertEquals(0, perm.view1.size());
 		
 		log(String.format("1st"));
 		TopLevel toplevel = perm.createTopLevel();
@@ -139,6 +196,7 @@ public class TopLevelTests extends BaseTest
 		cmd.a = 15;
 		cmd.s = "bob";
 		toplevel.process(cmd);
+		assertEquals(0, perm.view1.size()); //haven't done yet
 		
 		log(String.format("2nd"));
 		toplevel = perm.createTopLevel();
