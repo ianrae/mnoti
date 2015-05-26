@@ -18,7 +18,7 @@ public class ViewLoader
 	
 	public List<Commit> loadCommits(long startId)
 	{
-		long n = maxId - startId;
+		long n = maxId - startId + 1;
 		List<Commit> L = dao.loadRange(startId, n);
 		return L;
 	}

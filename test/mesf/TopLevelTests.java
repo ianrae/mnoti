@@ -34,20 +34,24 @@ import org.junit.Test;
 
 public class TopLevelTests extends BaseTest 
 {
-	public static class BaseView
+	public static class BaseView implements ICommitObserver
 	{
 		private long lastCommitId;
-		private ICommitObserver view;
 		public Object obj;
 		
-		public BaseView(ICommitObserver view)
+		public BaseView()
 		{
-			this.view = view;
 		}
 		
-		public ICommitObserver getView()
+		@Override
+		public boolean willAccept(Stream stream, Commit commit) 
 		{
-			return view;
+			return false;
+		}
+
+		@Override
+		public void observe(Stream stream, Commit commit) 
+		{
 		}
 	}
 	
@@ -61,9 +65,8 @@ public class TopLevelTests extends BaseTest
 			this.streamDAO = streamDAO;
 		}
 		
-		protected void registerViewObserver(ICommitObserver observer)
+		protected void registerViewObserver(BaseView view)
 		{
-			BaseView view = new BaseView(observer);
 			this.viewObserversL.add(view);
 		}
 		
@@ -78,10 +81,9 @@ public class TopLevelTests extends BaseTest
 		{
 			for(BaseView view : this.viewObserversL)
 			{
-				ICommitObserver observer = view.getView();
-				if (observer.willAccept(stream, commit))
+				if (view.willAccept(stream, commit))
 				{
-					observer.observe(stream, commit);
+					view.observe(stream, commit);
 				}
 			}
 		}
@@ -102,7 +104,7 @@ public class TopLevelTests extends BaseTest
 				observe(stream, commit);
 			}
 			
-			if (L.size() > 1)
+			if (L.size() > 0)
 			{
 				Commit last = L.get(L.size() - 1);
 				view.lastCommitId = last.getId();
@@ -157,8 +159,9 @@ public class TopLevelTests extends BaseTest
 			CommitMgr mgr = new CommitMgr(dao, streamDAO, cache);
 			mgr.getMaxId(); //query db
 			CommandProcessor proc = createProc(mgr);
+			ViewLoader vloader = new ViewLoader(dao, streamDAO, mgr.getMaxId());
 			
-			TopLevel toplevel = new TopLevel(proc, mgr);
+			TopLevel toplevel = new TopLevel(proc, mgr, vloader);
 			return toplevel;
 		}
 		
@@ -170,9 +173,13 @@ public class TopLevelTests extends BaseTest
 			return objcache.getIfLoaded(objectId);
 		}
 		
-		protected void registerViewObserver(ICommitObserver observer)
+		protected void registerViewObserver(BaseView view)
 		{
-			viewMgr.registerViewObserver(observer);
+			viewMgr.registerViewObserver(view);
+		}
+		public ViewManager getViewMgr()
+		{
+			return viewMgr;
 		}
 	}
 	
@@ -180,11 +187,13 @@ public class TopLevelTests extends BaseTest
 	{
 		CommandProcessor proc;
 		private CommitMgr commitMgr;
+		public ViewLoader vloader;
 		
-		public TopLevel(CommandProcessor proc, CommitMgr mgr)
+		public TopLevel(CommandProcessor proc, CommitMgr mgr, ViewLoader vloader)
 		{
 			this.proc = proc;
 			this.commitMgr = mgr;
+			this.vloader = vloader;
 		}
 
 		public void process(ICommand cmd) 
@@ -193,7 +202,7 @@ public class TopLevelTests extends BaseTest
 		}
 	}
 	
-	public static class MyView implements ICommitObserver
+	public static class MyView extends BaseView
 	{
 		public Map<Long,Scooter> map = new HashMap<>();
 		
@@ -294,6 +303,12 @@ public class TopLevelTests extends BaseTest
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		chkScooterStr(perm, ucmd.objectId, "more");
+		
+		assertEquals(0, perm.view1.size()); //haven't done yet
+		assertEquals(3, dao.size());
+		ViewManager viewMgr = perm.getViewMgr();
+		Object obj = viewMgr.loadView(perm.view1, toplevel.vloader);
+		assertEquals(1, perm.view1.size()); 
 	}
 
 	
