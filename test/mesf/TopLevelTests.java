@@ -1,5 +1,7 @@
 package mesf;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
@@ -93,6 +95,11 @@ public class TopLevelTests extends BaseTest
 		{
 			return new MyCmdProc(commitMgr, registry, objcache);
 		}
+
+		public BaseObject getObjectFromCache(long objectId) 
+		{
+			return objcache.getIfLoaded(objectId);
+		}
 		
 	}
 	
@@ -140,16 +147,29 @@ public class TopLevelTests extends BaseTest
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
 		
+		//we don't have an event bus. so cmd processing does not update objcache
+		//do this for two reasons
+		// -so objects don't change partially way through a web request
+		// -objcache is synchronized so is perf issue
+		chkScooterStr(perm, ucmd.objectId, "bob");
+		
 		log(String.format("2nd"));
 		toplevel = perm.createTopLevel();
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "more2";
 		ucmd.objectId = 1L;
 		toplevel.process(ucmd);
-		
+		chkScooterStr(perm, ucmd.objectId, "more");
 	}
 
 	
+	private void chkScooterStr(MyPerm perm, long objectId, String string) 
+	{
+		Scooter scooter = (Scooter) perm.getObjectFromCache(objectId);
+		assertEquals(string, scooter.getS());
+	}
+
+
 	protected static String fix(String s)
 	{
 		s = s.replace('\'', '"');

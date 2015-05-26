@@ -9,49 +9,63 @@ import org.mef.framework.sfx.SfxTrail;
 public class ObjectViewCache implements ICommitObserver
 {
 	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
+	Map<Long, Long> whenMap = new HashMap<>(); 
 	private IStreamDAO streamDAO;
 	private ObjectManagerRegistry registry;
 	private long numHits;
 	private long numMisses;
 	private SfxTrail trail = new SfxTrail();
-	
+
 	public ObjectViewCache(IStreamDAO streamDAO, ObjectManagerRegistry registry)
 	{
 		this.streamDAO = streamDAO;
 		this.registry = registry;
 	}
-	
+
 	public synchronized void dumpStats()
 	{
 		System.out.println(String.format("OVC: hits:%d, misses:%d", numHits, numMisses));
 		System.out.println(trail.getTrail());
 	}
-	
+
 	public synchronized BaseObject loadObject(String type, Long objectId, StreamLoader sloader) throws Exception
 	{
 		BaseObject obj = map.get(objectId);
+		Long startId = null;
 		if (obj != null)
 		{
-			numHits++;
-			return obj;
+			long when = whenMap.get(objectId);
+			if(when >= sloader.getMaxId())
+			{
+				numHits++;
+				return obj;
+			}
+			startId = when + 1L;
 		}
-		
+
 		numMisses++;
-		obj = doLoadObject(type, objectId, sloader);
+		obj = doLoadObject(type, objectId, sloader, startId, obj);
 		return obj;
 	}
-	private BaseObject doLoadObject(String type, Long objectId,  StreamLoader sloader) throws Exception
+	private BaseObject doLoadObject(String type, Long objectId, StreamLoader sloader, Long startId, BaseObject obj) throws Exception
 	{
 		Stream stream = streamDAO.findById(objectId);
 		if (stream == null)
 		{
 			return null;
 		}
-		
+
+		List<Commit> L = null;
+		if (startId == null)
+		{
+			L = sloader.loadStream(type, objectId);
+		}
+		else 
+		{
+			L = sloader.loadPartialStream(objectId, startId);
+		}
 		IObjectMgr mgr = registry.findByType(type);
-		List<Commit> L = sloader.loadStream(type, objectId);
-		BaseObject obj = null;
-		
+
 		for(Commit commit : L)
 		{
 			try {
@@ -61,7 +75,7 @@ public class ObjectViewCache implements ICommitObserver
 				e.printStackTrace();
 			}
 		}
-		
+
 		return obj;
 	}
 
@@ -85,7 +99,7 @@ public class ObjectViewCache implements ICommitObserver
 	{
 		Long objectId = stream.getId();
 		BaseObject obj = map.get(objectId);
-		
+
 		IObjectMgr mgr = registry.findByType(stream.getType());
 		try {
 			obj = doObserve(objectId, commit, mgr, obj);
@@ -97,7 +111,7 @@ public class ObjectViewCache implements ICommitObserver
 	private BaseObject doObserve(Long objectId, Commit commit, IObjectMgr mgr, BaseObject obj) throws Exception
 	{
 		this.trail.add(commit.getId().toString()); //remove later!!
-		
+
 		switch(commit.getAction())
 		{
 		case 'I':
@@ -118,10 +132,11 @@ public class ObjectViewCache implements ICommitObserver
 		default:
 			break;
 		}
-		
+
 		if (obj != null)
 		{
 			obj.clearSetList();
+			whenMap.put(objectId, commit.getId()); 
 		}
 		return obj;
 	}

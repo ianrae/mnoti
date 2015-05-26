@@ -28,4 +28,15 @@ public class StreamLoader
 		List<Commit> L = dao.loadStream(stream.getSnapshotId(), objectId);
 		return L;
 	}
+
+	public List<Commit> loadPartialStream(Long objectId, Long startId)
+	{
+		List<Commit> L = dao.loadStream(startId, objectId);
+		return L;
+	}
+
+	public long getMaxId() 
+	{
+		return maxId;
+	}
 }
