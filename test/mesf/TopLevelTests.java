@@ -27,6 +27,7 @@ import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectViewCache;
 import mesf.core.Stream;
+import mesf.core.ViewLoader;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,7 @@ public class TopLevelTests extends BaseTest
 	{
 		private long lastCommitId;
 		private ICommitObserver view;
+		public Object obj;
 		
 		public BaseView(ICommitObserver view)
 		{
@@ -52,9 +54,11 @@ public class TopLevelTests extends BaseTest
 	public static class ViewManager implements ICommitObserver
 	{
 		protected List<BaseView> viewObserversL = new ArrayList<>();
+		private IStreamDAO streamDAO;
 
-		public ViewManager()
+		public ViewManager(IStreamDAO streamDAO)
 		{
+			this.streamDAO = streamDAO;
 		}
 		
 		protected void registerViewObserver(ICommitObserver observer)
@@ -81,6 +85,30 @@ public class TopLevelTests extends BaseTest
 				}
 			}
 		}
+		
+		public synchronized Object loadView(BaseView view, ViewLoader vloader) throws Exception
+		{
+			List<Commit> L = vloader.loadCommits(view.lastCommitId + 1);
+			
+			for(Commit commit : L)
+			{
+				Long streamId = commit.getStreamId();
+				Stream stream = null;
+				if (streamId != null)
+				{
+					stream = streamDAO.findById(streamId);
+				}
+				
+				observe(stream, commit);
+			}
+			
+			if (L.size() > 1)
+			{
+				Commit last = L.get(L.size() - 1);
+				view.lastCommitId = last.getId();
+			}
+			return view.obj;
+		}
 	}
 	
 	public static abstract class Permanent
@@ -98,7 +126,7 @@ public class TopLevelTests extends BaseTest
 			this.registry = registry;
 			ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);	
 			this.objcache = objcache;
-			this.viewMgr = new ViewManager();
+			this.viewMgr = new ViewManager(streamDAO);
 		}
 		
 		public void start()
