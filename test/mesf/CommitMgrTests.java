@@ -24,6 +24,8 @@ import mesf.core.ObjectMgr;
 import mesf.core.ObjectViewCache;
 import mesf.core.Stream;
 import mesf.core.StreamLoader;
+import mesf.view.ViewLoader;
+import mesf.view.ViewManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -109,9 +111,9 @@ public class CommitMgrTests extends BaseTest
 	
 	public static class MyCmdProc extends CommandProcessor
 	{
-		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache)
+		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache, ViewManager viewMgr, ViewLoader vloader)
 		{
-			super(commitMgr, registry, objcache);
+			super(commitMgr, registry, objcache, viewMgr, vloader);
 		}
 
 		@Override
@@ -311,7 +313,7 @@ public class CommitMgrTests extends BaseTest
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
 		
-		MyCmdProc proc = new MyCmdProc(commitMgr, registry, objcache);
+		MyCmdProc proc = new MyCmdProc(commitMgr, registry, objcache, null, null);
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";

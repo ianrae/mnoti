@@ -79,14 +79,14 @@ public class TopLevelTests extends BaseTest
 			CommitCache cache = new CommitCache(dao);
 			CommitMgr mgr = new CommitMgr(dao, streamDAO, cache);
 			mgr.getMaxId(); //query db
-			CommandProcessor proc = createProc(mgr);
 			ViewLoader vloader = new ViewLoader(dao, streamDAO, mgr.getMaxId());
+			CommandProcessor proc = createProc(mgr, vloader);
 			
 			TopLevel toplevel = new TopLevel(proc, mgr, vloader);
 			return toplevel;
 		}
 		
-		abstract protected CommandProcessor createProc(CommitMgr mgr);
+		abstract protected CommandProcessor createProc(CommitMgr mgr, ViewLoader vloader);
 		
 
 		public BaseObject getObjectFromCache(long objectId) 
@@ -176,9 +176,9 @@ public class TopLevelTests extends BaseTest
 		}
 		
 		@Override
-		protected CommandProcessor createProc(CommitMgr commitMgr)
+		protected CommandProcessor createProc(CommitMgr commitMgr, ViewLoader vloader)
 		{
-			return new MyCmdProc(commitMgr, registry, objcache);
+			return new MyCmdProc(commitMgr, registry, objcache, viewMgr, vloader);
 		}
 	}
 	

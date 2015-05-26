@@ -65,7 +65,7 @@ public class OldTopLevelTests extends BaseTest
 		@Override
 		protected void createProc() 
 		{
-			this.proc = new MyCmdProc(commitMgr, registry, objcache);
+			this.proc = new MyCmdProc(commitMgr, registry, objcache, null, null);
 		}
 
 		public void process(ICommand cmd) 

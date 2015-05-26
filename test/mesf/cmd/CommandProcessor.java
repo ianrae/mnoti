@@ -7,6 +7,8 @@ import mesf.core.ObjectHydrater;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectViewCache;
 import mesf.core.StreamLoader;
+import mesf.view.ViewLoader;
+import mesf.view.ViewManager;
 
 public abstract class CommandProcessor
 {
@@ -15,14 +17,18 @@ public abstract class CommandProcessor
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
 	protected StreamLoader sloader;
+	private ViewManager viewMgr;
+	private ViewLoader vloader;
 
-	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache)
+	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache, ViewManager viewMgr, ViewLoader vloader)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;
 		this.objcache = objcache;
 		this.hydrater = new ObjectHydrater(objcache);
 		this.sloader = commitMgr.createStreamLoader();
+		this.viewMgr = viewMgr;
+		this.vloader = vloader;
 	}
 	
 	public abstract void process(ICommand cmd);
