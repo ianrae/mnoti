@@ -6,14 +6,14 @@ import java.util.List;
 import mesf.core.Commit;
 import mesf.core.ICommitObserver;
 import mesf.core.Stream;
-import mesf.core.StreamTableCache;
+import mesf.core.StreamCache;
 
 public class ViewManager implements ICommitObserver
 {
 	protected List<BaseView> viewObserversL = new ArrayList<>();
-	private StreamTableCache strcache;
+	private StreamCache strcache;
 
-	public ViewManager(StreamTableCache strcache)
+	public ViewManager(StreamCache strcache)
 	{
 		this.strcache = strcache;
 	}

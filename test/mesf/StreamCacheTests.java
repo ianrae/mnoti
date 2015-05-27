@@ -8,12 +8,12 @@ import mef.framework.helpers.BaseTest;
 import mesf.core.MockStreamDAO;
 import mesf.core.Stream;
 import mesf.core.IStreamDAO;
-import mesf.core.StreamTableCache;
+import mesf.core.StreamCache;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class StreamTableCacheTests extends BaseTest
+public class StreamCacheTests extends BaseTest
 {
 	@Test
 	public void test() 
@@ -22,7 +22,7 @@ public class StreamTableCacheTests extends BaseTest
 		buildObjects(streamDAO);
 		assertEquals(5, streamDAO.size());
 		
-		StreamTableCache cache = new StreamTableCache(streamDAO);
+		StreamCache cache = new StreamCache(streamDAO);
 		long streamId = cache.findSnapshotId(2);
 		assertEquals(11, streamId);
 		streamId = cache.findSnapshotId(5);

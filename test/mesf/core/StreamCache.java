@@ -3,7 +3,7 @@ package mesf.core;
 import java.util.List;
 
 //thread-safe long running cache of commit DTOs
-public class StreamTableCache
+public class StreamCache
 {
 	class StreamTableLoader implements ISegCacheLoader<Stream>
 	{
@@ -24,7 +24,7 @@ public class StreamTableCache
 	SegmentedCache<Stream> segcache;
 	private IStreamDAO dao;
 	
-	public StreamTableCache(IStreamDAO dao)
+	public StreamCache(IStreamDAO dao)
 	{
 		this.dao = dao;
 		segcache = new SegmentedCache<Stream>(4, new StreamTableLoader());

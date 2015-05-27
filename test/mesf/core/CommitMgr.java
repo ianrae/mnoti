@@ -9,9 +9,9 @@ public class CommitMgr
 	private IStreamDAO streamDAO;
 	private long maxId; //per current epoch
 	private CommitCache cache;
-	private StreamTableCache strcache;
+	private StreamCache strcache;
 
-	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, StreamTableCache strcache)
+	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, StreamCache strcache)
 	{
 		this.dao = dao;
 		this.streamDAO = streamDAO;

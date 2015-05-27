@@ -25,7 +25,7 @@ import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectViewCache;
 import mesf.core.Stream;
-import mesf.core.StreamTableCache;
+import mesf.core.StreamCache;
 import mesf.view.BaseView;
 import mesf.view.ViewLoader;
 import mesf.view.ViewManager;
@@ -42,14 +42,14 @@ public class TopLevelTests extends BaseTest
 		protected ObjectManagerRegistry registry;
 		protected ObjectViewCache objcache;
 		protected ViewManager viewMgr;
-		protected StreamTableCache strcache;
+		protected StreamCache strcache;
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
 		{
 			this.dao = dao;
 			this.streamDAO = streamDAO;
 			this.registry = registry;
-			this.strcache = new StreamTableCache(streamDAO);
+			this.strcache = new StreamCache(streamDAO);
 			ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);	
 			this.objcache = objcache;
 			this.viewMgr = new ViewManager(strcache);

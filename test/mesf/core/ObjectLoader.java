@@ -7,10 +7,10 @@ import java.util.List;
 public class ObjectLoader
 {
 	private ICommitDAO dao;
-	private StreamTableCache strcache;
+	private StreamCache strcache;
 	private long maxId; //per current epoch
 
-	public ObjectLoader(ICommitDAO dao, StreamTableCache strcache, long maxId)
+	public ObjectLoader(ICommitDAO dao, StreamCache strcache, long maxId)
 	{
 		this.dao = dao;
 		this.strcache = strcache;
