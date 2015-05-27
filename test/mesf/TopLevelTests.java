@@ -44,6 +44,7 @@ public class TopLevelTests extends BaseTest
 		protected ReadModelRepository readmodelRepo;
 		protected StreamCache strcache;
 		private CommitCache commitCache;
+		private ProcRegistry procRegistry;
 		
 		/*
 		 * tbls: commit, stream
@@ -52,7 +53,7 @@ public class TopLevelTests extends BaseTest
 		 * proc
 		 */
 
-		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
+		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry, ProcRegistry procRegistry)
 		{
 			this.dao = dao;
 			this.streamDAO = streamDAO;
@@ -62,6 +63,7 @@ public class TopLevelTests extends BaseTest
 			this.objectRepo = objcache;
 			this.readmodelRepo = new ReadModelRepository(strcache);
 			commitCache = new CommitCache(dao);
+			this.procRegistry = procRegistry;
 		}
 		
 		public void start()
@@ -93,7 +95,7 @@ public class TopLevelTests extends BaseTest
 			ReadModelLoader vloader = new ReadModelLoader(dao, streamDAO, mgr.getMaxId());
 			CommandProcessor proc = createProc(mgr, vloader);
 			
-			TopLevel toplevel = new TopLevel(proc, mgr, vloader);
+			TopLevel toplevel = new TopLevel(proc, mgr, vloader, procRegistry);
 			return toplevel;
 		}
 		
@@ -115,17 +117,38 @@ public class TopLevelTests extends BaseTest
 		}
 	}
 	
+	public static class ProcRegistry
+	{
+		private Map<Class, CommandProcessor> map = new HashMap<>();
+		
+		public ProcRegistry()
+		{}
+		
+		public void register(Class clazz, CommandProcessor proc)
+		{
+			map.put(clazz, proc);
+		}
+		
+		public CommandProcessor find(Class clazz)
+		{
+			return map.get(clazz);
+		}
+		
+	}
+	
 	public static class TopLevel
 	{
 		CommandProcessor proc;
 		private CommitMgr commitMgr;
 		public ReadModelLoader vloader;
+		private ProcRegistry procRegistry;
 		
-		public TopLevel(CommandProcessor proc, CommitMgr mgr, ReadModelLoader vloader)
+		public TopLevel(CommandProcessor proc, CommitMgr mgr, ReadModelLoader vloader, ProcRegistry procRegistry)
 		{
 			this.proc = proc;
 			this.commitMgr = mgr;
 			this.vloader = vloader;
+			this.procRegistry = procRegistry;
 		}
 
 		public void process(ICommand cmd) 
@@ -178,9 +201,9 @@ public class TopLevelTests extends BaseTest
 	{
 		public MyReadModel readModel1;
 		
-		public MyPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry) 
+		public MyPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry, ProcRegistry procRegistry) 
 		{
-			super(dao, streamDAO, registry);
+			super(dao, streamDAO, registry, procRegistry);
 			
 			readModel1 = new MyReadModel();
 			registerReadModel(readModel1);
@@ -203,7 +226,10 @@ public class TopLevelTests extends BaseTest
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		
-		MyPerm perm = new MyPerm(dao, streamDAO, registry);
+		ProcRegistry procRegistry = new ProcRegistry();
+		procRegistry.register(Scooter.class, null);
+		
+		MyPerm perm = new MyPerm(dao, streamDAO, registry, procRegistry);
 		perm.start();
 		assertEquals(0, perm.readModel1.size());
 		
