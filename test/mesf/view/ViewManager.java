@@ -5,17 +5,17 @@ import java.util.List;
 
 import mesf.core.Commit;
 import mesf.core.ICommitObserver;
-import mesf.core.IStreamDAO;
 import mesf.core.Stream;
+import mesf.core.StreamTableCache;
 
 public class ViewManager implements ICommitObserver
 {
 	protected List<BaseView> viewObserversL = new ArrayList<>();
-	private IStreamDAO streamDAO;
+	private StreamTableCache strcache;
 
-	public ViewManager(IStreamDAO streamDAO)
+	public ViewManager(StreamTableCache strcache)
 	{
-		this.streamDAO = streamDAO;
+		this.strcache = strcache;
 	}
 	
 	public void registerViewObserver(BaseView view)
@@ -51,7 +51,7 @@ public class ViewManager implements ICommitObserver
 			Stream stream = null;
 			if (streamId != null)
 			{
-				stream = streamDAO.findById(streamId);
+				stream = strcache.findStream(streamId);
 			}
 			
 			observe(stream, commit);

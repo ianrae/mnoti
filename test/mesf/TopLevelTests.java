@@ -25,6 +25,7 @@ import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectViewCache;
 import mesf.core.Stream;
+import mesf.core.StreamTableCache;
 import mesf.view.BaseView;
 import mesf.view.ViewLoader;
 import mesf.view.ViewManager;
@@ -41,16 +42,17 @@ public class TopLevelTests extends BaseTest
 		protected ObjectManagerRegistry registry;
 		protected ObjectViewCache objcache;
 		protected ViewManager viewMgr;
-//		protected S
+		protected StreamTableCache strcache;
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
 		{
 			this.dao = dao;
 			this.streamDAO = streamDAO;
 			this.registry = registry;
+			this.strcache = new StreamTableCache(streamDAO);
 			ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);	
 			this.objcache = objcache;
-			this.viewMgr = new ViewManager(streamDAO);
+			this.viewMgr = new ViewManager(strcache);
 		}
 		
 		public void start()
@@ -78,7 +80,7 @@ public class TopLevelTests extends BaseTest
 		public TopLevel createTopLevel() 
 		{
 			CommitCache cache = new CommitCache(dao);
-			CommitMgr mgr = new CommitMgr(dao, streamDAO, cache);
+			CommitMgr mgr = new CommitMgr(dao, streamDAO, cache, this.strcache);
 			mgr.getMaxId(); //query db
 			ViewLoader vloader = new ViewLoader(dao, streamDAO, mgr.getMaxId());
 			CommandProcessor proc = createProc(mgr, vloader);

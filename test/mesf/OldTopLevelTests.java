@@ -21,6 +21,7 @@ import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectViewCache;
+import mesf.core.StreamTableCache;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -145,7 +146,7 @@ public class OldTopLevelTests extends BaseTest
 
 	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectViewCache objcache)
 	{
-		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, cache);
+		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, cache,  new StreamTableCache(streamDAO));
 		
 		
 		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO, objcache);

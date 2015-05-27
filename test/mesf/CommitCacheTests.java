@@ -12,6 +12,7 @@ import mesf.core.ICommitDAO;
 import mesf.core.IStreamDAO;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
+import mesf.core.StreamTableCache;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class CommitCacheTests extends BaseTest
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao));
+		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamTableCache(streamDAO));
 		int n = 6;
 		for(int i = 0; i < n; i++)
 		{

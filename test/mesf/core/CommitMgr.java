@@ -9,12 +9,14 @@ public class CommitMgr
 	private IStreamDAO streamDAO;
 	private long maxId; //per current epoch
 	private CommitCache cache;
+	private StreamTableCache strcache;
 
-	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache)
+	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, StreamTableCache strcache)
 	{
 		this.dao = dao;
 		this.streamDAO = streamDAO;
 		this.cache = cache;
+		this.strcache = strcache;
 	}
 	
 	public long getMaxId()
@@ -63,7 +65,7 @@ public class CommitMgr
 	
 	public Commit loadSnapshotCommit(Long streamId)
 	{
-		Stream stream = streamDAO.findById(streamId);
+		Stream stream = strcache.findStream(streamId);
 		if (stream == null)
 		{
 			return null; //!!
@@ -172,7 +174,7 @@ public class CommitMgr
 			Stream stream = null;
 			if (streamId != null)
 			{
-				stream = streamDAO.findById(streamId);
+				stream = strcache.findStream(streamId);
 			}
 			
 			if (observer.willAccept(stream, commit))
