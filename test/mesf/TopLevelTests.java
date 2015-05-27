@@ -13,6 +13,7 @@ import mesf.CommitMgrTests.UpdateScooterCmd;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
+import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
 import mesf.core.Commit;
 import mesf.core.CommitCache;
@@ -115,25 +116,6 @@ public class TopLevelTests extends BaseTest
 		{
 			return readmodelRepo;
 		}
-	}
-	
-	public static class ProcRegistry
-	{
-		private Map<Class, CommandProcessor> map = new HashMap<>();
-		
-		public ProcRegistry()
-		{}
-		
-		public void register(Class clazz, CommandProcessor proc)
-		{
-			map.put(clazz, proc);
-		}
-		
-		public CommandProcessor find(Class clazz)
-		{
-			return map.get(clazz);
-		}
-		
 	}
 	
 	public static class TopLevel

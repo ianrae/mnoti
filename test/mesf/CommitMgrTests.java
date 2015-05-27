@@ -17,6 +17,7 @@ import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.ICommitObserver;
 import mesf.core.IStreamDAO;
+import mesf.core.MContext;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
@@ -114,7 +115,7 @@ public class CommitMgrTests extends BaseTest
 	{
 		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectRepository objcache, ReadModelRepository readmodelMgr, ReadModelLoader vloader)
 		{
-			super(commitMgr, registry, objcache, readmodelMgr, vloader);
+			super(new MContext(commitMgr, registry, objcache, readmodelMgr, vloader));
 		}
 
 		@Override
@@ -152,8 +153,8 @@ public class CommitMgrTests extends BaseTest
 
 		private Scooter loadTheObject(long objectId) throws Exception 
 		{
-			String type = this.registry.findTypeForClass(Scooter.class);
-			Scooter scooter = (Scooter) this.hydrater.loadObject(type, objectId, oloader);
+			String type = this.mtx.getRegistry().findTypeForClass(Scooter.class);
+			Scooter scooter = (Scooter) this.mtx.getHydrater().loadObject(type, objectId, this.mtx.getOloader());
 			return scooter;
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
