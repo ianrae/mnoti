@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class StreamLoader
+public class ObjectLoader
 {
 	private ICommitDAO dao;
 	private StreamTableCache strcache;
 	private long maxId; //per current epoch
 
-	public StreamLoader(ICommitDAO dao, StreamTableCache strcache, long maxId)
+	public ObjectLoader(ICommitDAO dao, StreamTableCache strcache, long maxId)
 	{
 		this.dao = dao;
 		this.strcache = strcache;

@@ -184,9 +184,9 @@ public class CommitMgr
 		}
 	}
 
-	public StreamLoader createStreamLoader() 
+	public ObjectLoader createStreamLoader() 
 	{
-		StreamLoader sloader = new StreamLoader(dao, strcache, this.maxId);
+		ObjectLoader sloader = new ObjectLoader(dao, strcache, this.maxId);
 		return sloader;
 	}
 }

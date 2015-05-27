@@ -6,7 +6,7 @@ import mesf.core.IObjectMgr;
 import mesf.core.ObjectHydrater;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectViewCache;
-import mesf.core.StreamLoader;
+import mesf.core.ObjectLoader;
 import mesf.view.ViewLoader;
 import mesf.view.ViewManager;
 
@@ -16,7 +16,7 @@ public abstract class CommandProcessor
 	protected ObjectViewCache objcache;
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
-	protected StreamLoader sloader;
+	protected ObjectLoader sloader;
 	private ViewManager viewMgr;
 	private ViewLoader vloader;
 

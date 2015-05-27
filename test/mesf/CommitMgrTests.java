@@ -23,7 +23,7 @@ import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectViewCache;
 import mesf.core.Stream;
-import mesf.core.StreamLoader;
+import mesf.core.ObjectLoader;
 import mesf.core.StreamTableCache;
 import mesf.view.ViewLoader;
 import mesf.view.ViewManager;
@@ -253,7 +253,7 @@ public class CommitMgrTests extends BaseTest
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamTableCache(streamDAO));
-		StreamLoader sloader = mgr.createStreamLoader();
+		ObjectLoader sloader = mgr.createStreamLoader();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);

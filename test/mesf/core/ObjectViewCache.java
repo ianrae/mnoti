@@ -28,7 +28,7 @@ public class ObjectViewCache implements ICommitObserver
 		System.out.println(trail.getTrail());
 	}
 
-	public synchronized BaseObject loadObject(String type, Long objectId, StreamLoader sloader) throws Exception
+	public synchronized BaseObject loadObject(String type, Long objectId, ObjectLoader sloader) throws Exception
 	{
 		BaseObject obj = map.get(objectId);
 		Long startId = null;
@@ -47,7 +47,7 @@ public class ObjectViewCache implements ICommitObserver
 		obj = doLoadObject(type, objectId, sloader, startId, obj);
 		return obj;
 	}
-	private BaseObject doLoadObject(String type, Long objectId, StreamLoader sloader, Long startId, BaseObject obj) throws Exception
+	private BaseObject doLoadObject(String type, Long objectId, ObjectLoader sloader, Long startId, BaseObject obj) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)
