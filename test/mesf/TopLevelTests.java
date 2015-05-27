@@ -41,6 +41,7 @@ public class TopLevelTests extends BaseTest
 		protected ObjectManagerRegistry registry;
 		protected ObjectViewCache objcache;
 		protected ViewManager viewMgr;
+//		protected S
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
 		{
