@@ -253,7 +253,7 @@ public class CommitMgrTests extends BaseTest
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamTableCache(streamDAO));
-		ObjectLoader oloader = mgr.createStreamLoader();
+		ObjectLoader oloader = mgr.createObjectLoader();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
@@ -270,7 +270,7 @@ public class CommitMgrTests extends BaseTest
 		L = mgr.loadAll();
 		assertEquals(3, L.size());
 		chkStreamSize(streamDAO, 1);
-		oloader = mgr.createStreamLoader();
+		oloader = mgr.createObjectLoader();
 		
 		mgr.dump();
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
@@ -300,7 +300,7 @@ public class CommitMgrTests extends BaseTest
 		mgr.observeList(mgr.loadAll(), objcache);
 		Scooter scoot2 = (Scooter) objcache.getIfLoaded(scooter.getId());
 		assertEquals(555, scoot2.getA());
-		oloader = mgr.createStreamLoader();
+		oloader = mgr.createObjectLoader();
 	}
 
 	@Test

@@ -184,7 +184,7 @@ public class CommitMgr
 		}
 	}
 
-	public ObjectLoader createStreamLoader() 
+	public ObjectLoader createObjectLoader() 
 	{
 		ObjectLoader oloader = new ObjectLoader(dao, strcache, this.maxId);
 		return oloader;

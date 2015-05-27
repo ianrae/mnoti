@@ -26,7 +26,7 @@ public abstract class CommandProcessor
 		this.registry = registry;
 		this.objcache = objcache;
 		this.hydrater = new ObjectHydrater(objcache);
-		this.oloader = commitMgr.createStreamLoader();
+		this.oloader = commitMgr.createObjectLoader();
 		this.viewMgr = viewMgr;
 		this.vloader = vloader;
 	}
