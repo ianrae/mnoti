@@ -28,7 +28,7 @@ import mesf.core.Stream;
 import mesf.core.StreamCache;
 import mesf.readmodel.ReadModel;
 import mesf.readmodel.ReadModelLoader;
-import mesf.readmodel.ReadModelManager;
+import mesf.readmodel.ReadModelRepository;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,8 +41,15 @@ public class TopLevelTests extends BaseTest
 		protected IStreamDAO streamDAO;
 		protected ObjectManagerRegistry registry;
 		protected ObjectCache objcache;
-		protected ReadModelManager readmodelMgr;
+		protected ReadModelRepository readmodelRepo;
 		protected StreamCache strcache;
+		
+		/*
+		 * tbls: commit, stream
+		 * cache: CommitCache, StreamCache
+		 * repositories: Object, Aggregate, ReadModel
+		 * proc
+		 */
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
 		{
@@ -52,7 +59,7 @@ public class TopLevelTests extends BaseTest
 			this.strcache = new StreamCache(streamDAO);
 			ObjectCache objcache = new ObjectCache(streamDAO, registry);	
 			this.objcache = objcache;
-			this.readmodelMgr = new ReadModelManager(strcache);
+			this.readmodelRepo = new ReadModelRepository(strcache);
 		}
 		
 		public void start()
@@ -74,7 +81,7 @@ public class TopLevelTests extends BaseTest
 			}
 
 			objcache.observe(stream, commit);
-			readmodelMgr.observe(stream, commit);
+			readmodelRepo.observe(stream, commit);
 		}
 
 		public TopLevel createTopLevel() 
@@ -99,11 +106,11 @@ public class TopLevelTests extends BaseTest
 		
 		protected void registerReadModel(ReadModel readModel)
 		{
-			readmodelMgr.registerReadModel(readModel);
+			readmodelRepo.registerReadModel(readModel);
 		}
-		public ReadModelManager getreadmodelMgr()
+		public ReadModelRepository getreadmodelMgr()
 		{
-			return readmodelMgr;
+			return readmodelRepo;
 		}
 	}
 	
@@ -181,7 +188,7 @@ public class TopLevelTests extends BaseTest
 		@Override
 		protected CommandProcessor createProc(CommitMgr commitMgr, ReadModelLoader vloader)
 		{
-			return new MyCmdProc(commitMgr, registry, objcache, readmodelMgr, vloader);
+			return new MyCmdProc(commitMgr, registry, objcache, readmodelRepo, vloader);
 		}
 	}
 	
@@ -231,7 +238,7 @@ public class TopLevelTests extends BaseTest
 		
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(3, dao.size());
-		ReadModelManager readmodelMgr = perm.getreadmodelMgr();
+		ReadModelRepository readmodelMgr = perm.getreadmodelMgr();
 		Object obj = readmodelMgr.loadReadModel(perm.readModel1, toplevel.vloader);
 		assertEquals(1, perm.readModel1.size()); 
 	}

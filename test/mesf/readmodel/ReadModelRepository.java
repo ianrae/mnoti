@@ -8,12 +8,12 @@ import mesf.core.ICommitObserver;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
 
-public class ReadModelManager implements ICommitObserver
+public class ReadModelRepository implements ICommitObserver
 {
 	protected List<ReadModel> readModelL = new ArrayList<>();
 	private StreamCache strcache;
 
-	public ReadModelManager(StreamCache strcache)
+	public ReadModelRepository(StreamCache strcache)
 	{
 		this.strcache = strcache;
 	}
