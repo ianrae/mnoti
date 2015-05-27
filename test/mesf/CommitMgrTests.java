@@ -113,9 +113,9 @@ public class CommitMgrTests extends BaseTest
 	
 	public static class MyCmdProc extends CommandProcessor
 	{
-		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectRepository objcache, ReadModelRepository readmodelMgr, ReadModelLoader vloader)
+		public MyCmdProc(MContext mtx)
 		{
-			super(new MContext(commitMgr, registry, objcache, readmodelMgr, vloader));
+			super(mtx);
 		}
 
 		@Override
@@ -315,7 +315,8 @@ public class CommitMgrTests extends BaseTest
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		ObjectRepository objcache = new ObjectRepository(streamDAO, registry);
 		
-		MyCmdProc proc = new MyCmdProc(commitMgr, registry, objcache, null, null);
+		MContext mtx = new MContext(commitMgr, registry, objcache, null, null);
+		MyCmdProc proc = new MyCmdProc(mtx);
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";

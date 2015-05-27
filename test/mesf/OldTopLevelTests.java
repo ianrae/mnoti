@@ -16,6 +16,7 @@ import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.IStreamDAO;
+import mesf.core.MContext;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
@@ -66,7 +67,8 @@ public class OldTopLevelTests extends BaseTest
 		@Override
 		protected void createProc() 
 		{
-			this.proc = new MyCmdProc(commitMgr, registry, objcache, null, null);
+			MContext mtx = new MContext(commitMgr, registry, objcache, null, null);
+			this.proc = new MyCmdProc(mtx);
 		}
 
 		public void process(ICommand cmd) 

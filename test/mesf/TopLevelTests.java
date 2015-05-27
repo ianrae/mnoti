@@ -20,6 +20,7 @@ import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.IStreamDAO;
+import mesf.core.MContext;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
@@ -96,7 +97,9 @@ public class TopLevelTests extends BaseTest
 			ReadModelLoader vloader = new ReadModelLoader(dao, streamDAO, mgr.getMaxId());
 			CommandProcessor proc = createProc(mgr, vloader);
 			
-			TopLevel toplevel = new TopLevel(proc, mgr, vloader, procRegistry);
+			MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader);
+			
+			TopLevel toplevel = new TopLevel(proc, mtx, procRegistry);
 			return toplevel;
 		}
 		
@@ -121,15 +124,13 @@ public class TopLevelTests extends BaseTest
 	public static class TopLevel
 	{
 		CommandProcessor proc;
-		private CommitMgr commitMgr;
-		public ReadModelLoader vloader;
 		private ProcRegistry procRegistry;
+		private MContext mtx;
 		
-		public TopLevel(CommandProcessor proc, CommitMgr mgr, ReadModelLoader vloader, ProcRegistry procRegistry)
+		public TopLevel(CommandProcessor proc, MContext mtx, ProcRegistry procRegistry)
 		{
 			this.proc = proc;
-			this.commitMgr = mgr;
-			this.vloader = vloader;
+			this.mtx = mtx;
 			this.procRegistry = procRegistry;
 		}
 
@@ -194,7 +195,9 @@ public class TopLevelTests extends BaseTest
 		@Override
 		protected CommandProcessor createProc(CommitMgr commitMgr, ReadModelLoader vloader)
 		{
-			return new MyCmdProc(commitMgr, registry, objectRepo, readmodelRepo, vloader);
+			MContext mtx = new MContext(commitMgr, registry, objectRepo, readmodelRepo, vloader);
+			
+			return new MyCmdProc(mtx);
 		}
 	}
 	
@@ -248,7 +251,7 @@ public class TopLevelTests extends BaseTest
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(3, dao.size());
 		ReadModelRepository readmodelMgr = perm.getreadmodelMgr();
-		Object obj = readmodelMgr.loadReadModel(perm.readModel1, toplevel.vloader);
+		Object obj = readmodelMgr.loadReadModel(perm.readModel1, toplevel.mtx.getVloader());
 		assertEquals(1, perm.readModel1.size()); 
 	}
 
