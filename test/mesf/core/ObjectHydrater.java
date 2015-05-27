@@ -4,9 +4,9 @@ package mesf.core;
 //used by commands
 public class ObjectHydrater
 {
-	private ObjectViewCache objcache;
+	private ObjectCache objcache;
 	
-	public ObjectHydrater(ObjectViewCache objcache)
+	public ObjectHydrater(ObjectCache objcache)
 	{
 		this.objcache = objcache;
 	}

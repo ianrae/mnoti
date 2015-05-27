@@ -21,7 +21,7 @@ import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
-import mesf.core.ObjectViewCache;
+import mesf.core.ObjectCache;
 import mesf.core.Stream;
 import mesf.core.ObjectLoader;
 import mesf.core.StreamCache;
@@ -112,7 +112,7 @@ public class CommitMgrTests extends BaseTest
 	
 	public static class MyCmdProc extends CommandProcessor
 	{
-		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache, ViewManager viewMgr, ViewLoader vloader)
+		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ViewManager viewMgr, ViewLoader vloader)
 		{
 			super(commitMgr, registry, objcache, viewMgr, vloader);
 		}
@@ -275,7 +275,7 @@ public class CommitMgrTests extends BaseTest
 		mgr.dump();
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
+		ObjectCache objcache = new ObjectCache(streamDAO, registry);
 		
 		BaseObject obj = objcache.loadObject("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj.getId().longValue());
@@ -312,7 +312,7 @@ public class CommitMgrTests extends BaseTest
 
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
+		ObjectCache objcache = new ObjectCache(streamDAO, registry);
 		
 		MyCmdProc proc = new MyCmdProc(commitMgr, registry, objcache, null, null);
 		InsertScooterCmd cmd = new InsertScooterCmd();

@@ -23,7 +23,7 @@ import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
-import mesf.core.ObjectViewCache;
+import mesf.core.ObjectCache;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
 import mesf.view.BaseView;
@@ -40,7 +40,7 @@ public class TopLevelTests extends BaseTest
 		protected ICommitDAO dao;
 		protected IStreamDAO streamDAO;
 		protected ObjectManagerRegistry registry;
-		protected ObjectViewCache objcache;
+		protected ObjectCache objcache;
 		protected ViewManager viewMgr;
 		protected StreamCache strcache;
 
@@ -50,14 +50,14 @@ public class TopLevelTests extends BaseTest
 			this.streamDAO = streamDAO;
 			this.registry = registry;
 			this.strcache = new StreamCache(streamDAO);
-			ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);	
+			ObjectCache objcache = new ObjectCache(streamDAO, registry);	
 			this.objcache = objcache;
 			this.viewMgr = new ViewManager(strcache);
 		}
 		
 		public void start()
 		{
-			List<Commit> L = dao.all();
+			List<Commit> L = dao.all(); //!!use commitcache later
 			for(Commit commit : L)	
 			{
 				doObserve(commit);

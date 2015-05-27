@@ -20,7 +20,7 @@ import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
-import mesf.core.ObjectViewCache;
+import mesf.core.ObjectCache;
 import mesf.core.StreamCache;
 
 import org.junit.Before;
@@ -32,10 +32,10 @@ public class OldTopLevelTests extends BaseTest
 	{
 		protected CommandProcessor proc;
 		protected CommitMgr commitMgr;
-		protected ObjectViewCache objcache;
+		protected ObjectCache objcache;
 		protected ObjectManagerRegistry registry;
 
-		public TopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectViewCache objcache)
+		public TopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectCache objcache)
 		{
 			this.commitMgr = commitMgr;
 			this.registry = registry;
@@ -58,7 +58,7 @@ public class OldTopLevelTests extends BaseTest
 	public static class MyTopLevel extends TopLevel
 	{
 
-		public MyTopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectViewCache objcache)
+		public MyTopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectCache objcache)
 		{
 			super(commitMgr, registry, streamDAO, objcache);
 		}
@@ -93,7 +93,7 @@ public class OldTopLevelTests extends BaseTest
 		
 		registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
+		ObjectCache objcache = new ObjectCache(streamDAO, registry);
 		maxId = 0L;
 		
 		MyTopLevel toplevel = createTopLevel(dao, streamDAO, cache, objcache);
@@ -144,7 +144,7 @@ public class OldTopLevelTests extends BaseTest
 //		commitMgr.dump();
 	}
 
-	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectViewCache objcache)
+	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectCache objcache)
 	{
 		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, cache,  new StreamCache(streamDAO));
 		

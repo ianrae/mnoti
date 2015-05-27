@@ -5,7 +5,7 @@ import mesf.core.CommitMgr;
 import mesf.core.IObjectMgr;
 import mesf.core.ObjectHydrater;
 import mesf.core.ObjectManagerRegistry;
-import mesf.core.ObjectViewCache;
+import mesf.core.ObjectCache;
 import mesf.core.ObjectLoader;
 import mesf.view.ViewLoader;
 import mesf.view.ViewManager;
@@ -13,14 +13,14 @@ import mesf.view.ViewManager;
 public abstract class CommandProcessor
 {
 	protected CommitMgr commitMgr;
-	protected ObjectViewCache objcache;
+	protected ObjectCache objcache;
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
 	protected ObjectLoader oloader;
 	private ViewManager viewMgr;
 	private ViewLoader vloader;
 
-	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectViewCache objcache, ViewManager viewMgr, ViewLoader vloader)
+	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ViewManager viewMgr, ViewLoader vloader)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;
