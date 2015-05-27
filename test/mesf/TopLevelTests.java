@@ -41,7 +41,7 @@ public class TopLevelTests extends BaseTest
 		protected IStreamDAO streamDAO;
 		protected ObjectManagerRegistry registry;
 		protected ObjectCache objcache;
-		protected ReadModelManager viewMgr;
+		protected ReadModelManager readmodelMgr;
 		protected StreamCache strcache;
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
@@ -52,7 +52,7 @@ public class TopLevelTests extends BaseTest
 			this.strcache = new StreamCache(streamDAO);
 			ObjectCache objcache = new ObjectCache(streamDAO, registry);	
 			this.objcache = objcache;
-			this.viewMgr = new ReadModelManager(strcache);
+			this.readmodelMgr = new ReadModelManager(strcache);
 		}
 		
 		public void start()
@@ -74,7 +74,7 @@ public class TopLevelTests extends BaseTest
 			}
 
 			objcache.observe(stream, commit);
-			viewMgr.observe(stream, commit);
+			readmodelMgr.observe(stream, commit);
 		}
 
 		public TopLevel createTopLevel() 
@@ -97,13 +97,13 @@ public class TopLevelTests extends BaseTest
 			return objcache.getIfLoaded(objectId);
 		}
 		
-		protected void registerViewObserver(ReadModel view)
+		protected void registerReadModel(ReadModel readModel)
 		{
-			viewMgr.registerReadModel(view);
+			readmodelMgr.registerReadModel(readModel);
 		}
-		public ReadModelManager getViewMgr()
+		public ReadModelManager getreadmodelMgr()
 		{
-			return viewMgr;
+			return readmodelMgr;
 		}
 	}
 	
@@ -126,7 +126,7 @@ public class TopLevelTests extends BaseTest
 		}
 	}
 	
-	public static class MyView extends ReadModel
+	public static class MyReadModel extends ReadModel
 	{
 		public Map<Long,Scooter> map = new HashMap<>();
 		
@@ -168,20 +168,20 @@ public class TopLevelTests extends BaseTest
 	
 	public static class MyPerm extends Permanent
 	{
-		public MyView view1;
+		public MyReadModel readModel1;
 		
 		public MyPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry) 
 		{
 			super(dao, streamDAO, registry);
 			
-			view1 = new MyView();
-			registerViewObserver(view1);
+			readModel1 = new MyReadModel();
+			registerReadModel(readModel1);
 		}
 		
 		@Override
 		protected CommandProcessor createProc(CommitMgr commitMgr, ReadModelLoader vloader)
 		{
-			return new MyCmdProc(commitMgr, registry, objcache, viewMgr, vloader);
+			return new MyCmdProc(commitMgr, registry, objcache, readmodelMgr, vloader);
 		}
 	}
 	
@@ -197,7 +197,7 @@ public class TopLevelTests extends BaseTest
 		
 		MyPerm perm = new MyPerm(dao, streamDAO, registry);
 		perm.start();
-		assertEquals(0, perm.view1.size());
+		assertEquals(0, perm.readModel1.size());
 		
 		log(String.format("1st"));
 		TopLevel toplevel = perm.createTopLevel();
@@ -205,7 +205,7 @@ public class TopLevelTests extends BaseTest
 		cmd.a = 15;
 		cmd.s = "bob";
 		toplevel.process(cmd);
-		assertEquals(0, perm.view1.size()); //haven't done yet
+		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(1L, cmd.objectId); //!! we set this in proc (only on insert)
 		
 		log(String.format("2nd"));
@@ -229,11 +229,11 @@ public class TopLevelTests extends BaseTest
 		toplevel.process(ucmd);
 		chkScooterStr(perm, ucmd.objectId, "more");
 		
-		assertEquals(0, perm.view1.size()); //haven't done yet
+		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(3, dao.size());
-		ReadModelManager viewMgr = perm.getViewMgr();
-		Object obj = viewMgr.loadView(perm.view1, toplevel.vloader);
-		assertEquals(1, perm.view1.size()); 
+		ReadModelManager readmodelMgr = perm.getreadmodelMgr();
+		Object obj = readmodelMgr.loadReadModel(perm.readModel1, toplevel.vloader);
+		assertEquals(1, perm.readModel1.size()); 
 	}
 
 	

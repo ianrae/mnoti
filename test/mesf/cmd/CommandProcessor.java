@@ -17,17 +17,17 @@ public abstract class CommandProcessor
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
 	protected ObjectLoader oloader;
-	private ReadModelManager viewMgr;
+	private ReadModelManager readmodelMgr;
 	private ReadModelLoader vloader;
 
-	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ReadModelManager viewMgr, ReadModelLoader vloader)
+	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ReadModelManager readmodelMgr, ReadModelLoader vloader)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;
 		this.objcache = objcache;
 		this.hydrater = new ObjectHydrater(objcache);
 		this.oloader = commitMgr.createObjectLoader();
-		this.viewMgr = viewMgr;
+		this.readmodelMgr = readmodelMgr;
 		this.vloader = vloader;
 	}
 	

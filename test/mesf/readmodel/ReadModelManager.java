@@ -10,7 +10,7 @@ import mesf.core.StreamCache;
 
 public class ReadModelManager implements ICommitObserver
 {
-	protected List<ReadModel> viewObserversL = new ArrayList<>();
+	protected List<ReadModel> readModelL = new ArrayList<>();
 	private StreamCache strcache;
 
 	public ReadModelManager(StreamCache strcache)
@@ -18,9 +18,9 @@ public class ReadModelManager implements ICommitObserver
 		this.strcache = strcache;
 	}
 	
-	public void registerReadModel(ReadModel view)
+	public void registerReadModel(ReadModel readModel)
 	{
-		this.viewObserversL.add(view);
+		this.readModelL.add(readModel);
 	}
 	
 	@Override
@@ -32,18 +32,18 @@ public class ReadModelManager implements ICommitObserver
 	@Override
 	public void observe(Stream stream, Commit commit) 
 	{
-		for(ReadModel view : this.viewObserversL)
+		for(ReadModel readModel : this.readModelL)
 		{
-			if (view.willAccept(stream, commit))
+			if (readModel.willAccept(stream, commit))
 			{
-				view.observe(stream, commit);
+				readModel.observe(stream, commit);
 			}
 		}
 	}
 	
-	public synchronized Object loadView(ReadModel view, ReadModelLoader vloader) throws Exception
+	public synchronized Object loadReadModel(ReadModel readModel, ReadModelLoader vloader) throws Exception
 	{
-		List<Commit> L = vloader.loadCommits(view.lastCommitId + 1);
+		List<Commit> L = vloader.loadCommits(readModel.lastCommitId + 1);
 		
 		for(Commit commit : L)
 		{
@@ -60,8 +60,8 @@ public class ReadModelManager implements ICommitObserver
 		if (L.size() > 0)
 		{
 			Commit last = L.get(L.size() - 1);
-			view.lastCommitId = last.getId();
+			readModel.lastCommitId = last.getId();
 		}
-		return view.obj;
+		return readModel.obj;
 	}
 }

@@ -112,9 +112,9 @@ public class CommitMgrTests extends BaseTest
 	
 	public static class MyCmdProc extends CommandProcessor
 	{
-		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ReadModelManager viewMgr, ReadModelLoader vloader)
+		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ReadModelManager readmodelMgr, ReadModelLoader vloader)
 		{
-			super(commitMgr, registry, objcache, viewMgr, vloader);
+			super(commitMgr, registry, objcache, readmodelMgr, vloader);
 		}
 
 		@Override
@@ -248,7 +248,7 @@ public class CommitMgrTests extends BaseTest
 	
 	
 	@Test
-	public void testViewCache() throws Exception
+	public void testReadModelCache() throws Exception
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
