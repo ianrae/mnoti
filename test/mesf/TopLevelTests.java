@@ -70,7 +70,7 @@ public class TopLevelTests extends BaseTest
 			Stream stream = null;
 			if (streamId != null && streamId != 0L)
 			{
-				stream = streamDAO.findById(streamId);
+				stream = strcache.findStream(streamId);
 			}
 
 			objcache.observe(stream, commit);

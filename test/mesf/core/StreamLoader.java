@@ -7,19 +7,19 @@ import java.util.List;
 public class StreamLoader
 {
 	private ICommitDAO dao;
-	private IStreamDAO streamDAO;
+	private StreamTableCache strcache;
 	private long maxId; //per current epoch
 
-	public StreamLoader(ICommitDAO dao, IStreamDAO streamDAO, long maxId)
+	public StreamLoader(ICommitDAO dao, StreamTableCache strcache, long maxId)
 	{
 		this.dao = dao;
-		this.streamDAO = streamDAO;
+		this.strcache = strcache;
 		this.maxId = maxId;
 	}
 	
 	public List<Commit> loadStream(String type, Long objectId)
 	{
-		Stream stream = streamDAO.findById(objectId);
+		Stream stream = strcache.findStream(objectId);
 		if (stream == null)
 		{
 			return null; //!!

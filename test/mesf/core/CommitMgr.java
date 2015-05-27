@@ -186,7 +186,7 @@ public class CommitMgr
 
 	public StreamLoader createStreamLoader() 
 	{
-		StreamLoader sloader = new StreamLoader(dao, streamDAO, this.maxId);
+		StreamLoader sloader = new StreamLoader(dao, strcache, this.maxId);
 		return sloader;
 	}
 }

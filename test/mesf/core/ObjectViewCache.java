@@ -49,12 +49,6 @@ public class ObjectViewCache implements ICommitObserver
 	}
 	private BaseObject doLoadObject(String type, Long objectId, StreamLoader sloader, Long startId, BaseObject obj) throws Exception
 	{
-//		Stream stream = streamDAO.findById(objectId);
-//		if (stream == null)
-//		{
-//			return null;
-//		}
-
 		List<Commit> L = null;
 		if (startId == null)
 		{
