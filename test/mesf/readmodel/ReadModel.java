@@ -1,4 +1,4 @@
-package mesf.view;
+package mesf.readmodel;
 
 import mesf.core.Commit;
 import mesf.core.ICommitObserver;

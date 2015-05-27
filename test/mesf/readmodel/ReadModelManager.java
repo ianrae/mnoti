@@ -1,4 +1,4 @@
-package mesf.view;
+package mesf.readmodel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,17 +8,17 @@ import mesf.core.ICommitObserver;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
 
-public class ViewManager implements ICommitObserver
+public class ReadModelManager implements ICommitObserver
 {
 	protected List<ReadModel> viewObserversL = new ArrayList<>();
 	private StreamCache strcache;
 
-	public ViewManager(StreamCache strcache)
+	public ReadModelManager(StreamCache strcache)
 	{
 		this.strcache = strcache;
 	}
 	
-	public void registerViewObserver(ReadModel view)
+	public void registerReadModel(ReadModel view)
 	{
 		this.viewObserversL.add(view);
 	}

@@ -25,8 +25,8 @@ import mesf.core.ObjectCache;
 import mesf.core.Stream;
 import mesf.core.ObjectLoader;
 import mesf.core.StreamCache;
-import mesf.view.ReadModelLoader;
-import mesf.view.ViewManager;
+import mesf.readmodel.ReadModelLoader;
+import mesf.readmodel.ReadModelManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -112,7 +112,7 @@ public class CommitMgrTests extends BaseTest
 	
 	public static class MyCmdProc extends CommandProcessor
 	{
-		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ViewManager viewMgr, ReadModelLoader vloader)
+		public MyCmdProc(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ReadModelManager viewMgr, ReadModelLoader vloader)
 		{
 			super(commitMgr, registry, objcache, viewMgr, vloader);
 		}

@@ -1,4 +1,4 @@
-package mesf.view;
+package mesf.readmodel;
 
 import java.util.List;
 

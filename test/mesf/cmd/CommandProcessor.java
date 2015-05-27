@@ -7,8 +7,8 @@ import mesf.core.ObjectHydrater;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectCache;
 import mesf.core.ObjectLoader;
-import mesf.view.ReadModelLoader;
-import mesf.view.ViewManager;
+import mesf.readmodel.ReadModelLoader;
+import mesf.readmodel.ReadModelManager;
 
 public abstract class CommandProcessor
 {
@@ -17,10 +17,10 @@ public abstract class CommandProcessor
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
 	protected ObjectLoader oloader;
-	private ViewManager viewMgr;
+	private ReadModelManager viewMgr;
 	private ReadModelLoader vloader;
 
-	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ViewManager viewMgr, ReadModelLoader vloader)
+	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ReadModelManager viewMgr, ReadModelLoader vloader)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;

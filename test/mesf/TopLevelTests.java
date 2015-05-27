@@ -26,9 +26,9 @@ import mesf.core.ObjectMgr;
 import mesf.core.ObjectCache;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
-import mesf.view.ReadModel;
-import mesf.view.ReadModelLoader;
-import mesf.view.ViewManager;
+import mesf.readmodel.ReadModel;
+import mesf.readmodel.ReadModelLoader;
+import mesf.readmodel.ReadModelManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class TopLevelTests extends BaseTest
 		protected IStreamDAO streamDAO;
 		protected ObjectManagerRegistry registry;
 		protected ObjectCache objcache;
-		protected ViewManager viewMgr;
+		protected ReadModelManager viewMgr;
 		protected StreamCache strcache;
 
 		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry)
@@ -52,7 +52,7 @@ public class TopLevelTests extends BaseTest
 			this.strcache = new StreamCache(streamDAO);
 			ObjectCache objcache = new ObjectCache(streamDAO, registry);	
 			this.objcache = objcache;
-			this.viewMgr = new ViewManager(strcache);
+			this.viewMgr = new ReadModelManager(strcache);
 		}
 		
 		public void start()
@@ -99,9 +99,9 @@ public class TopLevelTests extends BaseTest
 		
 		protected void registerViewObserver(ReadModel view)
 		{
-			viewMgr.registerViewObserver(view);
+			viewMgr.registerReadModel(view);
 		}
-		public ViewManager getViewMgr()
+		public ReadModelManager getViewMgr()
 		{
 			return viewMgr;
 		}
@@ -231,7 +231,7 @@ public class TopLevelTests extends BaseTest
 		
 		assertEquals(0, perm.view1.size()); //haven't done yet
 		assertEquals(3, dao.size());
-		ViewManager viewMgr = perm.getViewMgr();
+		ReadModelManager viewMgr = perm.getViewMgr();
 		Object obj = viewMgr.loadView(perm.view1, toplevel.vloader);
 		assertEquals(1, perm.view1.size()); 
 	}
