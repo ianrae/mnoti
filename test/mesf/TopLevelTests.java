@@ -3,7 +3,6 @@ package mesf;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
@@ -14,9 +13,7 @@ import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.ProcRegistry;
-import mesf.core.BaseObject;
 import mesf.core.Commit;
-import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
 import mesf.core.IStreamDAO;
@@ -25,9 +22,8 @@ import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
-import mesf.core.ObjectRepository;
+import mesf.core.Permanent;
 import mesf.core.Stream;
-import mesf.core.StreamCache;
 import mesf.readmodel.ReadModel;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
@@ -37,112 +33,6 @@ import org.junit.Test;
 
 public class TopLevelTests extends BaseTest 
 {
-	public static abstract class Permanent
-	{
-		protected ICommitDAO dao;
-		protected IStreamDAO streamDAO;
-		protected ObjectManagerRegistry registry;
-		protected ObjectRepository objectRepo;
-		protected ReadModelRepository readmodelRepo;
-		protected StreamCache strcache;
-		private CommitCache commitCache;
-		private ProcRegistry procRegistry;
-		
-		/*
-		 * tbls: commit, stream
-		 * cache: CommitCache, StreamCache
-		 * repositories: Object, Aggregate, ReadModel
-		 * proc
-		 */
-
-		public Permanent(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry, ProcRegistry procRegistry)
-		{
-			this.dao = dao;
-			this.streamDAO = streamDAO;
-			this.registry = registry;
-			this.strcache = new StreamCache(streamDAO);
-			ObjectRepository objcache = new ObjectRepository(streamDAO, registry);	
-			this.objectRepo = objcache;
-			this.readmodelRepo = new ReadModelRepository(strcache);
-			commitCache = new CommitCache(dao);
-			this.procRegistry = procRegistry;
-		}
-		
-		public void start()
-		{
-			List<Commit> L = dao.all(); //!!use commitcache later
-			for(Commit commit : L)	
-			{
-				doObserve(commit);
-			}
-		}
-		
-		private void doObserve(Commit commit)
-		{
-			Long streamId = commit.getStreamId();
-			Stream stream = null;
-			if (streamId != null && streamId != 0L)
-			{
-				stream = strcache.findStream(streamId);
-			}
-
-			objectRepo.observe(stream, commit);
-			readmodelRepo.observe(stream, commit);
-		}
-
-		public TopLevel createTopLevel() 
-		{
-			CommitMgr mgr = new CommitMgr(dao, streamDAO, commitCache, this.strcache);
-			mgr.getMaxId(); //query db
-			ReadModelLoader vloader = new ReadModelLoader(dao, streamDAO, mgr.getMaxId());
-			CommandProcessor proc = createProc(mgr, vloader);
-			
-			MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader);
-			mtx.setProcRegistry(procRegistry);
-			
-			TopLevel toplevel = new TopLevel(proc, mtx);
-			return toplevel;
-		}
-		
-		abstract protected CommandProcessor createProc(CommitMgr mgr, ReadModelLoader vloader);
-		
-
-		public BaseObject loadObjectFromRepo(long objectId) 
-		{
-			return objectRepo.getIfLoaded(objectId);
-		}
-		
-		protected void registerReadModel(ReadModel readModel)
-		{
-			readmodelRepo.registerReadModel(readModel);
-		}
-		public ReadModelRepository getreadmodelMgr()
-		{
-			return readmodelRepo;
-		}
-	}
-	
-	public static class TopLevel
-	{
-		CommandProcessor proc;
-		private MContext mtx;
-		
-		public TopLevel(CommandProcessor proc, MContext mtx)
-		{
-			this.proc = proc;
-			this.mtx = mtx;
-		}
-
-		public CommandProcessor findProd(Class clazz)
-		{
-			return mtx.getProcRegistry().find(clazz, mtx);
-		}
-//		public void process(ICommand cmd) 
-//		{
-//			proc.process(cmd);
-//		}
-	}
-	
 	public static class MyReadModel extends ReadModel
 	{
 		public Map<Long,Scooter> map = new HashMap<>();
@@ -224,17 +114,18 @@ public class TopLevelTests extends BaseTest
 		assertEquals(0, perm.readModel1.size());
 		
 		log(String.format("1st"));
-		TopLevel toplevel = perm.createTopLevel();
+		MContext mtx = perm.createMContext();
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";
-		CommandProcessor proc = toplevel.findProd(Scooter.class);
+		CommandProcessor proc = mtx.findProd(Scooter.class);
 		proc.process(cmd);
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(1L, cmd.objectId); //!! we set this in proc (only on insert)
 		
 		log(String.format("2nd"));
-		toplevel = perm.createTopLevel();
+		mtx = perm.createMContext();
+		proc = mtx.findProd(Scooter.class);
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
 		ucmd.objectId = 1L;
@@ -247,18 +138,18 @@ public class TopLevelTests extends BaseTest
 		chkScooterStr(perm, ucmd.objectId, "bob");
 		
 		log(String.format("2nd"));
-		toplevel = perm.createTopLevel();
+		mtx = perm.createMContext();
+		proc = mtx.findProd(Scooter.class);
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "more2";
 		ucmd.objectId = 1L;
-		proc = toplevel.findProd(Scooter.class);
 		proc.process(ucmd);
 		chkScooterStr(perm, ucmd.objectId, "more");
 		
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(3, dao.size());
 		ReadModelRepository readmodelMgr = perm.getreadmodelMgr();
-		Object obj = readmodelMgr.loadReadModel(perm.readModel1, toplevel.mtx.getVloader());
+		Object obj = readmodelMgr.loadReadModel(perm.readModel1, mtx.getVloader());
 		assertEquals(1, perm.readModel1.size()); 
 	}
 

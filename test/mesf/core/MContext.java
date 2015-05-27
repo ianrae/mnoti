@@ -1,6 +1,7 @@
 package mesf.core;
 
 import mesf.ObjManagerTests.Scooter;
+import mesf.cmd.CommandProcessor;
 import mesf.cmd.ProcRegistry;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
@@ -71,6 +72,11 @@ public class MContext
 		String type = this.getRegistry().findTypeForClass(clazz);
 		BaseObject obj = this.getHydrater().loadObject(type, objectId, this.getOloader());
 		return obj;
+	}
+	
+	public CommandProcessor findProd(Class clazz)
+	{
+		return getProcRegistry().find(clazz, this);
 	}
 	
 }
