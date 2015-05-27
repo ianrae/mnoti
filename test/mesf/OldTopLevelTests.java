@@ -20,7 +20,7 @@ import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
-import mesf.core.ObjectCache;
+import mesf.core.ObjectRepository;
 import mesf.core.StreamCache;
 
 import org.junit.Before;
@@ -32,10 +32,10 @@ public class OldTopLevelTests extends BaseTest
 	{
 		protected CommandProcessor proc;
 		protected CommitMgr commitMgr;
-		protected ObjectCache objcache;
+		protected ObjectRepository objcache;
 		protected ObjectManagerRegistry registry;
 
-		public TopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectCache objcache)
+		public TopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectRepository objcache)
 		{
 			this.commitMgr = commitMgr;
 			this.registry = registry;
@@ -58,7 +58,7 @@ public class OldTopLevelTests extends BaseTest
 	public static class MyTopLevel extends TopLevel
 	{
 
-		public MyTopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectCache objcache)
+		public MyTopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectRepository objcache)
 		{
 			super(commitMgr, registry, streamDAO, objcache);
 		}
@@ -93,7 +93,7 @@ public class OldTopLevelTests extends BaseTest
 		
 		registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectCache objcache = new ObjectCache(streamDAO, registry);
+		ObjectRepository objcache = new ObjectRepository(streamDAO, registry);
 		maxId = 0L;
 		
 		MyTopLevel toplevel = createTopLevel(dao, streamDAO, cache, objcache);
@@ -144,7 +144,7 @@ public class OldTopLevelTests extends BaseTest
 //		commitMgr.dump();
 	}
 
-	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectCache objcache)
+	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectRepository objcache)
 	{
 		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, cache,  new StreamCache(streamDAO));
 		

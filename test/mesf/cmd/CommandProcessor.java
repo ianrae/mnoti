@@ -5,7 +5,7 @@ import mesf.core.CommitMgr;
 import mesf.core.IObjectMgr;
 import mesf.core.ObjectHydrater;
 import mesf.core.ObjectManagerRegistry;
-import mesf.core.ObjectCache;
+import mesf.core.ObjectRepository;
 import mesf.core.ObjectLoader;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
@@ -13,14 +13,14 @@ import mesf.readmodel.ReadModelRepository;
 public abstract class CommandProcessor
 {
 	protected CommitMgr commitMgr;
-	protected ObjectCache objcache;
+	protected ObjectRepository objcache;
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
 	protected ObjectLoader oloader;
 	private ReadModelRepository readmodelMgr;
 	private ReadModelLoader vloader;
 
-	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectCache objcache, ReadModelRepository readmodelMgr, ReadModelLoader vloader)
+	public CommandProcessor(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectRepository objcache, ReadModelRepository readmodelMgr, ReadModelLoader vloader)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;

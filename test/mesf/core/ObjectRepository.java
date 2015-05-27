@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.mef.framework.sfx.SfxTrail;
 
-public class ObjectCache implements ICommitObserver
+public class ObjectRepository implements ICommitObserver
 {
 	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
 	Map<Long, Long> whenMap = new HashMap<>(); 
@@ -16,7 +16,7 @@ public class ObjectCache implements ICommitObserver
 	private long numMisses;
 	private SfxTrail trail = new SfxTrail();
 
-	public ObjectCache(IStreamDAO streamDAO, ObjectManagerRegistry registry)
+	public ObjectRepository(IStreamDAO streamDAO, ObjectManagerRegistry registry)
 	{
 		this.streamDAO = streamDAO;
 		this.registry = registry;

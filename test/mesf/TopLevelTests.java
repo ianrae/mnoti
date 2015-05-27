@@ -23,7 +23,7 @@ import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
-import mesf.core.ObjectCache;
+import mesf.core.ObjectRepository;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
 import mesf.readmodel.ReadModel;
@@ -40,9 +40,10 @@ public class TopLevelTests extends BaseTest
 		protected ICommitDAO dao;
 		protected IStreamDAO streamDAO;
 		protected ObjectManagerRegistry registry;
-		protected ObjectCache objcache;
+		protected ObjectRepository objectRepo;
 		protected ReadModelRepository readmodelRepo;
 		protected StreamCache strcache;
+		private CommitCache commitCache;
 		
 		/*
 		 * tbls: commit, stream
@@ -57,9 +58,10 @@ public class TopLevelTests extends BaseTest
 			this.streamDAO = streamDAO;
 			this.registry = registry;
 			this.strcache = new StreamCache(streamDAO);
-			ObjectCache objcache = new ObjectCache(streamDAO, registry);	
-			this.objcache = objcache;
+			ObjectRepository objcache = new ObjectRepository(streamDAO, registry);	
+			this.objectRepo = objcache;
 			this.readmodelRepo = new ReadModelRepository(strcache);
+			commitCache = new CommitCache(dao);
 		}
 		
 		public void start()
@@ -80,14 +82,13 @@ public class TopLevelTests extends BaseTest
 				stream = strcache.findStream(streamId);
 			}
 
-			objcache.observe(stream, commit);
+			objectRepo.observe(stream, commit);
 			readmodelRepo.observe(stream, commit);
 		}
 
 		public TopLevel createTopLevel() 
 		{
-			CommitCache cache = new CommitCache(dao);
-			CommitMgr mgr = new CommitMgr(dao, streamDAO, cache, this.strcache);
+			CommitMgr mgr = new CommitMgr(dao, streamDAO, commitCache, this.strcache);
 			mgr.getMaxId(); //query db
 			ReadModelLoader vloader = new ReadModelLoader(dao, streamDAO, mgr.getMaxId());
 			CommandProcessor proc = createProc(mgr, vloader);
@@ -99,9 +100,9 @@ public class TopLevelTests extends BaseTest
 		abstract protected CommandProcessor createProc(CommitMgr mgr, ReadModelLoader vloader);
 		
 
-		public BaseObject getObjectFromCache(long objectId) 
+		public BaseObject loadObjectFromRepo(long objectId) 
 		{
-			return objcache.getIfLoaded(objectId);
+			return objectRepo.getIfLoaded(objectId);
 		}
 		
 		protected void registerReadModel(ReadModel readModel)
@@ -188,7 +189,7 @@ public class TopLevelTests extends BaseTest
 		@Override
 		protected CommandProcessor createProc(CommitMgr commitMgr, ReadModelLoader vloader)
 		{
-			return new MyCmdProc(commitMgr, registry, objcache, readmodelRepo, vloader);
+			return new MyCmdProc(commitMgr, registry, objectRepo, readmodelRepo, vloader);
 		}
 	}
 	
@@ -246,7 +247,7 @@ public class TopLevelTests extends BaseTest
 	
 	private void chkScooterStr(MyPerm perm, long objectId, String string) 
 	{
-		Scooter scooter = (Scooter) perm.getObjectFromCache(objectId);
+		Scooter scooter = (Scooter) perm.loadObjectFromRepo(objectId);
 		assertEquals(string, scooter.getS());
 	}
 
