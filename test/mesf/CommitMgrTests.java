@@ -153,7 +153,7 @@ public class CommitMgrTests extends BaseTest
 		private Scooter loadTheObject(long objectId) throws Exception 
 		{
 			String type = this.registry.findTypeForClass(Scooter.class);
-			Scooter scooter = (Scooter) this.hydrater.loadObject(type, objectId, sloader);
+			Scooter scooter = (Scooter) this.hydrater.loadObject(type, objectId, oloader);
 			return scooter;
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
@@ -253,7 +253,7 @@ public class CommitMgrTests extends BaseTest
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamTableCache(streamDAO));
-		ObjectLoader sloader = mgr.createStreamLoader();
+		ObjectLoader oloader = mgr.createStreamLoader();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
@@ -270,18 +270,18 @@ public class CommitMgrTests extends BaseTest
 		L = mgr.loadAll();
 		assertEquals(3, L.size());
 		chkStreamSize(streamDAO, 1);
-		sloader = mgr.createStreamLoader();
+		oloader = mgr.createStreamLoader();
 		
 		mgr.dump();
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		ObjectViewCache objcache = new ObjectViewCache(streamDAO, registry);
 		
-		BaseObject obj = objcache.loadObject("scooter", scooter.getId(), sloader);
+		BaseObject obj = objcache.loadObject("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj.getId().longValue());
 		chkScooter((Scooter) obj, 444, 26, "abc");
 
-		BaseObject obj2 = objcache.loadObject("scooter", scooter.getId(), sloader);
+		BaseObject obj2 = objcache.loadObject("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj2.getId().longValue());
 		chkScooter((Scooter) obj2, 444, 26, "abc");
 		
@@ -300,7 +300,7 @@ public class CommitMgrTests extends BaseTest
 		mgr.observeList(mgr.loadAll(), objcache);
 		Scooter scoot2 = (Scooter) objcache.getIfLoaded(scooter.getId());
 		assertEquals(555, scoot2.getA());
-		sloader = mgr.createStreamLoader();
+		oloader = mgr.createStreamLoader();
 	}
 
 	@Test

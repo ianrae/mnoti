@@ -16,7 +16,7 @@ public abstract class CommandProcessor
 	protected ObjectViewCache objcache;
 	protected ObjectHydrater hydrater;
 	protected ObjectManagerRegistry registry;
-	protected ObjectLoader sloader;
+	protected ObjectLoader oloader;
 	private ViewManager viewMgr;
 	private ViewLoader vloader;
 
@@ -26,7 +26,7 @@ public abstract class CommandProcessor
 		this.registry = registry;
 		this.objcache = objcache;
 		this.hydrater = new ObjectHydrater(objcache);
-		this.sloader = commitMgr.createStreamLoader();
+		this.oloader = commitMgr.createStreamLoader();
 		this.viewMgr = viewMgr;
 		this.vloader = vloader;
 	}

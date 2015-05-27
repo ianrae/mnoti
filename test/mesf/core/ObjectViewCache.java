@@ -28,14 +28,14 @@ public class ObjectViewCache implements ICommitObserver
 		System.out.println(trail.getTrail());
 	}
 
-	public synchronized BaseObject loadObject(String type, Long objectId, ObjectLoader sloader) throws Exception
+	public synchronized BaseObject loadObject(String type, Long objectId, ObjectLoader oloader) throws Exception
 	{
 		BaseObject obj = map.get(objectId);
 		Long startId = null;
 		if (obj != null)
 		{
 			long when = whenMap.get(objectId);
-			if(when >= sloader.getMaxId())
+			if(when >= oloader.getMaxId())
 			{
 				numHits++;
 				return obj;
@@ -44,19 +44,19 @@ public class ObjectViewCache implements ICommitObserver
 		}
 
 		numMisses++;
-		obj = doLoadObject(type, objectId, sloader, startId, obj);
+		obj = doLoadObject(type, objectId, oloader, startId, obj);
 		return obj;
 	}
-	private BaseObject doLoadObject(String type, Long objectId, ObjectLoader sloader, Long startId, BaseObject obj) throws Exception
+	private BaseObject doLoadObject(String type, Long objectId, ObjectLoader oloader, Long startId, BaseObject obj) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)
 		{
-			L = sloader.loadStream(type, objectId);
+			L = oloader.loadStream(type, objectId);
 		}
 		else 
 		{
-			L = sloader.loadPartialStream(objectId, startId);
+			L = oloader.loadPartialStream(objectId, startId);
 		}
 		IObjectMgr mgr = registry.findByType(type);
 
