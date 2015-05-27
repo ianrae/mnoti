@@ -7,13 +7,13 @@ import mesf.core.ICommitDAO;
 import mesf.core.IStreamDAO;
 
 
-public class ViewLoader
+public class ReadModelLoader
 {
 	private ICommitDAO dao;
 	private IStreamDAO streamDAO;
 	private long maxId; //per current epoch
 
-	public ViewLoader(ICommitDAO dao, IStreamDAO streamDAO, long maxId)
+	public ReadModelLoader(ICommitDAO dao, IStreamDAO streamDAO, long maxId)
 	{
 		this.dao = dao;
 		this.streamDAO = streamDAO;

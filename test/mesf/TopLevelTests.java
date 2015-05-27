@@ -26,8 +26,8 @@ import mesf.core.ObjectMgr;
 import mesf.core.ObjectCache;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
-import mesf.view.BaseView;
-import mesf.view.ViewLoader;
+import mesf.view.ReadModel;
+import mesf.view.ReadModelLoader;
 import mesf.view.ViewManager;
 
 import org.junit.Before;
@@ -82,14 +82,14 @@ public class TopLevelTests extends BaseTest
 			CommitCache cache = new CommitCache(dao);
 			CommitMgr mgr = new CommitMgr(dao, streamDAO, cache, this.strcache);
 			mgr.getMaxId(); //query db
-			ViewLoader vloader = new ViewLoader(dao, streamDAO, mgr.getMaxId());
+			ReadModelLoader vloader = new ReadModelLoader(dao, streamDAO, mgr.getMaxId());
 			CommandProcessor proc = createProc(mgr, vloader);
 			
 			TopLevel toplevel = new TopLevel(proc, mgr, vloader);
 			return toplevel;
 		}
 		
-		abstract protected CommandProcessor createProc(CommitMgr mgr, ViewLoader vloader);
+		abstract protected CommandProcessor createProc(CommitMgr mgr, ReadModelLoader vloader);
 		
 
 		public BaseObject getObjectFromCache(long objectId) 
@@ -97,7 +97,7 @@ public class TopLevelTests extends BaseTest
 			return objcache.getIfLoaded(objectId);
 		}
 		
-		protected void registerViewObserver(BaseView view)
+		protected void registerViewObserver(ReadModel view)
 		{
 			viewMgr.registerViewObserver(view);
 		}
@@ -111,9 +111,9 @@ public class TopLevelTests extends BaseTest
 	{
 		CommandProcessor proc;
 		private CommitMgr commitMgr;
-		public ViewLoader vloader;
+		public ReadModelLoader vloader;
 		
-		public TopLevel(CommandProcessor proc, CommitMgr mgr, ViewLoader vloader)
+		public TopLevel(CommandProcessor proc, CommitMgr mgr, ReadModelLoader vloader)
 		{
 			this.proc = proc;
 			this.commitMgr = mgr;
@@ -126,7 +126,7 @@ public class TopLevelTests extends BaseTest
 		}
 	}
 	
-	public static class MyView extends BaseView
+	public static class MyView extends ReadModel
 	{
 		public Map<Long,Scooter> map = new HashMap<>();
 		
@@ -179,7 +179,7 @@ public class TopLevelTests extends BaseTest
 		}
 		
 		@Override
-		protected CommandProcessor createProc(CommitMgr commitMgr, ViewLoader vloader)
+		protected CommandProcessor createProc(CommitMgr commitMgr, ReadModelLoader vloader)
 		{
 			return new MyCmdProc(commitMgr, registry, objcache, viewMgr, vloader);
 		}

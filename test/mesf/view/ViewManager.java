@@ -10,7 +10,7 @@ import mesf.core.StreamCache;
 
 public class ViewManager implements ICommitObserver
 {
-	protected List<BaseView> viewObserversL = new ArrayList<>();
+	protected List<ReadModel> viewObserversL = new ArrayList<>();
 	private StreamCache strcache;
 
 	public ViewManager(StreamCache strcache)
@@ -18,7 +18,7 @@ public class ViewManager implements ICommitObserver
 		this.strcache = strcache;
 	}
 	
-	public void registerViewObserver(BaseView view)
+	public void registerViewObserver(ReadModel view)
 	{
 		this.viewObserversL.add(view);
 	}
@@ -32,7 +32,7 @@ public class ViewManager implements ICommitObserver
 	@Override
 	public void observe(Stream stream, Commit commit) 
 	{
-		for(BaseView view : this.viewObserversL)
+		for(ReadModel view : this.viewObserversL)
 		{
 			if (view.willAccept(stream, commit))
 			{
@@ -41,7 +41,7 @@ public class ViewManager implements ICommitObserver
 		}
 	}
 	
-	public synchronized Object loadView(BaseView view, ViewLoader vloader) throws Exception
+	public synchronized Object loadView(ReadModel view, ReadModelLoader vloader) throws Exception
 	{
 		List<Commit> L = vloader.loadCommits(view.lastCommitId + 1);
 		

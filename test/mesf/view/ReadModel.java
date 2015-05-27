@@ -4,12 +4,12 @@ import mesf.core.Commit;
 import mesf.core.ICommitObserver;
 import mesf.core.Stream;
 
-public class BaseView implements ICommitObserver
+public class ReadModel implements ICommitObserver
 {
 	long lastCommitId;
 	public Object obj;
 	
-	public BaseView()
+	public ReadModel()
 	{
 	}
 	
