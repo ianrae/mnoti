@@ -8,6 +8,7 @@ import org.mef.framework.fluent.Query1;
 public interface IStreamDAO  extends IDAO
 {
 	Stream findById(long id);
+	List<Stream> loadRange(long startId, long n);
 	List<Stream> all();
 	void save(Stream entity);        
 	void update(Stream entity);

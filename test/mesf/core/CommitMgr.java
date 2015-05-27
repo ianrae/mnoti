@@ -125,13 +125,14 @@ public class CommitMgr
 	
 	public void updateObject(IObjectMgr mgr, BaseObject obj)
 	{
-		Stream stream = streamDAO.findById(obj.getId());
-		if (stream == null)
-		{
-			return; //!!
-		}
+//		Stream stream = streamDAO.findById(obj.getId());
+//		if (stream == null)
+//		{
+//			return; //!!
+//		}
 		
-		Long objectId = stream.getId();
+//		Long objectId = stream.getId();
+		Long objectId = obj.getId();
 		Commit commit = new Commit();
 		commit.setAction('U');
 		commit.setStreamId(objectId);
@@ -147,13 +148,13 @@ public class CommitMgr
 	}
 	public void deleteObject(IObjectMgr mgr, BaseObject obj)
 	{
-		Stream stream = streamDAO.findById(obj.getId());
-		if (stream == null)
-		{
-			return; //!!
-		}
+//		Stream stream = streamDAO.findById(obj.getId());
+//		if (stream == null)
+//		{
+//			return; //!!
+//		}
 		
-		Long objectId = stream.getId();
+		Long objectId = obj.getId();
 		Commit commit = new Commit();
 		commit.setAction('D');
 		commit.setStreamId(objectId);

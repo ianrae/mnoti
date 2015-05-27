@@ -123,5 +123,24 @@ public class MockStreamDAO implements IStreamDAO
 			this.delete(entity.getId());
 			this.save(entity);
 		}
+		
+		@Override
+		public List<Stream> loadRange(long startId, long n) 
+		{
+			List<Stream> resultL = new ArrayList<>();
+			
+			for(Stream entity : _L)
+			{
+				if (entity.getId() >= startId)
+				{
+					resultL.add(entity);
+					if (resultL.size() >= n)
+					{
+						return resultL;
+					}
+				}
+			}
+			return resultL;
+		}
 
 	}
