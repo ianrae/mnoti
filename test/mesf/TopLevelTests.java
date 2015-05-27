@@ -98,8 +98,9 @@ public class TopLevelTests extends BaseTest
 			CommandProcessor proc = createProc(mgr, vloader);
 			
 			MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader);
+			mtx.setProcRegistry(procRegistry);
 			
-			TopLevel toplevel = new TopLevel(proc, mtx, procRegistry);
+			TopLevel toplevel = new TopLevel(proc, mtx);
 			return toplevel;
 		}
 		
@@ -124,20 +125,22 @@ public class TopLevelTests extends BaseTest
 	public static class TopLevel
 	{
 		CommandProcessor proc;
-		private ProcRegistry procRegistry;
 		private MContext mtx;
 		
-		public TopLevel(CommandProcessor proc, MContext mtx, ProcRegistry procRegistry)
+		public TopLevel(CommandProcessor proc, MContext mtx)
 		{
 			this.proc = proc;
 			this.mtx = mtx;
-			this.procRegistry = procRegistry;
 		}
 
-		public void process(ICommand cmd) 
+		public CommandProcessor findProd(Class clazz)
 		{
-			proc.process(cmd);
+			return mtx.getProcRegistry().find(clazz, mtx);
 		}
+//		public void process(ICommand cmd) 
+//		{
+//			proc.process(cmd);
+//		}
 	}
 	
 	public static class MyReadModel extends ReadModel
@@ -197,7 +200,9 @@ public class TopLevelTests extends BaseTest
 		{
 			MContext mtx = new MContext(commitMgr, registry, objectRepo, readmodelRepo, vloader);
 			
-			return new MyCmdProc(mtx);
+			CommandProcessor proc = new MyCmdProc();
+			proc.setMContext(mtx);
+			return proc;
 		}
 	}
 	
@@ -212,7 +217,7 @@ public class TopLevelTests extends BaseTest
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		
 		ProcRegistry procRegistry = new ProcRegistry();
-		procRegistry.register(Scooter.class, null);
+		procRegistry.register(Scooter.class, MyCmdProc.class);
 		
 		MyPerm perm = new MyPerm(dao, streamDAO, registry, procRegistry);
 		perm.start();
@@ -223,7 +228,8 @@ public class TopLevelTests extends BaseTest
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";
-		toplevel.process(cmd);
+		CommandProcessor proc = toplevel.findProd(Scooter.class);
+		proc.process(cmd);
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(1L, cmd.objectId); //!! we set this in proc (only on insert)
 		
@@ -232,7 +238,7 @@ public class TopLevelTests extends BaseTest
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
 		ucmd.objectId = 1L;
-		toplevel.process(ucmd);
+		proc.process(ucmd);
 		
 		//we don't have an event bus. so cmd processing does not update objcache
 		//do this for two reasons
@@ -245,7 +251,8 @@ public class TopLevelTests extends BaseTest
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "more2";
 		ucmd.objectId = 1L;
-		toplevel.process(ucmd);
+		proc = toplevel.findProd(Scooter.class);
+		proc.process(ucmd);
 		chkScooterStr(perm, ucmd.objectId, "more");
 		
 		assertEquals(0, perm.readModel1.size()); //haven't done yet

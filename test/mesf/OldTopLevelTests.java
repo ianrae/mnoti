@@ -68,7 +68,9 @@ public class OldTopLevelTests extends BaseTest
 		protected void createProc() 
 		{
 			MContext mtx = new MContext(commitMgr, registry, objcache, null, null);
-			this.proc = new MyCmdProc(mtx);
+			this.proc = new MyCmdProc();
+			proc.setMContext(mtx);
+
 		}
 
 		public void process(ICommand cmd) 

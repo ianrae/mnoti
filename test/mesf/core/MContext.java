@@ -1,6 +1,7 @@
 package mesf.core;
 
 import mesf.ObjManagerTests.Scooter;
+import mesf.cmd.ProcRegistry;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
 
@@ -14,6 +15,7 @@ public class MContext
 
 	private ReadModelRepository readmodelMgr;
 	private ReadModelLoader vloader;
+	private ProcRegistry procRegistry;
 
 	public MContext(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectRepository objcache, ReadModelRepository readmodelMgr, ReadModelLoader vloader)
 	{
@@ -24,6 +26,16 @@ public class MContext
 		this.oloader = commitMgr.createObjectLoader();
 		this.readmodelMgr = readmodelMgr;
 		this.vloader = vloader;
+	}
+	
+	//is optional
+	public void setProcRegistry(ProcRegistry procRegistry)
+	{
+		this.procRegistry = procRegistry;
+	}
+	public ProcRegistry getProcRegistry()
+	{
+		return procRegistry;
 	}
 
 	public CommitMgr getCommitMgr() {

@@ -15,7 +15,11 @@ public abstract class CommandProcessor
 {
 	protected MContext mtx;
 
-	public CommandProcessor(MContext mtx)
+	public CommandProcessor()
+	{
+	}
+	
+	public void setMContext(MContext mtx)
 	{
 		this.mtx = mtx;
 	}
