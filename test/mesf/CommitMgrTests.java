@@ -153,8 +153,7 @@ public class CommitMgrTests extends BaseTest
 
 		private Scooter loadTheObject(long objectId) throws Exception 
 		{
-			String type = this.mtx.getRegistry().findTypeForClass(Scooter.class);
-			Scooter scooter = (Scooter) this.mtx.getHydrater().loadObject(type, objectId, this.mtx.getOloader());
+			Scooter scooter = (Scooter) mtx.loadObject(Scooter.class, objectId);
 			return scooter;
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 

@@ -22,7 +22,7 @@ public abstract class CommandProcessor
 	
 	public abstract void process(ICommand cmd);
 	
-	protected void insertObject(ObjectCommand cmd, BaseObject obj)
+	public void insertObject(ObjectCommand cmd, BaseObject obj)
 	{
 		String type = this.getObjectType(obj);
 		IObjectMgr mgr = mtx.getRegistry().findByType(type);
@@ -30,21 +30,21 @@ public abstract class CommandProcessor
 		//!break rules here and we modify command. Since controller needs to know id of newly created object
 		cmd.objectId = mtx.getCommitMgr().insertObject(mgr, obj);
 	}
-	protected void updateObject(BaseObject obj)
+	public void updateObject(BaseObject obj)
 	{
 		String type = this.getObjectType(obj);
 		IObjectMgr mgr = mtx.getRegistry().findByType(type);
 		
 		mtx.getCommitMgr().updateObject(mgr, obj);
 	}
-	protected void deleteObject(BaseObject obj)
+	public void deleteObject(BaseObject obj)
 	{
 		String type = this.getObjectType(obj);
 		IObjectMgr mgr = mtx.getRegistry().findByType(type);
 		
 		mtx.getCommitMgr().deleteObject(mgr, obj);
 	}
-	protected String getObjectType(BaseObject obj)
+	public String getObjectType(BaseObject obj)
 	{
 		String type = mtx.getRegistry().findTypeForClass(obj.getClass());
 		return type;

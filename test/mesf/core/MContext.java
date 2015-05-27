@@ -1,5 +1,6 @@
 package mesf.core;
 
+import mesf.ObjManagerTests.Scooter;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
 
@@ -51,6 +52,13 @@ public class MContext
 
 	public ReadModelLoader getVloader() {
 		return vloader;
+	}
+	
+	public BaseObject loadObject(Class clazz, long objectId) throws Exception 
+	{
+		String type = this.getRegistry().findTypeForClass(clazz);
+		BaseObject obj = this.getHydrater().loadObject(type, objectId, this.getOloader());
+		return obj;
 	}
 	
 }
