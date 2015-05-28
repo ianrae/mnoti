@@ -31,7 +31,7 @@ import mesf.readmodel.ReadModelRepository;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TopLevelTests extends BaseTest 
+public class TopLevelTests extends BaseMesfTest 
 {
 	public static class MyReadModel extends ReadModel
 	{

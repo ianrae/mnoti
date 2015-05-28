@@ -12,7 +12,7 @@ import mesf.core.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ObjTableTests extends BaseTest 
+public class ObjTableTests extends BaseMesfTest 
 {
 
 	@Test

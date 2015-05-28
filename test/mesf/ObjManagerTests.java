@@ -8,7 +8,7 @@ import mesf.core.ObjectMgr;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ObjManagerTests extends BaseTest 
+public class ObjManagerTests extends BaseMesfTest 
 {
 	public static class Scooter extends BaseObject
 	{

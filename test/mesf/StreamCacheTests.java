@@ -13,7 +13,7 @@ import mesf.core.StreamCache;
 import org.junit.Before;
 import org.junit.Test;
 
-public class StreamCacheTests extends BaseTest
+public class StreamCacheTests extends BaseMesfTest
 {
 	@Test
 	public void test() 

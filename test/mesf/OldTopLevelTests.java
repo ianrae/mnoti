@@ -27,7 +27,7 @@ import mesf.core.StreamCache;
 import org.junit.Before;
 import org.junit.Test;
 
-public class OldTopLevelTests extends BaseTest 
+public class OldTopLevelTests extends BaseMesfTest 
 {
 	public static abstract class TopLevel
 	{

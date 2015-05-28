@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-public class JacksonTests extends BaseTest 
+public class JacksonTests extends BaseMesfTest 
 {
 	@JsonFilter("myFilter")
 	public static class Taxi

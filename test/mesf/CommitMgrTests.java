@@ -32,7 +32,7 @@ import mesf.readmodel.ReadModelRepository;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CommitMgrTests extends BaseTest 
+public class CommitMgrTests extends BaseMesfTest 
 {
 	public static class CountObserver implements ICommitObserver
 	{

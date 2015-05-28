@@ -17,7 +17,7 @@ import mesf.core.StreamCache;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CommitCacheTests extends BaseTest 
+public class CommitCacheTests extends BaseMesfTest 
 {
 	@Test
 	public void test() throws Exception

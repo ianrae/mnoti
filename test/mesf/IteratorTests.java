@@ -14,7 +14,7 @@ import mesf.core.SegmentedCache;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IteratorTests extends BaseTest
+public class IteratorTests extends BaseMesfTest
 {
 	public static class MyIter implements Iterable<String>{
 	    public String[] a=null; //make this final if you can

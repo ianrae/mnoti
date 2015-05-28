@@ -35,7 +35,7 @@ import org.junit.Test;
  * snapshots
  */
 
-public class UserTests extends BaseTest 
+public class UserTests extends BaseMesfTest 
 {
 	public static class User extends BaseObject
 	{

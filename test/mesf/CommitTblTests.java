@@ -12,7 +12,7 @@ import mesf.core.MockCommitDAO;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CommitTblTests extends BaseTest 
+public class CommitTblTests extends BaseMesfTest 
 {
 	@Test
 	public void test() throws Exception
