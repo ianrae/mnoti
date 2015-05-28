@@ -10,8 +10,8 @@ import mesf.UserTests.User;
 import mesf.core.BaseObject;
 import mesf.core.MContext;
 import mesf.core.Projector;
-import mesf.core.Stream;
 import mesf.persistence.Commit;
+import mesf.persistence.Stream;
 
 public class AllIdsRM<T> extends ReadModel
 {

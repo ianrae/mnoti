@@ -18,7 +18,7 @@ import mesf.core.MContext;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.Permanent;
-import mesf.core.Stream;
+import mesf.persistence.Stream;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;

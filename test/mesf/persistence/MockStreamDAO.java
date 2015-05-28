@@ -3,8 +3,6 @@ package mesf.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import mesf.core.Stream;
-
 import org.mef.framework.entitydb.EntityDB;
 import org.mef.framework.fluent.QStep;
 import org.mef.framework.fluent.Query1;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
+import mesf.persistence.Stream;
 
 
 public class ObjectLoader

@@ -6,6 +6,7 @@ import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
+import mesf.persistence.Stream;
 
 //will create one of these per web request, but all will share underlying thread-safe commit cache
 public class CommitMgr

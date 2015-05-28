@@ -2,8 +2,8 @@ package mesf.readmodel;
 
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
-import mesf.core.Stream;
 import mesf.persistence.Commit;
+import mesf.persistence.Stream;
 
 public abstract class ReadModel implements ICommitObserver, IReadModel
 {

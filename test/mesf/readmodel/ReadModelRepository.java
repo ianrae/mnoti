@@ -5,9 +5,9 @@ import java.util.List;
 
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
-import mesf.core.Stream;
 import mesf.core.StreamCache;
 import mesf.persistence.Commit;
+import mesf.persistence.Stream;
 
 public class ReadModelRepository implements ICommitObserver, IReadModel
 {

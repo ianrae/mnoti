@@ -1,4 +1,5 @@
-package mesf.core;
+package mesf.persistence;
+
 
 public class Stream 
 {

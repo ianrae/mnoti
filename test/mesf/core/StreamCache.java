@@ -4,6 +4,7 @@ import java.util.List;
 
 import mesf.log.Logger;
 import mesf.persistence.IStreamDAO;
+import mesf.persistence.Stream;
 
 //thread-safe long running cache of commit DTOs
 public class StreamCache

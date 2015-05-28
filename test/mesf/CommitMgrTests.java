@@ -18,7 +18,7 @@ import mesf.core.MContext;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectRepository;
-import mesf.core.Stream;
+import mesf.persistence.Stream;
 import mesf.core.ObjectLoader;
 import mesf.core.StreamCache;
 import mesf.persistence.Commit;

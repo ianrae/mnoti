@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mesf.persistence.Commit;
+import mesf.persistence.Stream;
 import mesf.readmodel.IReadModel;
 
 public class Projector

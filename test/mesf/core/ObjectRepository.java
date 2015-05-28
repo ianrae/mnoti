@@ -7,6 +7,7 @@ import java.util.Map;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.IStreamDAO;
+import mesf.persistence.Stream;
 
 import org.mef.framework.sfx.SfxTrail;
 
