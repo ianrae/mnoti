@@ -3,6 +3,7 @@ package mesf.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import mesf.persistence.Commit;
 import mesf.readmodel.IReadModel;
 
 public class Projector

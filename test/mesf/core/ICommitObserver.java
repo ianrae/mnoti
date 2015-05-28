@@ -1,5 +1,7 @@
 package mesf.core;
 
+import mesf.persistence.Commit;
+
 
 public interface ICommitObserver
 {

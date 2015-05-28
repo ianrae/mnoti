@@ -1,7 +1,9 @@
-package mesf.core;
+package mesf.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import mesf.core.Stream;
 
 import org.mef.framework.entitydb.EntityDB;
 import org.mef.framework.fluent.QStep;
@@ -9,27 +11,27 @@ import org.mef.framework.fluent.Query1;
 import org.mef.framework.fluent.QueryContext;
 import org.mef.framework.sfx.SfxContext;
 
-public class MockCommitDAO implements ICommitDAO
+public class MockStreamDAO implements IStreamDAO
 	{
-		protected List<Commit> _L = new ArrayList<Commit>();
-		protected EntityDB<Commit> _entityDB = new EntityDB<Commit>();
-		public QueryContext<Commit> queryctx; 
+		protected List<Stream> _L = new ArrayList<Stream>();
+		protected EntityDB<Stream> _entityDB = new EntityDB<Stream>();
+		public QueryContext<Stream> queryctx; 
 
 		@Override
 		public void init(SfxContext ctx)
 		{
-			this.queryctx = new QueryContext<Commit>(ctx, Commit.class);
+			this.queryctx = new QueryContext<Stream>(ctx, Stream.class);
 
 //			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
-//			EntityDBQueryProcessor<ObjectCommit> proc = new EntityDBQueryProcessor<ObjectCommit>(ctx, _L);
-//			registry.registerDao(ObjectCommit.class, proc);
+//			EntityDBQueryProcessor<ObjectStream> proc = new EntityDBQueryProcessor<ObjectStream>(ctx, _L);
+//			registry.registerDao(ObjectStream.class, proc);
 		}
 
 		@Override
-		public Query1<Commit> query() 
+		public Query1<Stream> query() 
 		{
 			queryctx.queryL = new ArrayList<QStep>();
-			return new Query1<Commit>(queryctx);
+			return new Query1<Stream>(queryctx);
 		}
 
 
@@ -40,19 +42,19 @@ public class MockCommitDAO implements ICommitDAO
 		}
 
 		@Override
-		public Commit findById(long id) 
+		public Stream findById(long id) 
 		{
-			Commit entity = this.findActualById(id);
+			Stream entity = this.findActualById(id);
 			if (entity != null)
 			{
-				return entity; //!!new ObjectCommit(entity); //return copy
+				return entity; //!!new ObjectStream(entity); //return copy
 			}
 			return null; //not found
 		}
 
-		protected Commit findActualById(long id) 
+		protected Stream findActualById(long id) 
 		{
-			for(Commit entity : _L)
+			for(Stream entity : _L)
 			{
 				if (entity.getId() == id)
 				{
@@ -63,7 +65,7 @@ public class MockCommitDAO implements ICommitDAO
 		}
 
 		@Override
-		public List<Commit> all() 
+		public List<Stream> all() 
 		{
 			return _L; //ret copy??!!
 		}
@@ -71,7 +73,7 @@ public class MockCommitDAO implements ICommitDAO
 		@Override
 		public void delete(long id) 
 		{
-			Commit entity = this.findActualById(id);
+			Stream entity = this.findActualById(id);
 			if (entity != null)
 			{
 				_L.remove(entity);
@@ -79,7 +81,7 @@ public class MockCommitDAO implements ICommitDAO
 		}
 
 		@Override
-		public void save(Commit entity) 
+		public void save(Stream entity) 
 		{
 			if (entity.getId() == null)
 			{
@@ -107,7 +109,7 @@ public class MockCommitDAO implements ICommitDAO
 		private Long nextAvailIdNumber() 
 		{
 			long used = 0;
-			for(Commit entity : _L)
+			for(Stream entity : _L)
 			{
 				if (entity.getId() > used)
 				{
@@ -118,30 +120,18 @@ public class MockCommitDAO implements ICommitDAO
 		}
 
 		@Override
-		public void update(Commit entity) 
+		public void update(Stream entity) 
 		{
 			this.delete(entity.getId());
 			this.save(entity);
 		}
-
+		
 		@Override
-		public Long findMaxId() 
+		public List<Stream> loadRange(long startId, long n) 
 		{
-			List<Commit> L = all();
-			if (L.size() == 0)
-			{
-				return 0L;
-			}
-			Commit commit = L.get(L.size() - 1);
-			return commit.getId();
-		}
-
-		@Override
-		public List<Commit> loadRange(long startId, long n) 
-		{
-			List<Commit> resultL = new ArrayList<>();
+			List<Stream> resultL = new ArrayList<>();
 			
-			for(Commit entity : _L)
+			for(Stream entity : _L)
 			{
 				if (entity.getId() >= startId)
 				{
@@ -149,24 +139,6 @@ public class MockCommitDAO implements ICommitDAO
 					if (resultL.size() >= n)
 					{
 						return resultL;
-					}
-				}
-			}
-			return resultL;
-		}
-
-		@Override
-		public List<Commit> loadStream(long startId, long streamId) 
-		{
-			List<Commit> resultL = new ArrayList<>();
-			
-			for(Commit entity : _L)
-			{
-				if (entity.getId() >= startId)
-				{
-					if (entity.getStreamId() == streamId)
-					{
-						resultL.add(entity);
 					}
 				}
 			}

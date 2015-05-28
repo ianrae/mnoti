@@ -3,6 +3,9 @@ package mesf.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import mesf.persistence.Commit;
+import mesf.persistence.ICommitDAO;
+
 
 public class ObjectLoader
 {

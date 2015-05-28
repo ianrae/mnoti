@@ -3,11 +3,11 @@ package mesf.readmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import mesf.core.Commit;
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
+import mesf.persistence.Commit;
 
 public class ReadModelRepository implements ICommitObserver, IReadModel
 {

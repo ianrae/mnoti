@@ -3,6 +3,8 @@ package mesf.core;
 import java.util.List;
 
 import mesf.log.Logger;
+import mesf.persistence.Commit;
+import mesf.persistence.ICommitDAO;
 
 //thread-safe long running cache of commit DTOs
 public class CommitCache

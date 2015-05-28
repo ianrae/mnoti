@@ -5,14 +5,14 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
-import mesf.core.Commit;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
-import mesf.core.ICommitDAO;
-import mesf.core.IStreamDAO;
-import mesf.core.MockCommitDAO;
-import mesf.core.MockStreamDAO;
 import mesf.core.StreamCache;
+import mesf.persistence.Commit;
+import mesf.persistence.ICommitDAO;
+import mesf.persistence.IStreamDAO;
+import mesf.persistence.MockCommitDAO;
+import mesf.persistence.MockStreamDAO;
 
 import org.junit.Before;
 import org.junit.Test;

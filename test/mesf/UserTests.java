@@ -11,14 +11,14 @@ import mesf.cmd.ICommand;
 import mesf.cmd.ObjectCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
-import mesf.core.ICommitDAO;
-import mesf.core.IStreamDAO;
 import mesf.core.MContext;
-import mesf.core.MockCommitDAO;
-import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.Permanent;
+import mesf.persistence.ICommitDAO;
+import mesf.persistence.IStreamDAO;
+import mesf.persistence.MockCommitDAO;
+import mesf.persistence.MockStreamDAO;
 import mesf.readmodel.AllIdsRM;
 
 import org.junit.Before;

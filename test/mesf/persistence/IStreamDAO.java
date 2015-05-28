@@ -1,6 +1,8 @@
-package mesf.core;
+package mesf.persistence;
 
 import java.util.List;
+
+import mesf.core.Stream;
 
 import org.mef.framework.dao.IDAO;
 import org.mef.framework.fluent.Query1;

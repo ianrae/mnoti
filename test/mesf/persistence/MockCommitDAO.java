@@ -1,4 +1,4 @@
-package mesf.core;
+package mesf.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,27 +9,27 @@ import org.mef.framework.fluent.Query1;
 import org.mef.framework.fluent.QueryContext;
 import org.mef.framework.sfx.SfxContext;
 
-public class MockStreamDAO implements IStreamDAO
+public class MockCommitDAO implements ICommitDAO
 	{
-		protected List<Stream> _L = new ArrayList<Stream>();
-		protected EntityDB<Stream> _entityDB = new EntityDB<Stream>();
-		public QueryContext<Stream> queryctx; 
+		protected List<Commit> _L = new ArrayList<Commit>();
+		protected EntityDB<Commit> _entityDB = new EntityDB<Commit>();
+		public QueryContext<Commit> queryctx; 
 
 		@Override
 		public void init(SfxContext ctx)
 		{
-			this.queryctx = new QueryContext<Stream>(ctx, Stream.class);
+			this.queryctx = new QueryContext<Commit>(ctx, Commit.class);
 
 //			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
-//			EntityDBQueryProcessor<ObjectStream> proc = new EntityDBQueryProcessor<ObjectStream>(ctx, _L);
-//			registry.registerDao(ObjectStream.class, proc);
+//			EntityDBQueryProcessor<ObjectCommit> proc = new EntityDBQueryProcessor<ObjectCommit>(ctx, _L);
+//			registry.registerDao(ObjectCommit.class, proc);
 		}
 
 		@Override
-		public Query1<Stream> query() 
+		public Query1<Commit> query() 
 		{
 			queryctx.queryL = new ArrayList<QStep>();
-			return new Query1<Stream>(queryctx);
+			return new Query1<Commit>(queryctx);
 		}
 
 
@@ -40,19 +40,19 @@ public class MockStreamDAO implements IStreamDAO
 		}
 
 		@Override
-		public Stream findById(long id) 
+		public Commit findById(long id) 
 		{
-			Stream entity = this.findActualById(id);
+			Commit entity = this.findActualById(id);
 			if (entity != null)
 			{
-				return entity; //!!new ObjectStream(entity); //return copy
+				return entity; //!!new ObjectCommit(entity); //return copy
 			}
 			return null; //not found
 		}
 
-		protected Stream findActualById(long id) 
+		protected Commit findActualById(long id) 
 		{
-			for(Stream entity : _L)
+			for(Commit entity : _L)
 			{
 				if (entity.getId() == id)
 				{
@@ -63,7 +63,7 @@ public class MockStreamDAO implements IStreamDAO
 		}
 
 		@Override
-		public List<Stream> all() 
+		public List<Commit> all() 
 		{
 			return _L; //ret copy??!!
 		}
@@ -71,7 +71,7 @@ public class MockStreamDAO implements IStreamDAO
 		@Override
 		public void delete(long id) 
 		{
-			Stream entity = this.findActualById(id);
+			Commit entity = this.findActualById(id);
 			if (entity != null)
 			{
 				_L.remove(entity);
@@ -79,7 +79,7 @@ public class MockStreamDAO implements IStreamDAO
 		}
 
 		@Override
-		public void save(Stream entity) 
+		public void save(Commit entity) 
 		{
 			if (entity.getId() == null)
 			{
@@ -107,7 +107,7 @@ public class MockStreamDAO implements IStreamDAO
 		private Long nextAvailIdNumber() 
 		{
 			long used = 0;
-			for(Stream entity : _L)
+			for(Commit entity : _L)
 			{
 				if (entity.getId() > used)
 				{
@@ -118,18 +118,30 @@ public class MockStreamDAO implements IStreamDAO
 		}
 
 		@Override
-		public void update(Stream entity) 
+		public void update(Commit entity) 
 		{
 			this.delete(entity.getId());
 			this.save(entity);
 		}
-		
+
 		@Override
-		public List<Stream> loadRange(long startId, long n) 
+		public Long findMaxId() 
 		{
-			List<Stream> resultL = new ArrayList<>();
+			List<Commit> L = all();
+			if (L.size() == 0)
+			{
+				return 0L;
+			}
+			Commit commit = L.get(L.size() - 1);
+			return commit.getId();
+		}
+
+		@Override
+		public List<Commit> loadRange(long startId, long n) 
+		{
+			List<Commit> resultL = new ArrayList<>();
 			
-			for(Stream entity : _L)
+			for(Commit entity : _L)
 			{
 				if (entity.getId() >= startId)
 				{
@@ -137,6 +149,24 @@ public class MockStreamDAO implements IStreamDAO
 					if (resultL.size() >= n)
 					{
 						return resultL;
+					}
+				}
+			}
+			return resultL;
+		}
+
+		@Override
+		public List<Commit> loadStream(long startId, long streamId) 
+		{
+			List<Commit> resultL = new ArrayList<>();
+			
+			for(Commit entity : _L)
+			{
+				if (entity.getId() >= startId)
+				{
+					if (entity.getStreamId() == streamId)
+					{
+						resultL.add(entity);
 					}
 				}
 			}

@@ -1,4 +1,4 @@
-package mesf.core;
+package mesf.persistence;
 
 import java.util.List;
 

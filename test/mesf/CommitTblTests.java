@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
-import mesf.core.Commit;
-import mesf.core.ICommitDAO;
-import mesf.core.MockCommitDAO;
+import mesf.persistence.Commit;
+import mesf.persistence.ICommitDAO;
+import mesf.persistence.MockCommitDAO;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -2,9 +2,9 @@ package mesf.readmodel;
 
 import java.util.List;
 
-import mesf.core.Commit;
-import mesf.core.ICommitDAO;
-import mesf.core.IStreamDAO;
+import mesf.persistence.Commit;
+import mesf.persistence.ICommitDAO;
+import mesf.persistence.IStreamDAO;
 
 
 public class ReadModelLoader

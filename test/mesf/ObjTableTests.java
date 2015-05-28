@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
-import mesf.core.IStreamDAO;
-import mesf.core.MockStreamDAO;
 import mesf.core.Stream;
+import mesf.persistence.IStreamDAO;
+import mesf.persistence.MockStreamDAO;
 
 import org.junit.Before;
 import org.junit.Test;

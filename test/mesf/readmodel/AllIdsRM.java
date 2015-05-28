@@ -8,10 +8,10 @@ import java.util.TreeMap;
 import mesf.UserTests;
 import mesf.UserTests.User;
 import mesf.core.BaseObject;
-import mesf.core.Commit;
 import mesf.core.MContext;
 import mesf.core.Projector;
 import mesf.core.Stream;
+import mesf.persistence.Commit;
 
 public class AllIdsRM<T> extends ReadModel
 {
