@@ -139,8 +139,8 @@ public class TopLevelTests extends BaseTest
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(3, dao.size());
 		ReadModelRepository readmodelMgr = perm.getreadmodelMgr();
-		Object obj = readmodelMgr.loadReadModel(perm.readModel1, mtx.getVloader());
-		assertEquals(1, perm.readModel1.size()); 
+//		Object obj = readmodelMgr.loadReadModel(perm.readModel1, mtx.getVloader());
+//		assertEquals(1, perm.readModel1.size()); 
 	}
 
 	

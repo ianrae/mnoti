@@ -8,7 +8,7 @@ import mesf.core.ICommitObserver;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
 
-public class ReadModelRepository implements ICommitObserver
+public class ReadModelRepository implements ICommitObserver, IReadModel
 {
 	protected List<ReadModel> readModelL = new ArrayList<>();
 	private StreamCache strcache;
@@ -40,28 +40,37 @@ public class ReadModelRepository implements ICommitObserver
 			}
 		}
 	}
-	
-	public synchronized Object loadReadModel(ReadModel readModel, ReadModelLoader vloader) throws Exception
+
+	@Override
+	public void setLastCommitId(long id) 
 	{
-		List<Commit> L = vloader.loadCommits(readModel.lastCommitId + 1);
-		
-		for(Commit commit : L)
+		for(ReadModel readModel : this.readModelL)
 		{
-			Long streamId = commit.getStreamId();
-			Stream stream = null;
-			if (streamId != null)
-			{
-				stream = strcache.findStream(streamId);
-			}
-			
-			observe(stream, commit);
+			readModel.setLastCommitId(id);
 		}
-		
-		if (L.size() > 0)
-		{
-			Commit last = L.get(L.size() - 1);
-			readModel.lastCommitId = last.getId();
-		}
-		return readModel.obj;
 	}
+	
+//	public synchronized Object loadReadModel(ReadModel readModel, ReadModelLoader vloader) throws Exception
+//	{
+//		List<Commit> L = vloader.loadCommits(readModel.lastCommitId + 1);
+//		
+//		for(Commit commit : L)
+//		{
+//			Long streamId = commit.getStreamId();
+//			Stream stream = null;
+//			if (streamId != null)
+//			{
+//				stream = strcache.findStream(streamId);
+//			}
+//			
+//			observe(stream, commit);
+//		}
+//		
+//		if (L.size() > 0)
+//		{
+//			Commit last = L.get(L.size() - 1);
+//			readModel.lastCommitId = last.getId();
+//		}
+//		return readModel.obj;
+//	}
 }
