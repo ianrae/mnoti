@@ -195,7 +195,7 @@ public class UserTests extends BaseMesfTest
 			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
 			cmd.a = 101+i;
 			cmd.s = String.format("bob%d", i+1);
-			CommandProcessor proc = mtx.findProd(User.class);
+			CommandProcessor proc = mtx.findProc(User.class);
 			proc.process(cmd);
 			assertEquals(i+1, cmd.objectId); //!! we set this in proc (only on insert)
 		}
@@ -219,7 +219,7 @@ public class UserTests extends BaseMesfTest
 			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
 			cmd.a = 101+i;
 			cmd.s = String.format("bob%d", i+1);
-			CommandProcessor proc = mtx.findProd(User.class);
+			CommandProcessor proc = mtx.findProc(User.class);
 			proc.process(cmd);
 		}
 		
@@ -242,7 +242,7 @@ public class UserTests extends BaseMesfTest
 			mtx = perm.createMContext();
 			MyUserProc.DeleteCmd cmd = new MyUserProc.DeleteCmd();
 			cmd.objectId = 4;
-			CommandProcessor proc = mtx.findProd(User.class);
+			CommandProcessor proc = mtx.findProc(User.class);
 			proc.process(cmd);
 		}
 		

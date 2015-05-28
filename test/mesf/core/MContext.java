@@ -80,7 +80,7 @@ public class MContext
 		return obj;
 	}
 	
-	public CommandProcessor findProd(Class clazz)
+	public CommandProcessor findProc(Class clazz)
 	{
 		return getProcRegistry().find(clazz, this);
 	}

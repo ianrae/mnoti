@@ -116,14 +116,14 @@ public class TopLevelTests extends BaseMesfTest
 		InsertScooterCmd cmd = new InsertScooterCmd();
 		cmd.a = 15;
 		cmd.s = "bob";
-		CommandProcessor proc = mtx.findProd(Scooter.class);
+		CommandProcessor proc = mtx.findProc(Scooter.class);
 		proc.process(cmd);
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(1L, cmd.objectId); //!! we set this in proc (only on insert)
 		
 		log(String.format("2nd"));
 		mtx = perm.createMContext();
-		proc = mtx.findProd(Scooter.class);
+		proc = mtx.findProc(Scooter.class);
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
 		ucmd.objectId = 1L;
@@ -137,7 +137,7 @@ public class TopLevelTests extends BaseMesfTest
 		
 		log(String.format("2nd"));
 		mtx = perm.createMContext();
-		proc = mtx.findProd(Scooter.class);
+		proc = mtx.findProc(Scooter.class);
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "more2";
 		ucmd.objectId = 1L;
