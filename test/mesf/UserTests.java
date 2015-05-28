@@ -24,6 +24,17 @@ import mesf.readmodel.AllIdsRM;
 import org.junit.Before;
 import org.junit.Test;
 
+/*
+ * TaskTests and add a UserTaskRM, cascading delete
+ * presenter, QryCmd
+ * guava cache in scache,objcache,commitcache
+ * metrics
+ * logger and error tracker singletons
+ * play 2.4
+ * computerDatabase sample
+ * snapshots
+ */
+
 public class UserTests extends BaseTest 
 {
 	public static class User extends BaseObject
