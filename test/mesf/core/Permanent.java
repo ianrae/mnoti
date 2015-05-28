@@ -60,7 +60,7 @@ public class Permanent
 		mgr.getMaxId(); //query db
 		ReadModelLoader vloader = new ReadModelLoader(dao, streamDAO, mgr.getMaxId());
 		
-		MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader);
+		MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader, this.commitCache, this.strcache);
 		mtx.setProcRegistry(procRegistry);
 		return mtx;
 	}

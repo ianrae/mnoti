@@ -49,4 +49,9 @@ public class StreamCache
 		return L.get(0);
 	}
 	
+	public synchronized void clearLastSegment(long maxId)
+	{
+		segcache.clearLastSegment(maxId);
+	}
+	
 }

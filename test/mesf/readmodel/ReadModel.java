@@ -4,9 +4,9 @@ import mesf.core.Commit;
 import mesf.core.ICommitObserver;
 import mesf.core.Stream;
 
-public class ReadModel implements ICommitObserver
+public class ReadModel implements ICommitObserver, IReadModel
 {
-	long lastCommitId;
+	public long lastCommitId;
 	public Object obj;
 	
 	public ReadModel()
@@ -22,5 +22,11 @@ public class ReadModel implements ICommitObserver
 	@Override
 	public void observe(Stream stream, Commit commit) 
 	{
+	}
+
+	@Override
+	public void setLastCommitId(long id) 
+	{
+		this.lastCommitId = id;
 	}
 }

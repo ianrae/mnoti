@@ -1,6 +1,6 @@
 package mesf;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -201,8 +201,7 @@ public class UserTests extends BaseTest
 		{
 			Projector projector = mtx.createProjector();
 					
-			Long maxId = mtx.getMaxId();
-			projector.run(mtx, this, maxId);
+			projector.run(mtx, this, this.lastCommitId);
 		}
 		public List<User> queryAll(MContext mtx) throws Exception
 		{
@@ -210,7 +209,7 @@ public class UserTests extends BaseTest
 			for(Long id : map.keySet())
 			{
 				BaseObject obj = mtx.loadObject(User.class, id);
-				L.add((User) L);
+				L.add((User) obj);
 			}
 			return L;
 		}
@@ -251,8 +250,38 @@ public class UserTests extends BaseTest
 		}
 		
 		MContext mtx = perm.createMContext();
+		perm.readModel1.freshen(mtx);
 		List<User> L = perm.readModel1.queryAll(mtx);
-		assertEquals(22, L.size());
+		assertEquals(5, L.size());
+		for(User u : L)
+		{
+			assertNotNull(u);
+			log(u.getId().toString());
+		}
+		
+		log("again..");
+		n = 1; 
+		for(int i = 0; i < n; i++)
+		{
+			log(String.format("%d..	", i));
+			mtx = perm.createMContext();
+			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
+			cmd.a = 101+i;
+			cmd.s = String.format("bob%d", i+1);
+			CommandProcessor proc = mtx.findProd(User.class);
+			proc.process(cmd);
+		}
+		
+		mtx = perm.createMContext();
+		perm.readModel1.freshen(mtx);;
+		L = perm.readModel1.queryAll(mtx);
+		assertEquals(6, L.size());
+		for(User u : L)
+		{
+			assertNotNull(u);
+			log(u.getId().toString());
+		}
+		
 	}
 
 	

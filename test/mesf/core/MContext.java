@@ -17,8 +17,11 @@ public class MContext
 	private ReadModelRepository readmodelMgr;
 	private ReadModelLoader vloader;
 	private ProcRegistry procRegistry;
+	private CommitCache commitCache;
+	private StreamCache strcache;
 
-	public MContext(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectRepository objcache, ReadModelRepository readmodelMgr, ReadModelLoader vloader)
+	public MContext(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectRepository objcache, 
+			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;
@@ -27,6 +30,8 @@ public class MContext
 		this.oloader = commitMgr.createObjectLoader();
 		this.readmodelMgr = readmodelMgr;
 		this.vloader = vloader;
+		this.commitCache = commitCache;
+		this.strcache = strcache;
 	}
 	
 	//is optional
@@ -84,9 +89,9 @@ public class MContext
 		return commitMgr.getMaxId();
 	}
 
-	public Projector createProjector() {
-		// TODO Auto-generated method stub
-		return null;
+	public Projector createProjector() 
+	{
+		return new Projector(commitCache, strcache);
 	}
 	
 }

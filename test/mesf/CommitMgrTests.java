@@ -313,7 +313,7 @@ public class CommitMgrTests extends BaseTest
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
 		ObjectRepository objcache = new ObjectRepository(streamDAO, registry);
 		
-		MContext mtx = new MContext(commitMgr, registry, objcache, null, null);
+		MContext mtx = new MContext(commitMgr, registry, objcache, null, null, null, null);
 		MyCmdProc proc = new MyCmdProc();
 		proc.setMContext(mtx);
 		InsertScooterCmd cmd = new InsertScooterCmd();

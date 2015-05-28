@@ -3,6 +3,8 @@ package mesf.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import mesf.readmodel.IReadModel;
+
 public class Projector
 {
 	private CommitCache cache;
@@ -16,21 +18,31 @@ public class Projector
 	
 	public void run(MContext mtx, ICommitObserver observer, long startId)
 	{
+		cache.clearLastSegment(mtx.getMaxId());
+		scache.clearLastSegment(mtx.getMaxId());
 		List<ICommitObserver> obsL = new ArrayList<>();
 		obsL.add(observer);
-		
-		List<Commit> L = cache.loadRange(startId - 1, mtx.getMaxId());
-		for(Commit commit : L)	
-		{
-			doObserve(commit, obsL);
-		}
+		run(mtx, obsL, startId);
 	}
 	public void run(MContext mtx, List<ICommitObserver> observerL, long startId)
 	{
-		List<Commit> L = cache.loadRange(startId - 1, mtx.getMaxId());
+		if (startId > 0)
+		{
+			startId--; //yuck!!
+		}
+		List<Commit> L = cache.loadRange(startId, mtx.getMaxId() - startId);
 		for(Commit commit : L)	
 		{
 			doObserve(commit, observerL);
+		}
+		
+		for(ICommitObserver observer : observerL)
+		{
+			if (observer instanceof IReadModel)
+			{
+				IReadModel rm = (IReadModel) observer;
+				rm.setLastCommitId(mtx.getMaxId());
+			}
 		}
 	}
 	
