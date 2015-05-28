@@ -189,7 +189,7 @@ public class UserTests extends BaseTest
 		}
 		
 		MContext mtx = perm.createMContext();
-		perm.readModel1.freshen(mtx);
+		mtx.acquire(perm.readModel1.getClass());
 		List<User> L = perm.readModel1.queryAll(mtx);
 		assertEquals(5, L.size());
 		for(User u : L)
@@ -212,7 +212,7 @@ public class UserTests extends BaseTest
 		}
 		
 		mtx = perm.createMContext();
-		perm.readModel1.freshen(mtx);;
+		mtx.acquire(perm.readModel1.getClass());
 		L = perm.readModel1.queryAll(mtx);
 		assertEquals(6, L.size());
 		for(User u : L)
@@ -235,7 +235,7 @@ public class UserTests extends BaseTest
 		}
 		
 		mtx = perm.createMContext();
-		perm.readModel1.freshen(mtx);
+		mtx.acquire(perm.readModel1.getClass());
 		L = perm.readModel1.queryAll(mtx);
 		assertEquals(5, L.size());
 		for(User u : L)

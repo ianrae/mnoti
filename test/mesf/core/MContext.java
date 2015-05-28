@@ -3,6 +3,7 @@ package mesf.core;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ProcRegistry;
+import mesf.readmodel.IReadModel;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
 
@@ -92,6 +93,11 @@ public class MContext
 	public Projector createProjector() 
 	{
 		return new Projector(commitCache, strcache);
+	}
+	
+	public IReadModel acquire(Class clazz)
+	{
+		return readmodelMgr.acquire(this, clazz);
 	}
 	
 }
