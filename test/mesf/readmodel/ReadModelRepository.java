@@ -5,6 +5,7 @@ import java.util.List;
 
 import mesf.core.Commit;
 import mesf.core.ICommitObserver;
+import mesf.core.MContext;
 import mesf.core.Stream;
 import mesf.core.StreamCache;
 
@@ -50,6 +51,18 @@ public class ReadModelRepository implements ICommitObserver, IReadModel
 		}
 	}
 	
+	public IReadModel acquire(MContext mtx, Class clazz) 
+	{
+		for(IReadModel readModel : this.readModelL)
+		{
+			if (readModel.getClass() == clazz)
+			{
+				readModel.freshen(mtx);
+				return readModel;
+			}
+		}
+		return null;
+	}
 //	public synchronized Object loadReadModel(ReadModel readModel, ReadModelLoader vloader) throws Exception
 //	{
 //		List<Commit> L = vloader.loadCommits(readModel.lastCommitId + 1);
@@ -73,4 +86,17 @@ public class ReadModelRepository implements ICommitObserver, IReadModel
 //		}
 //		return readModel.obj;
 //	}
+
+	@Override
+	public void freshen(MContext mtx) 
+	{
+		for(ReadModel readModel : this.readModelL)
+		{
+			if (readModel instanceof IReadModel)
+			{
+				IReadModel rm = readModel;
+				rm.freshen(mtx);
+			}
+		}
+	}
 }

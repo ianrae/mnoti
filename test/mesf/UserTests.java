@@ -1,20 +1,17 @@
 package mesf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
-import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.ObjectCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
-import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
-import mesf.core.ICommitObserver;
 import mesf.core.IStreamDAO;
 import mesf.core.MContext;
 import mesf.core.MockCommitDAO;
@@ -23,7 +20,6 @@ import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.Permanent;
 import mesf.readmodel.AllIdsRM;
-import mesf.readmodel.ReadModelLoader;
 
 import org.junit.Before;
 import org.junit.Test;
