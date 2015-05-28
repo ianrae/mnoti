@@ -51,7 +51,7 @@ public class ReadModelRepository implements ICommitObserver, IReadModel
 		}
 	}
 	
-	public IReadModel acquire(MContext mtx, Class clazz) 
+	public synchronized IReadModel acquire(MContext mtx, Class clazz) 
 	{
 		for(IReadModel readModel : this.readModelL)
 		{

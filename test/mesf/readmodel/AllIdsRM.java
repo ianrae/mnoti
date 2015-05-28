@@ -17,10 +17,12 @@ public class AllIdsRM<T> extends ReadModel
 {
 	public Map<Long,T> map = new TreeMap<>(); //sorted
 	private String type;
+	private Class clazz;
 	
-	public AllIdsRM(String type)
+	public AllIdsRM(String type, Class clazz)
 	{
 		this.type = type;
+		this.clazz = clazz;
 	}
 	public int size()
 	{
@@ -67,7 +69,7 @@ public class AllIdsRM<T> extends ReadModel
 		List<T> L = new ArrayList<>();
 		for(Long id : map.keySet())
 		{
-			BaseObject obj = mtx.loadObject(User.class, id);
+			BaseObject obj = mtx.loadObject(clazz, id);
 			L.add((T) obj);
 		}
 		return L;

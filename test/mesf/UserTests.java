@@ -153,7 +153,7 @@ public class UserTests extends BaseTest
 	{
 		public UsersRM()
 		{
-			super("user");
+			super("user", User.class);
 		}
 	}
 	
