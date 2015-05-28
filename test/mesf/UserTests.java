@@ -19,6 +19,7 @@ import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
 import mesf.persistence.MockStreamDAO;
+import mesf.persistence.PersistenceContext;
 import mesf.readmodel.AllIdsRM;
 
 import org.junit.Before;
@@ -172,9 +173,9 @@ public class UserTests extends BaseMesfTest
 	{
 		public UsersRM readModel1;
 		
-		public MyUserPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry, ProcRegistry procRegistry) 
+		public MyUserPerm(PersistenceContext persistenceCtx, ObjectManagerRegistry registry, ProcRegistry procRegistry) 
 		{
-			super(dao, streamDAO, registry, procRegistry);
+			super(persistenceCtx, registry, procRegistry);
 			
 			readModel1 = new UsersRM();
 			registerReadModel(readModel1);
@@ -279,7 +280,8 @@ public class UserTests extends BaseMesfTest
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(User.class, MyUserProc.class);
 		
-		MyUserPerm perm = new MyUserPerm(dao, streamDAO, registry, procRegistry);
+		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
+		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry);
 		perm.start();
 		return perm;
 	}		

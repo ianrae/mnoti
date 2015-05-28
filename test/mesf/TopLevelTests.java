@@ -18,6 +18,7 @@ import mesf.core.MContext;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.Permanent;
+import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
@@ -83,9 +84,9 @@ public class TopLevelTests extends BaseMesfTest
 	{
 		public MyReadModel readModel1;
 		
-		public MyPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry, ProcRegistry procRegistry) 
+		public MyPerm(PersistenceContext persistenceCtx, ObjectManagerRegistry registry, ProcRegistry procRegistry) 
 		{
-			super(dao, streamDAO, registry, procRegistry);
+			super(persistenceCtx, registry, procRegistry);
 			
 			readModel1 = new MyReadModel();
 			registerReadModel(readModel1);
@@ -105,7 +106,8 @@ public class TopLevelTests extends BaseMesfTest
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(Scooter.class, MyCmdProc.class);
 		
-		MyPerm perm = new MyPerm(dao, streamDAO, registry, procRegistry);
+		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
+		MyPerm perm = new MyPerm(persistenceCtx, registry, procRegistry);
 		perm.start();
 		assertEquals(0, perm.readModel1.size());
 		
