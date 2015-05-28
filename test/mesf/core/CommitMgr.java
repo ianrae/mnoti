@@ -2,6 +2,8 @@ package mesf.core;
 
 import java.util.List;
 
+import mesf.log.Logger;
+
 //will create one of these per web request, but all will share underlying thread-safe commit cache
 public class CommitMgr
 {
@@ -93,7 +95,7 @@ public class CommitMgr
 		for(Commit commit : loadAll())
 		{
 			String s = String.format("[%d] %c %d json:%s", commit.getId(), commit.getAction(), commit.getStreamId(), commit.getJson());
-			System.out.println(s);
+			Logger.log(s);
 		}
 	}
 	
@@ -121,7 +123,7 @@ public class CommitMgr
 		Long snapshotId = commit.getId();
 		stream.setSnapshotId(snapshotId);
 		this.streamDAO.update(stream);
-		System.out.println(String.format("INS [%d] %d %s", snapshotId, objectId, mgr.getTypeName()));
+		Logger.logDebug("INS [%d] %d %s", snapshotId, objectId, mgr.getTypeName());
 		return objectId;
 	}
 	
@@ -146,7 +148,7 @@ public class CommitMgr
 		}
 		commit.setJson(json);
 		this.dao.save(commit);
-		System.out.println(String.format("UPD [%d] %d %s", commit.getId(), objectId, mgr.getTypeName()));
+		Logger.logDebug("UPD [%d] %d %s", commit.getId(), objectId, mgr.getTypeName());
 	}
 	public void deleteObject(IObjectMgr mgr, BaseObject obj)
 	{
@@ -163,7 +165,7 @@ public class CommitMgr
 		String json = "";
 		commit.setJson(json);
 		this.dao.save(commit);
-		System.out.println(String.format("DEL [%d] %d %s", commit.getId(), objectId, mgr.getTypeName()));
+		Logger.logDebug("DEL [%d] %d %s", commit.getId(), objectId, mgr.getTypeName());
 	}
 	
 	public void observeList(List<Commit> L, ICommitObserver observer)

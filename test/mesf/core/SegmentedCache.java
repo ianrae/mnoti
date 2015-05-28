@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mesf.log.Logger;
+
 public class SegmentedCache<T>
 {
 	private Map<Long, List<T>> map = new HashMap<>();
@@ -43,7 +45,7 @@ public class SegmentedCache<T>
 			
 			if (startIndex + n < maxId)
 			{
-				System.out.println(String.format("LAST %d.%d", startIndex, n));
+				Logger.logDebug("LAST %d.%d", startIndex, n);
 //				map.remove(max);
 				
 				//calculate # new commits we haven't yet loaded and load them

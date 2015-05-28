@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mesf.log.Logger;
+
 import org.mef.framework.sfx.SfxTrail;
 
 public class ObjectRepository implements ICommitObserver
@@ -24,8 +26,8 @@ public class ObjectRepository implements ICommitObserver
 
 	public synchronized void dumpStats()
 	{
-		System.out.println(String.format("OVC: hits:%d, misses:%d", numHits, numMisses));
-		System.out.println(trail.getTrail());
+		Logger.log("OVC: hits:%d, misses:%d", numHits, numMisses);
+		Logger.log(trail.getTrail());
 	}
 
 	public synchronized BaseObject loadObject(String type, Long objectId, ObjectLoader oloader) throws Exception

@@ -2,6 +2,8 @@ package mesf.core;
 
 import java.util.List;
 
+import mesf.log.Logger;
+
 //thread-safe long running cache of commit DTOs
 public class StreamCache
 {
@@ -15,7 +17,7 @@ public class StreamCache
 		public List<Stream> loadRange(long startIndex, long n) 
 		{
 			List<Stream> L = dao.loadRange(startIndex + 1, n);
-			System.out.println(String.format("SLD %d.%d (got %d)", startIndex,n, L.size()));
+			Logger.logDebug("SLD %d.%d (got %d)", startIndex,n, L.size());
 			return L;
 		}
 		

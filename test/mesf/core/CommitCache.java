@@ -19,7 +19,6 @@ public class CommitCache
 			//there is no el[0] so shift down
 			//0,4 means load records 1..4
 			List<Commit> L = dao.loadRange(startIndex + 1, n);
-//			System.out.println(String.format("LD %d.%d (got %d)", startIndex,n, L.size()));
 			Logger.logDebug("LD %d.%d (got %d)", startIndex,n, L.size());
 			return L;
 		}
