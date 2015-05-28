@@ -59,7 +59,7 @@ public class Permanent
 	{
 		CommitMgr mgr = new CommitMgr(persistenceCtx, commitCache, this.strcache);
 		mgr.getMaxId(); //query db
-		ReadModelLoader vloader = new ReadModelLoader(persistenceCtx.getDao(), persistenceCtx.getStreamDAO(), mgr.getMaxId());
+		ReadModelLoader vloader = new ReadModelLoader(persistenceCtx, mgr.getMaxId());
 		
 		MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader, this.commitCache, this.strcache);
 		mtx.setProcRegistry(procRegistry);

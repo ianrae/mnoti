@@ -5,6 +5,7 @@ import java.util.List;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
+import mesf.persistence.PersistenceContext;
 
 
 public class ReadModelLoader
@@ -13,10 +14,10 @@ public class ReadModelLoader
 	private IStreamDAO streamDAO;
 	private long maxId; //per current epoch
 
-	public ReadModelLoader(ICommitDAO dao, IStreamDAO streamDAO, long maxId)
+	public ReadModelLoader(PersistenceContext persistenceCtx, long maxId)
 	{
-		this.dao = dao;
-		this.streamDAO = streamDAO;
+		this.dao = persistenceCtx.getDao();
+		this.streamDAO = persistenceCtx.getStreamDAO();
 		this.maxId = maxId;
 	}
 	
