@@ -1,5 +1,6 @@
 package mesf.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mesf.cmd.CommandProcessor;
@@ -8,7 +9,7 @@ import mesf.readmodel.ReadModel;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
 
-public abstract class Permanent
+public class Permanent
 {
 	protected ICommitDAO dao;
 	protected IStreamDAO streamDAO;
@@ -41,41 +42,29 @@ public abstract class Permanent
 	
 	public void start()
 	{
-		List<Commit> L = dao.all(); //!!use commitcache later
-		for(Commit commit : L)	
-		{
-			doObserve(commit);
-		}
+		Projector projector = new Projector(commitCache, strcache);
+		
+		List<ICommitObserver> obsL = new ArrayList<>();
+		obsL.add(objectRepo);
+		obsL.add(readmodelRepo);
+				
+		Long maxId = dao.findMaxId();
+		MContext mtx = createMContext();
+		projector.run(mtx, obsL, maxId);
 	}
 	
-	private void doObserve(Commit commit)
-	{
-		Long streamId = commit.getStreamId();
-		Stream stream = null;
-		if (streamId != null && streamId != 0L)
-		{
-			stream = strcache.findStream(streamId);
-		}
-
-		objectRepo.observe(stream, commit);
-		readmodelRepo.observe(stream, commit);
-	}
 
 	public MContext createMContext() 
 	{
 		CommitMgr mgr = new CommitMgr(dao, streamDAO, commitCache, this.strcache);
 		mgr.getMaxId(); //query db
 		ReadModelLoader vloader = new ReadModelLoader(dao, streamDAO, mgr.getMaxId());
-		CommandProcessor proc = createProc(mgr, vloader);
 		
 		MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader);
 		mtx.setProcRegistry(procRegistry);
 		return mtx;
 	}
 	
-	abstract protected CommandProcessor createProc(CommitMgr mgr, ReadModelLoader vloader);
-	
-
 	public BaseObject loadObjectFromRepo(long objectId) 
 	{
 		return objectRepo.getIfLoaded(objectId);

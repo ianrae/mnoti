@@ -78,5 +78,15 @@ public class MContext
 	{
 		return getProcRegistry().find(clazz, this);
 	}
+
+	public long getMaxId() 
+	{
+		return commitMgr.getMaxId();
+	}
+
+	public Projector createProjector() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

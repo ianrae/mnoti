@@ -84,16 +84,6 @@ public class TopLevelTests extends BaseTest
 			readModel1 = new MyReadModel();
 			registerReadModel(readModel1);
 		}
-		
-		@Override
-		protected CommandProcessor createProc(CommitMgr commitMgr, ReadModelLoader vloader)
-		{
-			MContext mtx = new MContext(commitMgr, registry, objectRepo, readmodelRepo, vloader);
-			
-			CommandProcessor proc = new MyCmdProc();
-			proc.setMContext(mtx);
-			return proc;
-		}
 	}
 	
 	@Test

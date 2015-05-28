@@ -1,21 +1,34 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import mef.framework.helpers.BaseTest;
-import mesf.CommitMgrTests.MyCmdProc;
+import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.ObjectCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
+import mesf.core.Commit;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitDAO;
+import mesf.core.ICommitObserver;
 import mesf.core.IStreamDAO;
 import mesf.core.MContext;
 import mesf.core.MockCommitDAO;
 import mesf.core.MockStreamDAO;
 import mesf.core.ObjectManagerRegistry;
+import mesf.core.ObjectMgr;
 import mesf.core.Permanent;
+import mesf.core.Projector;
+import mesf.core.Stream;
+import mesf.readmodel.ReadModel;
 import mesf.readmodel.ReadModelLoader;
 
 import org.junit.Before;
@@ -67,16 +80,16 @@ public class UserTests extends BaseTest
 	
 	public static class MyUserProc extends CommandProcessor
 	{
-		public static class InsertUserCmd extends ObjectCommand
+		public static class InsertCmd extends ObjectCommand
 		{
 			public int a;
 			public String s;
 		}
-		public static class UpdateUserCmd extends ObjectCommand
+		public static class UpdateCmd extends ObjectCommand
 		{
 			public String s;
 		}
-		public static class DeleteUserCmd extends ObjectCommand
+		public static class DeleteCmd extends ObjectCommand
 		{
 		}
 		
@@ -89,17 +102,17 @@ public class UserTests extends BaseTest
 		public void process(ICommand cmd) 
 		{
 			try {
-				if (cmd instanceof InsertUserCmd)
+				if (cmd instanceof InsertCmd)
 				{
-					doInsertUserCmd((InsertUserCmd)cmd);
+					doInsertCmd((InsertCmd)cmd);
 				}
-				else if (cmd instanceof UpdateUserCmd)
+				else if (cmd instanceof UpdateCmd)
 				{
-					doUpdateUserCmd((UpdateUserCmd)cmd);
+					doUpdateCmd((UpdateCmd)cmd);
 				}
-				else if (cmd instanceof DeleteUserCmd)
+				else if (cmd instanceof DeleteCmd)
 				{
-					doDeleteUserCmd((DeleteUserCmd)cmd);
+					doDeleteCmd((DeleteCmd)cmd);
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -107,7 +120,7 @@ public class UserTests extends BaseTest
 			}
 		}
 
-		private void doDeleteUserCmd(DeleteUserCmd cmd) throws Exception 
+		private void doDeleteCmd(DeleteCmd cmd) throws Exception 
 		{
 			User scooter = loadTheObject(cmd.getObjectId());
 			if (scooter == null)
@@ -123,7 +136,7 @@ public class UserTests extends BaseTest
 			User scooter = (User) mtx.loadObject(User.class, objectId);
 			return scooter;
 		}
-		private void doUpdateUserCmd(UpdateUserCmd cmd) throws Exception 
+		private void doUpdateCmd(UpdateCmd cmd) throws Exception 
 		{
 			User scooter = loadTheObject(cmd.getObjectId());
 			if (scooter == null)
@@ -135,7 +148,7 @@ public class UserTests extends BaseTest
 			updateObject(scooter);
 		}
 
-		private void doInsertUserCmd(InsertUserCmd cmd) throws Exception
+		private void doInsertCmd(InsertCmd cmd) throws Exception
 		{
 			User scooter = new User();
 			scooter.setA(cmd.a);
@@ -146,28 +159,77 @@ public class UserTests extends BaseTest
 		}
 	}
 	
+	public static class UsersRM extends ReadModel
+	{
+		public Map<Long,BaseObject> map = new TreeMap<>(); //sorted
+		
+		public int size()
+		{
+			return map.size();
+		}
+
+		@Override
+		public boolean willAccept(Stream stream, Commit commit) 
+		{
+			if (stream != null && stream.getType().equals("user"))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public void observe(Stream stream, Commit commit) 
+		{
+			switch(commit.getAction())
+			{
+			case 'I':
+			case 'S':
+				map.put(commit.getStreamId(), null);
+				break;
+			case 'U':
+				break;
+			case 'D':
+				map.remove(commit.getStreamId());
+				break;
+			default:
+				break;
+			}
+		}
+		
+		public void freshen(MContext mtx)
+		{
+			Projector projector = mtx.createProjector();
+					
+			Long maxId = mtx.getMaxId();
+			projector.run(mtx, this, maxId);
+		}
+		public List<User> queryAll(MContext mtx) throws Exception
+		{
+			List<User> L = new ArrayList<>();
+			for(Long id : map.keySet())
+			{
+				BaseObject obj = mtx.loadObject(User.class, id);
+				L.add((User) L);
+			}
+			return L;
+		}
+		
+	}
+	
 	
 	public static class MyUserPerm extends Permanent
 	{
-//		public MyReadModel readModel1;
+		public UsersRM readModel1;
 		
 		public MyUserPerm(ICommitDAO dao, IStreamDAO streamDAO, ObjectManagerRegistry registry, ProcRegistry procRegistry) 
 		{
 			super(dao, streamDAO, registry, procRegistry);
 			
-//			readModel1 = new MyReadModel();
-//			registerReadModel(readModel1);
+			readModel1 = new UsersRM();
+			registerReadModel(readModel1);
 		}
 		
-		@Override
-		protected CommandProcessor createProc(CommitMgr commitMgr, ReadModelLoader vloader)
-		{
-			MContext mtx = new MContext(commitMgr, registry, objectRepo, readmodelRepo, vloader);
-			
-			CommandProcessor proc = new MyCmdProc();
-			proc.setMContext(mtx);
-			return proc;
-		}
 	}
 	
 	@Test
@@ -175,15 +237,22 @@ public class UserTests extends BaseTest
 	{
 		MyUserPerm perm = this.createPerm();
 		
-		log(String.format("1st"));
-		MContext mtx = perm.createMContext();
-		MyUserProc.InsertUserCmd cmd = new MyUserProc.InsertUserCmd();
-		cmd.a = 15;
-		cmd.s = "bob";
-		CommandProcessor proc = mtx.findProd(User.class);
-		proc.process(cmd);
-		assertEquals(1L, cmd.objectId); //!! we set this in proc (only on insert)
+		int n = 5; 
+		for(int i = 0; i < n; i++)
+		{
+			log(String.format("%d..	", i));
+			MContext mtx = perm.createMContext();
+			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
+			cmd.a = 101+i;
+			cmd.s = String.format("bob%d", i+1);
+			CommandProcessor proc = mtx.findProd(User.class);
+			proc.process(cmd);
+			assertEquals(i+1, cmd.objectId); //!! we set this in proc (only on insert)
+		}
 		
+		MContext mtx = perm.createMContext();
+		List<User> L = perm.readModel1.queryAll(mtx);
+		assertEquals(22, L.size());
 	}
 
 	
@@ -202,10 +271,10 @@ public class UserTests extends BaseTest
 		IStreamDAO streamDAO = new MockStreamDAO();
 		
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
-//		registry.register(User.class, new ObjectMgr<User>(User.class));
+		registry.register(User.class, new ObjectMgr<User>(User.class));
 		
 		ProcRegistry procRegistry = new ProcRegistry();
-		procRegistry.register(User.class, MyCmdProc.class);
+		procRegistry.register(User.class, MyUserProc.class);
 		
 		MyUserPerm perm = new MyUserPerm(dao, streamDAO, registry, procRegistry);
 		perm.start();
