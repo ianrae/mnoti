@@ -6,6 +6,7 @@ import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
+import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
 
 //will create one of these per web request, but all will share underlying thread-safe commit cache
@@ -17,10 +18,10 @@ public class CommitMgr
 	private CommitCache cache;
 	private StreamCache strcache;
 
-	public CommitMgr(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, StreamCache strcache)
+	public CommitMgr(PersistenceContext persistenceCtx, CommitCache cache, StreamCache strcache)
 	{
-		this.dao = dao;
-		this.streamDAO = streamDAO;
+		this.dao = persistenceCtx.getDao();
+		this.streamDAO = persistenceCtx.getStreamDAO();
 		this.cache = cache;
 		this.strcache = strcache;
 	}

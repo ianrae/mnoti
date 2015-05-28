@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Persistence;
+
 import mef.framework.helpers.BaseTest;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
@@ -26,6 +28,7 @@ import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
 import mesf.persistence.MockStreamDAO;
+import mesf.persistence.PersistenceContext;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
 
@@ -177,13 +180,21 @@ public class CommitMgrTests extends BaseMesfTest
 			insertObject(cmd, scooter);
 		}
 	}
-	
+
+	ICommitDAO dao;
+	IStreamDAO streamDAO;
+	private CommitMgr createCommitMgr()
+	{
+		dao = new MockCommitDAO();
+		streamDAO = new MockStreamDAO();
+		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
+		CommitMgr mgr = new CommitMgr(persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
+		return mgr;
+	}
 	@Test
 	public void test() throws Exception
 	{
-		ICommitDAO dao = new MockCommitDAO();
-		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamCache(streamDAO));
+		CommitMgr mgr = createCommitMgr();
 		
 		List<Commit> L = mgr.loadAll();
 		assertEquals(0, L.size());
@@ -202,9 +213,7 @@ public class CommitMgrTests extends BaseMesfTest
 	@Test
 	public void testInsert() throws Exception
 	{
-		ICommitDAO dao = new MockCommitDAO();
-		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamCache(streamDAO));
+		CommitMgr mgr = createCommitMgr();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
@@ -249,9 +258,7 @@ public class CommitMgrTests extends BaseMesfTest
 	@Test
 	public void testReadModelCache() throws Exception
 	{
-		ICommitDAO dao = new MockCommitDAO();
-		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamCache(streamDAO));
+		CommitMgr mgr = createCommitMgr();
 		ObjectLoader oloader = mgr.createObjectLoader();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
@@ -305,9 +312,7 @@ public class CommitMgrTests extends BaseMesfTest
 	@Test
 	public void testCmd() throws Exception
 	{
-		ICommitDAO dao = new MockCommitDAO();
-		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamCache(streamDAO));
+		CommitMgr commitMgr = createCommitMgr();
 
 		ObjectManagerRegistry registry = new ObjectManagerRegistry();
 		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));

@@ -57,7 +57,7 @@ public class Permanent
 
 	public MContext createMContext() 
 	{
-		CommitMgr mgr = new CommitMgr(persistenceCtx.getDao(), persistenceCtx.getStreamDAO(), commitCache, this.strcache);
+		CommitMgr mgr = new CommitMgr(persistenceCtx, commitCache, this.strcache);
 		mgr.getMaxId(); //query db
 		ReadModelLoader vloader = new ReadModelLoader(persistenceCtx.getDao(), persistenceCtx.getStreamDAO(), mgr.getMaxId());
 		

@@ -13,6 +13,7 @@ import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
 import mesf.persistence.MockStreamDAO;
+import mesf.persistence.PersistenceContext;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,8 @@ public class CommitCacheTests extends BaseMesfTest
 	{
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		CommitMgr mgr = new CommitMgr(dao, streamDAO, new CommitCache(dao), new StreamCache(streamDAO));
+		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
+		CommitMgr mgr = new CommitMgr(persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
 		int n = 6;
 		for(int i = 0; i < n; i++)
 		{

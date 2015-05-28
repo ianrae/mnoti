@@ -23,6 +23,7 @@ import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
 import mesf.persistence.MockStreamDAO;
+import mesf.persistence.PersistenceContext;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -150,7 +151,8 @@ public class OldTopLevelTests extends BaseMesfTest
 
 	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectRepository objcache)
 	{
-		CommitMgr commitMgr = new CommitMgr(dao, streamDAO, cache,  new StreamCache(streamDAO));
+		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
+		CommitMgr commitMgr = new CommitMgr(persistenceCtx, cache,  new StreamCache(streamDAO));
 		
 		
 		MyTopLevel toplevel = new MyTopLevel(commitMgr, registry, streamDAO, objcache);
