@@ -159,10 +159,15 @@ public class UserTests extends BaseTest
 		}
 	}
 	
-	public static class UsersRM extends ReadModel
+	public static class AllIdsRM<T> extends ReadModel
 	{
-		public Map<Long,BaseObject> map = new TreeMap<>(); //sorted
+		public Map<Long,T> map = new TreeMap<>(); //sorted
+		private String type;
 		
+		public AllIdsRM(String type)
+		{
+			this.type = type;
+		}
 		public int size()
 		{
 			return map.size();
@@ -171,7 +176,7 @@ public class UserTests extends BaseTest
 		@Override
 		public boolean willAccept(Stream stream, Commit commit) 
 		{
-			if (stream != null && stream.getType().equals("user"))
+			if (stream != null && stream.getType().equals(type)) 
 			{
 				return true;
 			}
@@ -200,22 +205,28 @@ public class UserTests extends BaseTest
 		public void freshen(MContext mtx)
 		{
 			Projector projector = mtx.createProjector();
-					
 			projector.run(mtx, this, this.lastCommitId);
 		}
-		public List<User> queryAll(MContext mtx) throws Exception
+		
+		public List<T> queryAll(MContext mtx) throws Exception
 		{
-			List<User> L = new ArrayList<>();
+			List<T> L = new ArrayList<>();
 			for(Long id : map.keySet())
 			{
 				BaseObject obj = mtx.loadObject(User.class, id);
-				L.add((User) obj);
+				L.add((T) obj);
 			}
 			return L;
 		}
-		
 	}
 	
+	public static class UsersRM extends AllIdsRM<User>
+	{
+		public UsersRM()
+		{
+			super("user");
+		}
+	}
 	
 	public static class MyUserPerm extends Permanent
 	{
@@ -228,7 +239,6 @@ public class UserTests extends BaseTest
 			readModel1 = new UsersRM();
 			registerReadModel(readModel1);
 		}
-		
 	}
 	
 	@Test
@@ -282,6 +292,30 @@ public class UserTests extends BaseTest
 			log(u.getId().toString());
 		}
 		
+		
+		log("del..");
+		n = 1; 
+		for(int i = 0; i < n; i++)
+		{
+			log(String.format("%d..	", i));
+			mtx = perm.createMContext();
+			MyUserProc.DeleteCmd cmd = new MyUserProc.DeleteCmd();
+			cmd.objectId = 4;
+			CommandProcessor proc = mtx.findProd(User.class);
+			proc.process(cmd);
+		}
+		
+		mtx = perm.createMContext();
+		perm.readModel1.freshen(mtx);
+		L = perm.readModel1.queryAll(mtx);
+		assertEquals(5, L.size());
+		for(User u : L)
+		{
+			assertNotNull(u);
+			log(u.getId().toString());
+		}
+		
+		perm.readModel1.freshen(mtx);
 	}
 
 	

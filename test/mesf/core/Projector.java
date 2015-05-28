@@ -18,6 +18,10 @@ public class Projector
 	
 	public void run(MContext mtx, ICommitObserver observer, long startId)
 	{
+		if (startId >= mtx.getMaxId())
+		{
+			return; //nothing to do
+		}
 		cache.clearLastSegment(mtx.getMaxId());
 		scache.clearLastSegment(mtx.getMaxId());
 		List<ICommitObserver> obsL = new ArrayList<>();
@@ -26,11 +30,12 @@ public class Projector
 	}
 	public void run(MContext mtx, List<ICommitObserver> observerL, long startId)
 	{
-		if (startId > 0)
+		long startIndex = startId;
+		if (startIndex > 0)
 		{
-			startId--; //yuck!!
+			startIndex--; //yuck!!
 		}
-		List<Commit> L = cache.loadRange(startId, mtx.getMaxId() - startId);
+		List<Commit> L = cache.loadRange(startIndex, mtx.getMaxId() - startIndex);
 		for(Commit commit : L)	
 		{
 			doObserve(commit, observerL);
