@@ -1,8 +1,8 @@
 package mesf.cmd;
 
-import mesf.core.BaseEntity;
 import mesf.core.CommitMgr;
 import mesf.core.MContext;
+import mesf.entity.BaseEntity;
 import mesf.entity.EntityHydrater;
 import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;

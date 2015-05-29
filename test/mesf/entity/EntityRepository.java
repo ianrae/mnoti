@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mesf.core.BaseEntity;
 import mesf.core.ICommitObserver;
 import mesf.log.Logger;
 import mesf.persistence.Commit;

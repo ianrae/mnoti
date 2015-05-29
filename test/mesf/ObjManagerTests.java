@@ -2,7 +2,7 @@ package mesf;
 
 import static org.junit.Assert.assertEquals;
 import mef.framework.helpers.BaseTest;
-import mesf.core.BaseEntity;
+import mesf.entity.BaseEntity;
 import mesf.entity.EntityMgr;
 
 import org.junit.Before;

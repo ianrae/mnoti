@@ -2,6 +2,7 @@ package mesf.core;
 
 import java.util.List;
 
+import mesf.entity.BaseEntity;
 import mesf.entity.EntityLoader;
 import mesf.entity.IEntityMgr;
 import mesf.log.Logger;
@@ -83,10 +84,10 @@ public class CommitMgr
 		Commit commit = loadByCommitId(stream.getSnapshotId());
 		return commit;
 	}
-//	public List<Commit> loadStream(String type, Long objectId)
+//	public List<Commit> loadStream(String type, Long entityId)
 //	{
 //		StreamLoader loader = new StreamLoader(dao, streamDAO, maxId);
-//		List<Commit> L = loader.loadStream(type, objectId);
+//		List<Commit> L = loader.loadStream(type, entityId);
 //		return L;
 //	}
 	
@@ -142,11 +143,11 @@ public class CommitMgr
 //			return; //!!
 //		}
 		
-//		Long objectId = stream.getId();
-		Long objectId = obj.getId();
+//		Long entityId = stream.getId();
+		Long entityId = obj.getId();
 		Commit commit = new Commit();
 		commit.setAction('U');
-		commit.setStreamId(objectId);
+		commit.setStreamId(entityId);
 		String json = "";
 		try {
 			json = mgr.renderPartial(obj);
@@ -155,7 +156,7 @@ public class CommitMgr
 		}
 		commit.setJson(json);
 		this.dao.save(commit);
-		Logger.logDebug("UPD [%d] %d %s", commit.getId(), objectId, mgr.getTypeName());
+		Logger.logDebug("UPD [%d] %d %s", commit.getId(), entityId, mgr.getTypeName());
 	}
 	public void deleteObject(IEntityMgr mgr, BaseEntity obj)
 	{
@@ -165,14 +166,14 @@ public class CommitMgr
 //			return; //!!
 //		}
 		
-		Long objectId = obj.getId();
+		Long entityId = obj.getId();
 		Commit commit = new Commit();
 		commit.setAction('D');
-		commit.setStreamId(objectId);
+		commit.setStreamId(entityId);
 		String json = "";
 		commit.setJson(json);
 		this.dao.save(commit);
-		Logger.logDebug("DEL [%d] %d %s", commit.getId(), objectId, mgr.getTypeName());
+		Logger.logDebug("DEL [%d] %d %s", commit.getId(), entityId, mgr.getTypeName());
 	}
 	
 	public void observeList(List<Commit> L, ICommitObserver observer)

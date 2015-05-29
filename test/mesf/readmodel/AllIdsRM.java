@@ -7,9 +7,9 @@ import java.util.TreeMap;
 
 import mesf.UserTests;
 import mesf.UserTests.User;
-import mesf.core.BaseEntity;
 import mesf.core.MContext;
 import mesf.core.Projector;
+import mesf.entity.BaseEntity;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 

@@ -1,6 +1,5 @@
 package mesf.entity;
 
-import mesf.core.BaseEntity;
 
 
 public interface IEntityMgr

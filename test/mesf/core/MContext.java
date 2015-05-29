@@ -3,6 +3,7 @@ package mesf.core;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ProcRegistry;
+import mesf.entity.BaseEntity;
 import mesf.entity.EntityHydrater;
 import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;
@@ -77,10 +78,10 @@ public class MContext
 		return vloader;
 	}
 	
-	public BaseEntity loadObject(Class clazz, long objectId) throws Exception 
+	public BaseEntity loadObject(Class clazz, long entityId) throws Exception 
 	{
 		String type = this.getRegistry().findTypeForClass(clazz);
-		BaseEntity obj = this.getHydrater().loadObject(type, objectId, this.getOloader());
+		BaseEntity obj = this.getHydrater().loadObject(type, entityId, this.getOloader());
 		return obj;
 	}
 	

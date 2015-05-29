@@ -1,4 +1,4 @@
-package mesf.core;
+package mesf.entity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
