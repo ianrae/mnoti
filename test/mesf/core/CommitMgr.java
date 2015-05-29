@@ -107,7 +107,7 @@ public class CommitMgr
 		}
 	}
 	
-	public long insertObject(IEntityMgr mgr, BaseEntity obj)
+	public long insertEntity(IEntityMgr mgr, BaseEntity obj)
 	{
 		Stream stream = new Stream();
 		stream.setType(mgr.getTypeName());
@@ -135,7 +135,7 @@ public class CommitMgr
 		return entityid;
 	}
 	
-	public void updateObject(IEntityMgr mgr, BaseEntity obj)
+	public void updateEntity(IEntityMgr mgr, BaseEntity obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)
@@ -158,7 +158,7 @@ public class CommitMgr
 		this.dao.save(commit);
 		Logger.logDebug("UPD [%d] %d %s", commit.getId(), entityId, mgr.getTypeName());
 	}
-	public void deleteObject(IEntityMgr mgr, BaseEntity obj)
+	public void deleteEntity(IEntityMgr mgr, BaseEntity obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)
@@ -194,7 +194,7 @@ public class CommitMgr
 		}
 	}
 
-	public EntityLoader createObjectLoader() 
+	public EntityLoader createEntityLoader() 
 	{
 		EntityLoader oloader = new EntityLoader(dao, strcache, this.maxId);
 		return oloader;

@@ -33,7 +33,7 @@ public class MContext
 		this.registry = registry;
 		this.objcache = objcache;
 		this.hydrater = new EntityHydrater(objcache);
-		this.oloader = commitMgr.createObjectLoader();
+		this.oloader = commitMgr.createEntityLoader();
 		this.readmodelMgr = readmodelMgr;
 		this.vloader = vloader;
 		this.commitCache = commitCache;

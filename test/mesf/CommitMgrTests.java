@@ -220,7 +220,7 @@ public class CommitMgrTests extends BaseMesfTest
 		Scooter scooter = omgr.createFromJson(fix(json));		
 
 		mgr.writeNoOp();
-		mgr.insertObject(omgr, scooter);
+		mgr.insertEntity(omgr, scooter);
 		List<Commit> L = mgr.loadAll();
 		assertEquals(2, L.size());
 		
@@ -232,7 +232,7 @@ public class CommitMgrTests extends BaseMesfTest
 		
 		scooter.clearSetList();
 		scooter.setA(444);
-		mgr.updateObject(omgr, scooter);
+		mgr.updateEntity(omgr, scooter);
 		mgr.freshenMaxId(); //update maxid
 		L = mgr.loadAll();
 		assertEquals(3, L.size());
@@ -242,7 +242,7 @@ public class CommitMgrTests extends BaseMesfTest
 		mgr.observeList(mgr.loadAll(), observer);
 		assertEquals(1, observer.count);
 		
-		mgr.deleteObject(omgr, scooter);
+		mgr.deleteEntity(omgr, scooter);
 		mgr.freshenMaxId(); //update maxid
 		L = mgr.loadAll();
 		assertEquals(4, L.size());
@@ -259,24 +259,24 @@ public class CommitMgrTests extends BaseMesfTest
 	public void testReadModelCache() throws Exception
 	{
 		CommitMgr mgr = createCommitMgr();
-		EntityLoader oloader = mgr.createObjectLoader();
+		EntityLoader oloader = mgr.createEntityLoader();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		EntityMgr<Scooter> omgr = new EntityMgr(Scooter.class);
 		Scooter scooter = omgr.createFromJson(fix(json));		
 
 		mgr.writeNoOp();
-		mgr.insertObject(omgr, scooter);
+		mgr.insertEntity(omgr, scooter);
 		List<Commit> L = mgr.loadAll();
 		assertEquals(2, L.size());
 		scooter.clearSetList();
 		scooter.setA(444);
-		mgr.updateObject(omgr, scooter);
+		mgr.updateEntity(omgr, scooter);
 		mgr.freshenMaxId();
 		L = mgr.loadAll();
 		assertEquals(3, L.size());
 		chkStreamSize(streamDAO, 1);
-		oloader = mgr.createObjectLoader();
+		oloader = mgr.createEntityLoader();
 		
 		mgr.dump();
 		EntityManagerRegistry registry = new EntityManagerRegistry();
@@ -297,7 +297,7 @@ public class CommitMgrTests extends BaseMesfTest
 		long maxId = mgr.getMaxId();
 		scooter.clearSetList();
 		scooter.setA(555);
-		mgr.updateObject(omgr, scooter);
+		mgr.updateEntity(omgr, scooter);
 		mgr.dump();
 		
 		mgr.freshenMaxId();
@@ -306,7 +306,7 @@ public class CommitMgrTests extends BaseMesfTest
 		mgr.observeList(mgr.loadAll(), objcache);
 		Scooter scoot2 = (Scooter) objcache.getIfLoaded(scooter.getId());
 		assertEquals(555, scoot2.getA());
-		oloader = mgr.createObjectLoader();
+		oloader = mgr.createEntityLoader();
 	}
 
 	@Test

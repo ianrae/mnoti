@@ -32,21 +32,21 @@ public abstract class CommandProcessor
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
 		//!break rules here and we modify command. Since controller needs to know id of newly created object
-		cmd.entityId = mtx.getCommitMgr().insertObject(mgr, obj);
+		cmd.entityId = mtx.getCommitMgr().insertEntity(mgr, obj);
 	}
 	public void updateEntity(BaseEntity obj)
 	{
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
-		mtx.getCommitMgr().updateObject(mgr, obj);
+		mtx.getCommitMgr().updateEntity(mgr, obj);
 	}
 	public void deleteEntity(BaseEntity obj)
 	{
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
-		mtx.getCommitMgr().deleteObject(mgr, obj);
+		mtx.getCommitMgr().deleteEntity(mgr, obj);
 	}
 	public String getEntityType(BaseEntity obj)
 	{

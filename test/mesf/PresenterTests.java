@@ -57,7 +57,7 @@ public class PresenterTests extends BaseMesfTest
 			String type = this.getObjectType(obj);
 			IEntityMgr mgr = mtx.getRegistry().findByType(type);
 			
-			return mtx.getCommitMgr().insertObject(mgr, obj);
+			return mtx.getCommitMgr().insertEntity(mgr, obj);
 		}
 		
 		public String getObjectType(BaseEntity obj)
