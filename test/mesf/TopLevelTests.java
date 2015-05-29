@@ -154,7 +154,7 @@ public class TopLevelTests extends BaseMesfTest
 	
 	private void chkScooterStr(MyPerm perm, long objectId, String string) 
 	{
-		Scooter scooter = (Scooter) perm.loadObjectFromRepo(objectId);
+		Scooter scooter = (Scooter) perm.loadEntityFromRepo(objectId);
 		assertEquals(string, scooter.getS());
 	}
 

@@ -22,21 +22,21 @@ public class EntityLoader
 		this.maxId = maxId;
 	}
 	
-	public List<Commit> loadStream(String type, Long objectId)
+	public List<Commit> loadStream(String type, Long entityId)
 	{
-		Stream stream = strcache.findStream(objectId);
+		Stream stream = strcache.findStream(entityId);
 		if (stream == null)
 		{
 			return null; //!!
 		}
 		
-		List<Commit> L = dao.loadStream(stream.getSnapshotId(), objectId);
+		List<Commit> L = dao.loadStream(stream.getSnapshotId(), entityId);
 		return L;
 	}
 
-	public List<Commit> loadPartialStream(Long objectId, Long startId)
+	public List<Commit> loadPartialStream(Long entityId, Long startId)
 	{
-		List<Commit> L = dao.loadStream(startId, objectId);
+		List<Commit> L = dao.loadStream(startId, entityId);
 		return L;
 	}
 

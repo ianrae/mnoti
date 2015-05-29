@@ -34,18 +34,18 @@ public class StreamCache
 		segcache = new SegmentedCache<Stream>(4, new StreamTableLoader());
 	}
 	
-	public synchronized long findSnapshotId(long objectId) 
+	public synchronized long findSnapshotId(long entityId) 
 	{
-		List<Stream> L = segcache.getRange(objectId - 1, 1);
+		List<Stream> L = segcache.getRange(entityId - 1, 1);
 		if (L == null || L.size() < 1)
 		{
 			return 0L;
 		}
 		return L.get(0).getSnapshotId();
 	}
-	public synchronized Stream findStream(long objectId) 
+	public synchronized Stream findStream(long entityId) 
 	{
-		List<Stream> L = segcache.getRange(objectId - 1, 1);
+		List<Stream> L = segcache.getRange(entityId - 1, 1);
 		if (L == null || L.size() < 1)
 		{
 			return null;

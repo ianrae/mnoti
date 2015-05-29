@@ -34,13 +34,13 @@ public class EntityRepository implements ICommitObserver
 		Logger.log(trail.getTrail());
 	}
 
-	public synchronized BaseEntity loadObject(String type, Long objectId, EntityLoader oloader) throws Exception
+	public synchronized BaseEntity loadObject(String type, Long entityId, EntityLoader oloader) throws Exception
 	{
-		BaseEntity obj = map.get(objectId);
+		BaseEntity obj = map.get(entityId);
 		Long startId = null;
 		if (obj != null)
 		{
-			long when = whenMap.get(objectId);
+			long when = whenMap.get(entityId);
 			if(when >= oloader.getMaxId())
 			{
 				numHits++;
@@ -50,26 +50,26 @@ public class EntityRepository implements ICommitObserver
 		}
 
 		numMisses++;
-		obj = doLoadObject(type, objectId, oloader, startId, obj);
+		obj = doLoadObject(type, entityId, oloader, startId, obj);
 		return obj;
 	}
-	private BaseEntity doLoadObject(String type, Long objectId, EntityLoader oloader, Long startId, BaseEntity obj) throws Exception
+	private BaseEntity doLoadObject(String type, Long entityId, EntityLoader oloader, Long startId, BaseEntity obj) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)
 		{
-			L = oloader.loadStream(type, objectId);
+			L = oloader.loadStream(type, entityId);
 		}
 		else 
 		{
-			L = oloader.loadPartialStream(objectId, startId);
+			L = oloader.loadPartialStream(entityId, startId);
 		}
 		IEntityMgr mgr = registry.findByType(type);
 
 		for(Commit commit : L)
 		{
 			try {
-				obj = doObserve(objectId, commit, mgr, obj);
+				obj = doObserve(entityId, commit, mgr, obj);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -97,18 +97,18 @@ public class EntityRepository implements ICommitObserver
 	@Override
 	public synchronized void observe(Stream stream, Commit commit) 
 	{
-		Long objectId = stream.getId();
-		BaseEntity obj = map.get(objectId);
+		Long entityId = stream.getId();
+		BaseEntity obj = map.get(entityId);
 
 		IEntityMgr mgr = registry.findByType(stream.getType());
 		try {
-			obj = doObserve(objectId, commit, mgr, obj);
+			obj = doObserve(entityId, commit, mgr, obj);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	private BaseEntity doObserve(Long objectId, Commit commit, IEntityMgr mgr, BaseEntity obj) throws Exception
+	private BaseEntity doObserve(Long entityId, Commit commit, IEntityMgr mgr, BaseEntity obj) throws Exception
 	{
 		this.trail.add(commit.getId().toString()); //remove later!!
 
@@ -119,8 +119,8 @@ public class EntityRepository implements ICommitObserver
 			obj = mgr.rehydrate(commit.getJson());
 			if (obj != null)
 			{
-				obj.setId(objectId);
-				map.put(objectId, obj);
+				obj.setId(entityId);
+				map.put(entityId, obj);
 			}
 			break;
 		case 'U':
@@ -136,14 +136,14 @@ public class EntityRepository implements ICommitObserver
 		if (obj != null)
 		{
 			obj.clearSetList();
-			whenMap.put(objectId, commit.getId()); 
+			whenMap.put(entityId, commit.getId()); 
 		}
 		return obj;
 	}
 
-	public synchronized BaseEntity getIfLoaded(Long objectId) 
+	public synchronized BaseEntity getIfLoaded(Long entityId) 
 	{
-		BaseEntity obj = map.get(objectId);
+		BaseEntity obj = map.get(entityId);
 		return obj;
 	}
 }

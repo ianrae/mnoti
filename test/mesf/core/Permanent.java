@@ -69,9 +69,9 @@ public class Permanent
 		return mtx;
 	}
 	
-	public BaseEntity loadObjectFromRepo(long objectId) 
+	public BaseEntity loadEntityFromRepo(long entityId) 
 	{
-		return objectRepo.getIfLoaded(objectId);
+		return objectRepo.getIfLoaded(entityId);
 	}
 	
 	protected void registerReadModel(ReadModel readModel)
