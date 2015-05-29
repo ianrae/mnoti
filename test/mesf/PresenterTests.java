@@ -18,8 +18,10 @@ import mesf.entity.EntityMgr;
 import mesf.entity.IEntityMgr;
 import mesf.log.Logger;
 import mesf.persistence.ICommitDAO;
+import mesf.persistence.IEventDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
+import mesf.persistence.MockEventDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.presenter.MethodInvoker;
@@ -340,6 +342,7 @@ public class PresenterTests extends BaseMesfTest
 		//create long-running objects
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
+		IEventDAO eventDAO = new MockEventDAO();
 		
 		EntityManagerRegistry registry = new EntityManagerRegistry();
 		registry.register(User.class, new EntityMgr<User>(User.class));
@@ -347,7 +350,7 @@ public class PresenterTests extends BaseMesfTest
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(User.class, MyUserProc.class);
 		
-		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
+		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
 		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry);
 		perm.start();
 		return perm;

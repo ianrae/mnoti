@@ -18,6 +18,8 @@ import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
+import mesf.persistence.IEventDAO;
+import mesf.persistence.MockEventDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
 import mesf.persistence.Commit;
@@ -99,6 +101,7 @@ public class TopLevelTests extends BaseMesfTest
 		//create long-running objects
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
+		IEventDAO eventDAO = new MockEventDAO();
 		
 		EntityManagerRegistry registry = new EntityManagerRegistry();
 		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
@@ -106,7 +109,7 @@ public class TopLevelTests extends BaseMesfTest
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(Scooter.class, MyCmdProc.class);
 		
-		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
+		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
 		MyPerm perm = new MyPerm(persistenceCtx, registry, procRegistry);
 		perm.start();
 		assertEquals(0, perm.readModel1.size());
