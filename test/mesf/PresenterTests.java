@@ -8,11 +8,11 @@ import mef.framework.helpers.BaseTest;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
-import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.ObjectCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
+import mesf.core.IObjectMgr;
 import mesf.core.MContext;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
@@ -46,12 +46,39 @@ import org.mef.framework.sfx.SfxTrail;
 
 public class PresenterTests extends BaseMesfTest 
 {
+	public static class CommitWriter 
+	{
+		private MContext mtx;
+		public CommitWriter(MContext mtx)
+		{
+			this.mtx = mtx;
+		}
+		public long insertObject(ICommand cmd, BaseObject obj)
+		{
+			String type = this.getObjectType(obj);
+			IObjectMgr mgr = mtx.getRegistry().findByType(type);
+			
+			return mtx.getCommitMgr().insertObject(mgr, obj);
+		}
+		
+		public String getObjectType(BaseObject obj)
+		{
+			String type = mtx.getRegistry().findTypeForClass(obj.getClass());
+			return type;
+		}
+	}
+	
+	
 	public static abstract class Presenter //extends CommandProcessor
 	{
 		protected Reply baseReply;
+		protected MContext mtx;
+		protected CommitWriter commitWriter;
 		
-		public Presenter()
+		public Presenter(MContext mtx)
 		{
+			this.mtx = mtx;
+			this.commitWriter = new CommitWriter(mtx);
 		}
 		
 		protected abstract Reply createReply();
@@ -69,7 +96,7 @@ public class PresenterTests extends BaseMesfTest
 			}
 			
 			MethodInvoker invoker = new MethodInvoker(this, methodName, Request.class);
-			Object res = invoker.call(request, baseReply);			
+			invoker.call(request, baseReply);			
 			doAfterAction(request); //always do it
 			
 			return baseReply;
@@ -77,7 +104,8 @@ public class PresenterTests extends BaseMesfTest
 		
 		private String getMethodName(Request request) 
 		{
-			String methodName = request.getClass().getName();
+//			String methodName = request.getClass().getName();
+			String methodName = request.getClass().getSimpleName(); //avoid MyPres$InsertCmd
 			int pos = methodName.lastIndexOf('.');
 			if (pos > 0)
 			{
@@ -124,6 +152,12 @@ public class PresenterTests extends BaseMesfTest
 		{}
 		protected void afterRequest(Request request)
 		{}
+		
+		
+		protected void insertObject(ICommand cmd, BaseObject obj)
+		{
+			this.commitWriter.insertObject(cmd, obj);
+		}
 	}
 	
 	public static class MyReply extends Reply
@@ -133,19 +167,44 @@ public class PresenterTests extends BaseMesfTest
 	
 	public static class MyPres extends Presenter
 	{
-		private MyReply rr = new MyReply();
+		public class InsertCmd extends Request
+		{
+			public int a;
+			public String s;
+		}
+		
+		
+		private MyReply reply = new MyReply();
 		public SfxTrail trail = new SfxTrail();
+		
+		public MyPres(MContext mtx)
+		{
+			super(mtx);
+		}
 		
 		protected Reply createReply()
 		{
-			return rr;
+			return reply;
 		}
 		
 		public void onRequest(Request cmd)
 		{
 			Logger.log("i n d e xx");
 			trail.add("index");
-			rr.setDestination(Reply.VIEW_INDEX);
+			reply.setDestination(Reply.VIEW_INDEX);
+		}
+		public void onInsertCmd(InsertCmd cmd)
+		{
+			Logger.log("insert");
+			trail.add("index");
+			
+			User scooter = new User();
+			scooter.setA(cmd.a);
+			scooter.setB(10);
+			scooter.setS(cmd.s);
+			
+			insertObject(cmd, scooter);
+			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		
 		protected void beforeRequest(Request request)
@@ -161,7 +220,9 @@ public class PresenterTests extends BaseMesfTest
 	@Test
 	public void test() throws Exception
 	{
-		MyPres pres = new MyPres();
+		MyUserPerm perm = this.createPerm();
+		MContext mtx = perm.createMContext();
+		MyPres pres = new MyPres(mtx);
 		
 		Request request = new Request();
 		Reply reply = pres.process(request);
@@ -171,21 +232,29 @@ public class PresenterTests extends BaseMesfTest
 		assertEquals(Reply.VIEW_INDEX, reply.getDestination());
 		
 		log(pres.trail.getTrail());
-//		MyUserPerm perm = this.createPerm();
+	}	
+	
+	@Test
+	public void test22() throws Exception
+	{
+		MyUserPerm perm = this.createPerm();
 		
-//		int n = 5; 
-//		for(int i = 0; i < n; i++)
-//		{
-//			log(String.format("%d..	", i));
-//			MContext mtx = perm.createMContext();
-//			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
-//			cmd.a = 101+i;
-//			cmd.s = String.format("bob%d", i+1);
-//			CommandProcessor proc = mtx.findProc(User.class);
-//			proc.process(cmd);
-//			assertEquals(i+1, cmd.objectId); //!! we set this in proc (only on insert)
-//		}
-//		
+		int n = 1; 
+		for(int i = 0; i < n; i++)
+		{
+			log(String.format("%d..	", i));
+			MContext mtx = perm.createMContext();
+			MyPres pres = new MyPres(mtx);
+			MyPres.InsertCmd cmd = pres.new InsertCmd();
+			cmd.a = 101+i;
+			cmd.s = String.format("bob%d", i+1);
+			
+			Reply reply = pres.process(cmd);
+			
+			long id = perm.createMContext().getMaxId();
+			assertEquals(i+1, id); 
+		}
+		
 //		MContext mtx = perm.createMContext();
 //		mtx.acquire(perm.readModel1.getClass());
 //		List<User> L = perm.readModel1.queryAll(mtx);
