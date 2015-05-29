@@ -17,6 +17,7 @@ import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.entity.IEntityMgr;
 import mesf.event.BaseEvent;
+import mesf.event.EventManagerRegistry;
 import mesf.event.IEventMgr;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
@@ -381,8 +382,10 @@ public class PresenterTests extends BaseMesfTest
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(User.class, MyUserProc.class);
 		
+		EventManagerRegistry evReg = new EventManagerRegistry();
+		
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
-		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry);
+		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry, evReg);
 		perm.start();
 		return perm;
 	}		

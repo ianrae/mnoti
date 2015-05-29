@@ -8,6 +8,7 @@ import mesf.cmd.ProcRegistry;
 import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityRepository;
+import mesf.event.EventManagerRegistry;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.PersistenceContext;
@@ -25,6 +26,7 @@ public class Permanent
 	private ProcRegistry procRegistry;
 	private PersistenceContext persistenceCtx;
 	private EventCache eventCache;
+	private EventManagerRegistry eventRegistry;
 	
 	/*
 	 * tbls: commit, stream
@@ -33,7 +35,7 @@ public class Permanent
 	 * proc
 	 */
 
-	public Permanent(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry)
+	public Permanent(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry, EventManagerRegistry evReg)
 	{
 		this.persistenceCtx = persistenceCtx;
 		this.registry = registry;
@@ -44,6 +46,7 @@ public class Permanent
 		commitCache = new CommitCache(persistenceCtx.getDao());
 		this.procRegistry = procRegistry;
 		this.eventCache = new EventCache(persistenceCtx.getEventDAO());
+		this.eventRegistry = evReg;
 	}
 	
 	public void start()

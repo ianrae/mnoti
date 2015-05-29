@@ -17,7 +17,7 @@ public class EventTests extends BaseMesfTest
 		public BaseEvent clone()
 		{
 			ScooterAddedEvent copy = new ScooterAddedEvent();
-			copy.setId(getId()); //!
+			copy.setEntityId(getEntityId()); //!
 			copy.z = this.z;
 			return copy;
 		}

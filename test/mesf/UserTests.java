@@ -15,6 +15,7 @@ import mesf.core.Permanent;
 import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
+import mesf.event.EventManagerRegistry;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventDAO;
 import mesf.persistence.IStreamDAO;
@@ -175,9 +176,9 @@ public class UserTests extends BaseMesfTest
 	{
 		public UsersRM readModel1;
 		
-		public MyUserPerm(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry) 
+		public MyUserPerm(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry, EventManagerRegistry evReg) 
 		{
-			super(persistenceCtx, registry, procRegistry);
+			super(persistenceCtx, registry, procRegistry, evReg);
 			
 			readModel1 = new UsersRM();
 			registerReadModel(readModel1);
@@ -283,8 +284,10 @@ public class UserTests extends BaseMesfTest
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(User.class, MyUserProc.class);
 		
+		EventManagerRegistry evReg = new EventManagerRegistry();
+		
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
-		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry);
+		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry, evReg);
 		perm.start();
 		return perm;
 	}		

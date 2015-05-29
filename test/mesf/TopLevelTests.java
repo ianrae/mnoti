@@ -18,6 +18,7 @@ import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
+import mesf.event.EventManagerRegistry;
 import mesf.persistence.Event;
 import mesf.persistence.IEventDAO;
 import mesf.persistence.MockEventDAO;
@@ -86,9 +87,9 @@ public class TopLevelTests extends BaseMesfTest
 	{
 		public MyReadModel readModel1;
 		
-		public MyPerm(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry) 
+		public MyPerm(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry, EventManagerRegistry evReg) 
 		{
-			super(persistenceCtx, registry, procRegistry);
+			super(persistenceCtx, registry, procRegistry, evReg);
 			
 			readModel1 = new MyReadModel();
 			registerReadModel(readModel1);
@@ -109,8 +110,10 @@ public class TopLevelTests extends BaseMesfTest
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(Scooter.class, MyCmdProc.class);
 		
+		EventManagerRegistry evReg = new EventManagerRegistry();
+		
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
-		MyPerm perm = new MyPerm(persistenceCtx, registry, procRegistry);
+		MyPerm perm = new MyPerm(persistenceCtx, registry, procRegistry, evReg);
 		perm.start();
 		assertEquals(0, perm.readModel1.size());
 		
