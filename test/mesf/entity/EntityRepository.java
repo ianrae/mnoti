@@ -91,7 +91,7 @@ public class EntityRepository implements ICommitObserver
 		{
 			return false;
 		}
-		return map.containsKey(stream.getId()); //only care about object we have already in cache
+		return map.containsKey(stream.getId()); //only care about entity we have already in cache
 	}
 
 	@Override

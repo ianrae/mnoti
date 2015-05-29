@@ -18,7 +18,7 @@ import mesf.readmodel.ReadModelRepository;
 public class Permanent
 {
 	protected EntityManagerRegistry registry;
-	protected EntityRepository objectRepo;
+	protected EntityRepository entityRepo;
 	protected ReadModelRepository readmodelRepo;
 	protected StreamCache strcache;
 	private CommitCache commitCache;
@@ -28,7 +28,7 @@ public class Permanent
 	/*
 	 * tbls: commit, stream
 	 * cache: CommitCache, StreamCache
-	 * repositories: Object, Aggregate, ReadModel
+	 * repositories: Entity, Aggregate, ReadModel
 	 * proc
 	 */
 
@@ -38,7 +38,7 @@ public class Permanent
 		this.registry = registry;
 		this.strcache = new StreamCache(persistenceCtx.getStreamDAO());
 		EntityRepository objcache = new EntityRepository(persistenceCtx.getStreamDAO(), registry);	
-		this.objectRepo = objcache;
+		this.entityRepo = objcache;
 		this.readmodelRepo = new ReadModelRepository(strcache);
 		commitCache = new CommitCache(persistenceCtx.getDao());
 		this.procRegistry = procRegistry;
@@ -49,7 +49,7 @@ public class Permanent
 		Projector projector = new Projector(commitCache, strcache);
 		
 		List<ICommitObserver> obsL = new ArrayList<>();
-		obsL.add(objectRepo);
+		obsL.add(entityRepo);
 		obsL.add(readmodelRepo);
 				
 		Long maxId = persistenceCtx.getDao().findMaxId();
@@ -64,14 +64,14 @@ public class Permanent
 		mgr.getMaxId(); //query db
 		ReadModelLoader vloader = new ReadModelLoader(persistenceCtx, mgr.getMaxId());
 		
-		MContext mtx = new MContext(mgr, registry, this.objectRepo, this.readmodelRepo, vloader, this.commitCache, this.strcache);
+		MContext mtx = new MContext(mgr, registry, this.entityRepo, this.readmodelRepo, vloader, this.commitCache, this.strcache);
 		mtx.setProcRegistry(procRegistry);
 		return mtx;
 	}
 	
 	public BaseEntity loadEntityFromRepo(long entityId) 
 	{
-		return objectRepo.getIfLoaded(entityId);
+		return entityRepo.getIfLoaded(entityId);
 	}
 	
 	protected void registerReadModel(ReadModel readModel)

@@ -144,7 +144,7 @@ public class CommitMgrTests extends BaseMesfTest
 
 		private void doDeleteScooterCmd(DeleteScooterCmd cmd) throws Exception 
 		{
-			Scooter scooter = loadTheObject(cmd.getEntityId());
+			Scooter scooter = loadEntity(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -153,14 +153,14 @@ public class CommitMgrTests extends BaseMesfTest
 			deleteEntity(scooter);
 		}
 
-		private Scooter loadTheObject(long entityId) throws Exception 
+		private Scooter loadEntity(long entityId) throws Exception 
 		{
 			Scooter scooter = (Scooter) mtx.loadEntity(Scooter.class, entityId);
 			return scooter;
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
 		{
-			Scooter scooter = loadTheObject(cmd.getEntityId());
+			Scooter scooter = loadEntity(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
