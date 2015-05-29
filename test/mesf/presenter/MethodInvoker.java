@@ -112,6 +112,9 @@ public class MethodInvoker
 //			{
 //				this.addError(String.format("PRESENTER EXCEPTION: " + ex.getMessage()));
 				Logger.log(String.format("PRESENTER EXCEPTION: " + ex.getMessage()));
+				reply.setFailed(true);
+				reply.setDestination(Reply.FOWARD_ERROR);
+				
 				return null;
 //			}
 		}

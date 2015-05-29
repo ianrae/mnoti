@@ -1,7 +1,6 @@
 package mesf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -32,6 +31,7 @@ import mesf.cmd.CommandProcessor;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mef.framework.sfx.SfxTrail;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete
@@ -48,14 +48,34 @@ public class PresenterTests extends BaseMesfTest
 {
 	public static abstract class Presenter //extends CommandProcessor
 	{
-		protected Reply reply;
+		protected Reply baseReply;
 		
 		public Presenter()
 		{
-			reply = new Reply();
 		}
 		
+		protected abstract Reply createReply();
+		
 		public Reply process(Request request) 
+		{
+			this.baseReply = this.createReply();
+			String methodName = getMethodName(request);
+			Logger.log(String.format("[MEF] %s.%s ", this.getClass().getSimpleName(), methodName));
+		
+			doBeforeAction(request);
+			if (baseReply.getDestination() != Reply.VIEW_NONE)
+			{
+				return baseReply;
+			}
+			
+			MethodInvoker invoker = new MethodInvoker(this, methodName, Request.class);
+			Object res = invoker.call(request, baseReply);			
+			doAfterAction(request); //always do it
+			
+			return baseReply;
+		}
+		
+		private String getMethodName(Request request) 
 		{
 			String methodName = request.getClass().getName();
 			int pos = methodName.lastIndexOf('.');
@@ -69,16 +89,41 @@ public class PresenterTests extends BaseMesfTest
 				}
 			}
 			methodName = "on" + methodName;
-			Logger.log(String.format("[MEF] %s.%s ", this.getClass().getSimpleName(), methodName));
-			
-			MethodInvoker invoker = new MethodInvoker(this, methodName, Request.class);
-			
-			Object res = invoker.call(request, reply);			
-			return reply;
+			return methodName;
 		}
 		
-//		protected abstract HandlerResult beforeCmd(ICommand cmd);
-//		protected abstract HandlerResult afterCmd(ICommand cmd);
+		
+		protected void doBeforeAction(Request request)
+		{
+			try 
+			{
+				beforeRequest(request);
+			}
+			catch (Exception e) 
+			{
+//				this.addErrorException(e, "formatter");
+				baseReply.setFailed(true);
+				baseReply.setDestination(Reply.FOWARD_ERROR);
+			}
+		}
+		protected void doAfterAction(Request request)
+		{
+			try 
+			{
+				afterRequest(request);
+			}
+			catch (Exception e) 
+			{
+//				this.addErrorException(e, "formatter");
+				baseReply.setFailed(true);
+				baseReply.setDestination(Reply.FOWARD_ERROR);
+			}
+		}
+		
+		protected void beforeRequest(Request request)
+		{}
+		protected void afterRequest(Request request)
+		{}
 	}
 	
 	public static class MyReply extends Reply
@@ -89,20 +134,28 @@ public class PresenterTests extends BaseMesfTest
 	public static class MyPres extends Presenter
 	{
 		private MyReply rr = new MyReply();
+		public SfxTrail trail = new SfxTrail();
 		
-		public MyPres()
+		protected Reply createReply()
 		{
-			super();
-			reply = rr;
+			return rr;
 		}
 		
-		public Reply onRequest(Request cmd)
+		public void onRequest(Request cmd)
 		{
 			Logger.log("i n d e xx");
+			trail.add("index");
 			rr.setDestination(Reply.VIEW_INDEX);
-			return reply;
 		}
 		
+		protected void beforeRequest(Request request)
+		{
+			trail.add("before");
+		}
+		protected void afterRequest(Request request)
+		{
+			trail.add("after");
+		}
 	}
 	
 	@Test
@@ -114,8 +167,10 @@ public class PresenterTests extends BaseMesfTest
 		Reply reply = pres.process(request);
 		
 		assertNotNull(reply);
+		assertTrue(reply instanceof MyReply);
+		assertEquals(Reply.VIEW_INDEX, reply.getDestination());
 		
-		
+		log(pres.trail.getTrail());
 //		MyUserPerm perm = this.createPerm();
 		
 //		int n = 5; 
