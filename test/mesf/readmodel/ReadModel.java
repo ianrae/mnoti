@@ -8,6 +8,7 @@ import mesf.persistence.Stream;
 public abstract class ReadModel implements ICommitObserver, IReadModel
 {
 	public long lastCommitId;
+	public long lastEventId;
 	public Object obj;
 	
 	public ReadModel()
@@ -29,6 +30,12 @@ public abstract class ReadModel implements ICommitObserver, IReadModel
 	public void setLastCommitId(long id) 
 	{
 		this.lastCommitId = id;
+	}
+	
+	@Override
+	public void setLastEventId(long id) 
+	{
+		this.lastEventId = id;
 	}
 	
 	@Override

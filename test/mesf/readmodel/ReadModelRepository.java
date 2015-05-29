@@ -99,4 +99,13 @@ public class ReadModelRepository implements ICommitObserver, IReadModel
 			}
 		}
 	}
+
+	@Override
+	public void setLastEventId(long id)
+	{
+		for(ReadModel readModel : this.readModelL)
+		{
+			readModel.setLastEventId(id);
+		}
+	}
 }
