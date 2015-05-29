@@ -34,7 +34,7 @@ public class EntityRepository implements ICommitObserver
 		Logger.log(trail.getTrail());
 	}
 
-	public synchronized BaseEntity loadObject(String type, Long entityId, EntityLoader oloader) throws Exception
+	public synchronized BaseEntity loadEntity(String type, Long entityId, EntityLoader oloader) throws Exception
 	{
 		BaseEntity obj = map.get(entityId);
 		Long startId = null;
@@ -50,10 +50,10 @@ public class EntityRepository implements ICommitObserver
 		}
 
 		numMisses++;
-		obj = doLoadObject(type, entityId, oloader, startId, obj);
+		obj = doLoadEntity(type, entityId, oloader, startId, obj);
 		return obj;
 	}
-	private BaseEntity doLoadObject(String type, Long entityId, EntityLoader oloader, Long startId, BaseEntity obj) throws Exception
+	private BaseEntity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, BaseEntity obj) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)

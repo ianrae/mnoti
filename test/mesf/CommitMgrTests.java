@@ -155,7 +155,7 @@ public class CommitMgrTests extends BaseMesfTest
 
 		private Scooter loadTheObject(long entityId) throws Exception 
 		{
-			Scooter scooter = (Scooter) mtx.loadObject(Scooter.class, entityId);
+			Scooter scooter = (Scooter) mtx.loadEntity(Scooter.class, entityId);
 			return scooter;
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
@@ -283,11 +283,11 @@ public class CommitMgrTests extends BaseMesfTest
 		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
 		EntityRepository objcache = new EntityRepository(streamDAO, registry);
 		
-		BaseEntity obj = objcache.loadObject("scooter", scooter.getId(), oloader);
+		BaseEntity obj = objcache.loadEntity("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj.getId().longValue());
 		chkScooter((Scooter) obj, 444, 26, "abc");
 
-		BaseEntity obj2 = objcache.loadObject("scooter", scooter.getId(), oloader);
+		BaseEntity obj2 = objcache.loadEntity("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj2.getId().longValue());
 		chkScooter((Scooter) obj2, 444, 26, "abc");
 		

@@ -31,7 +31,7 @@ public abstract class CommandProcessor
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
-		//!break rules here and we modify command. Since controller needs to know id of newly created object
+		//!break rules here and we modify command. Since controller needs to know id of newly created entity
 		cmd.entityId = mtx.getCommitMgr().insertEntity(mgr, obj);
 	}
 	public void updateEntity(BaseEntity obj)

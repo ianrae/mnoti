@@ -78,10 +78,10 @@ public class MContext
 		return vloader;
 	}
 	
-	public BaseEntity loadObject(Class clazz, long entityId) throws Exception 
+	public BaseEntity loadEntity(Class clazz, long entityId) throws Exception 
 	{
 		String type = this.getRegistry().findTypeForClass(clazz);
-		BaseEntity obj = this.getHydrater().loadObject(type, entityId, this.getOloader());
+		BaseEntity obj = this.getHydrater().loadEntity(type, entityId, this.getOloader());
 		return obj;
 	}
 	

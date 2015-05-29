@@ -135,7 +135,7 @@ public class UserTests extends BaseMesfTest
 
 		private User loadEntity(long entityId) throws Exception 
 		{
-			User scooter = (User) mtx.loadObject(User.class, entityId);
+			User scooter = (User) mtx.loadEntity(User.class, entityId);
 			return scooter;
 		}
 		private void doUpdateCmd(UpdateCmd cmd) throws Exception 

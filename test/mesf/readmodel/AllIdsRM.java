@@ -69,7 +69,7 @@ public class AllIdsRM<T> extends ReadModel
 		List<T> L = new ArrayList<>();
 		for(Long id : map.keySet())
 		{
-			BaseEntity obj = mtx.loadObject(clazz, id);
+			BaseEntity obj = mtx.loadEntity(clazz, id);
 			L.add((T) obj);
 		}
 		return L;
