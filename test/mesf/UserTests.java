@@ -8,7 +8,7 @@ import java.util.List;
 import mef.framework.helpers.BaseTest;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
-import mesf.cmd.ObjectCommand;
+import mesf.cmd.BaseCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
 import mesf.core.MContext;
@@ -82,16 +82,16 @@ public class UserTests extends BaseMesfTest
 	
 	public static class MyUserProc extends CommandProcessor
 	{
-		public static class InsertCmd extends ObjectCommand
+		public static class InsertCmd extends BaseCommand
 		{
 			public int a;
 			public String s;
 		}
-		public static class UpdateCmd extends ObjectCommand
+		public static class UpdateCmd extends BaseCommand
 		{
 			public String s;
 		}
-		public static class DeleteCmd extends ObjectCommand
+		public static class DeleteCmd extends BaseCommand
 		{
 		}
 		

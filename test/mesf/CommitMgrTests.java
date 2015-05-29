@@ -11,7 +11,7 @@ import mef.framework.helpers.BaseTest;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
-import mesf.cmd.ObjectCommand;
+import mesf.cmd.BaseCommand;
 import mesf.core.BaseObject;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
@@ -101,16 +101,16 @@ public class CommitMgrTests extends BaseMesfTest
 	}
 	
 	
-	public static class InsertScooterCmd extends ObjectCommand
+	public static class InsertScooterCmd extends BaseCommand
 	{
 		public int a;
 		public String s;
 	}
-	public static class UpdateScooterCmd extends ObjectCommand
+	public static class UpdateScooterCmd extends BaseCommand
 	{
 		public String s;
 	}
-	public static class DeleteScooterCmd extends ObjectCommand
+	public static class DeleteScooterCmd extends BaseCommand
 	{
 	}
 	

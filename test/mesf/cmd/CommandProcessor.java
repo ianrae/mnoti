@@ -26,7 +26,7 @@ public abstract class CommandProcessor
 	
 	public abstract void process(ICommand cmd);
 	
-	public void insertObject(ObjectCommand cmd, BaseObject obj)
+	public void insertObject(BaseCommand cmd, BaseObject obj)
 	{
 		String type = this.getObjectType(obj);
 		IObjectMgr mgr = mtx.getRegistry().findByType(type);

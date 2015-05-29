@@ -1,12 +1,12 @@
 package mesf.cmd;
 
-public class ObjectCommand implements ICommand
+public class BaseCommand implements ICommand
 {
 	public long objectId;
 
 	@Override
 	public long getObjectId() 
 	{
-		return objectId;
+		return objectId; //x
 	}
 }
