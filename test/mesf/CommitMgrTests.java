@@ -150,7 +150,7 @@ public class CommitMgrTests extends BaseMesfTest
 				return; //!!
 			}
 			
-			deleteObject(scooter);
+			deleteEntity(scooter);
 		}
 
 		private Scooter loadTheObject(long entityId) throws Exception 
@@ -167,7 +167,7 @@ public class CommitMgrTests extends BaseMesfTest
 			}
 			
 			scooter.setS(cmd.s);
-			updateObject(scooter);
+			updateEntity(scooter);
 		}
 
 		private void doInsertScooterCmd(InsertScooterCmd cmd) throws Exception
@@ -177,7 +177,7 @@ public class CommitMgrTests extends BaseMesfTest
 			scooter.setB(10);
 			scooter.setS(cmd.s);
 			
-			insertObject(cmd, scooter);
+			insertEntity(cmd, scooter);
 		}
 	}
 

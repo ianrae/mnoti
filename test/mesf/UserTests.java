@@ -130,7 +130,7 @@ public class UserTests extends BaseMesfTest
 				return; //!!
 			}
 			
-			deleteObject(scooter);
+			deleteEntity(scooter);
 		}
 
 		private User loadEntity(long entityId) throws Exception 
@@ -147,7 +147,7 @@ public class UserTests extends BaseMesfTest
 			}
 			
 			scooter.setS(cmd.s);
-			updateObject(scooter);
+			updateEntity(scooter);
 		}
 
 		private void doInsertCmd(InsertCmd cmd) throws Exception
@@ -157,7 +157,7 @@ public class UserTests extends BaseMesfTest
 			scooter.setB(10);
 			scooter.setS(cmd.s);
 			
-			insertObject(cmd, scooter);
+			insertEntity(cmd, scooter);
 		}
 	}
 	
