@@ -91,6 +91,11 @@ public class PresenterTests extends BaseMesfTest
 			this.commitWriter = new CommitWriter(mtx);
 		}
 		
+		public void addInterceptor(IReqquestInterceptor intercept)
+		{
+			interceptL.add(intercept);
+		}
+		
 		protected abstract Reply createReply();
 		
 		public Reply process(Request request) 
@@ -111,6 +116,7 @@ public class PresenterTests extends BaseMesfTest
 			catch(Exception ex)
 			{
 				ex.printStackTrace();
+				Logger.log("cont-after-except");
 //				this.addErrorException(e, "formatter");
 				baseReply.setFailed(true);
 				baseReply.setDestination(Reply.FOWARD_ERROR);
@@ -124,7 +130,10 @@ public class PresenterTests extends BaseMesfTest
 			String methodName = getMethodName(request);
 			Logger.log(String.format("[MEF] %s.%s ", this.getClass().getSimpleName(), methodName));
 
-			processInterceptors(request);
+			if (! processInterceptors(request))
+			{
+				return baseReply;
+			}
 			beforeRequest(request);
 			if (baseReply.getDestination() != Reply.VIEW_NONE)
 			{
@@ -138,7 +147,7 @@ public class PresenterTests extends BaseMesfTest
 			return baseReply;
 		}
 		
-		private void processInterceptors(Request request) 
+		private boolean processInterceptors(Request request) 
 		{
 			InterceptorContext itx = new InterceptorContext();
 			for(IReqquestInterceptor interceptor : this.interceptL)
@@ -146,9 +155,10 @@ public class PresenterTests extends BaseMesfTest
 				interceptor.process(request, itx);
 				if (itx.haltProcessing)
 				{
-					return;
+					return false; //halt
 				}
 			}
+			return true; //continue
 		}
 
 		private String getMethodName(Request request) 
@@ -272,40 +282,56 @@ public class PresenterTests extends BaseMesfTest
 			long id = perm.createMContext().getMaxId();
 			assertEquals(i+1, id); 
 		}
-		
 	}
 	
 	private static class MyIntercept implements IReqquestInterceptor
 	{
 		public SfxTrail trail;
+		public int interceptorType;
 
 		@Override
 		public void process(Request request, InterceptorContext itx) 
 		{
 			trail.add("MYINTERCEPT");
+			if (interceptorType == 2)
+			{
+				itx.haltProcessing = true;
+			}
 		}
-		
-		
 	}
 
 	@Test
 	public void testFullChain() throws Exception
 	{
+		runOnce("before;index;after", 1L, 0);
+		runOnce("MYINTERCEPT;before;index;after", 1L, 1);
+		runOnce("MYINTERCEPT", 0L, 2);
+	}
+
+	private void runOnce(String expected, long expectedMaxId, int interceptorType) throws Exception
+	{
 		MyUserPerm perm = this.createPerm();
 		
 		MContext mtx = perm.createMContext();
 		MyPres pres = new MyPres(mtx);
+		if (interceptorType > 0)
+		{
+			MyIntercept intercept = new MyIntercept();
+			intercept.trail = pres.trail;
+			intercept.interceptorType = interceptorType;
+			pres.addInterceptor(intercept);
+		}
+		
 		MyPres.InsertCmd cmd = pres.new InsertCmd();
 		cmd.a = 101;
 		cmd.s = String.format("bob");
 		
 		Reply reply = pres.process(cmd);
 		
+		assertEquals(expected, pres.trail.getTrail());
 		long id = perm.createMContext().getMaxId();
-		assertEquals(1, id); 
-		assertEquals("before;index;after", pres.trail.getTrail());
+		assertEquals(expectedMaxId, id); 
 	}
-
 
 	//-----------------------
 	private MyUserPerm createPerm() throws Exception
