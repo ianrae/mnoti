@@ -12,7 +12,7 @@ import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.BaseCommand;
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitObserver;
@@ -283,11 +283,11 @@ public class CommitMgrTests extends BaseMesfTest
 		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
 		EntityRepository objcache = new EntityRepository(streamDAO, registry);
 		
-		BaseObject obj = objcache.loadObject("scooter", scooter.getId(), oloader);
+		BaseEntity obj = objcache.loadObject("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj.getId().longValue());
 		chkScooter((Scooter) obj, 444, 26, "abc");
 
-		BaseObject obj2 = objcache.loadObject("scooter", scooter.getId(), oloader);
+		BaseEntity obj2 = objcache.loadObject("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj2.getId().longValue());
 		chkScooter((Scooter) obj2, 444, 26, "abc");
 		

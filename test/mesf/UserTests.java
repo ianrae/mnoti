@@ -10,7 +10,7 @@ import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.BaseCommand;
 import mesf.cmd.ProcRegistry;
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.entity.EntityManagerRegistry;
@@ -38,7 +38,7 @@ import org.junit.Test;
 
 public class UserTests extends BaseMesfTest 
 {
-	public static class User extends BaseObject
+	public static class User extends BaseEntity
 	{
 		private int a;
 		private int b;
@@ -67,7 +67,7 @@ public class UserTests extends BaseMesfTest
 			this.s = s;
 		}
 		@Override
-		public BaseObject clone() 
+		public BaseEntity clone() 
 		{
 			User copy = new User();
 			copy.setId(getId()); //!

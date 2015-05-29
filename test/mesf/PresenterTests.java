@@ -11,7 +11,7 @@ import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
 import mesf.cmd.ProcRegistry;
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 import mesf.core.MContext;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
@@ -52,7 +52,7 @@ public class PresenterTests extends BaseMesfTest
 		{
 			this.mtx = mtx;
 		}
-		public long insertObject(BaseObject obj)
+		public long insertObject(BaseEntity obj)
 		{
 			String type = this.getObjectType(obj);
 			IEntityMgr mgr = mtx.getRegistry().findByType(type);
@@ -60,7 +60,7 @@ public class PresenterTests extends BaseMesfTest
 			return mtx.getCommitMgr().insertObject(mgr, obj);
 		}
 		
-		public String getObjectType(BaseObject obj)
+		public String getObjectType(BaseEntity obj)
 		{
 			String type = mtx.getRegistry().findTypeForClass(obj.getClass());
 			return type;
@@ -185,7 +185,7 @@ public class PresenterTests extends BaseMesfTest
 		protected void afterRequest(Request request)
 		{}
 		
-		protected void insertObject(BaseObject obj)
+		protected void insertObject(BaseEntity obj)
 		{
 			this.commitWriter.insertObject(obj);
 		}

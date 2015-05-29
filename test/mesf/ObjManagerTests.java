@@ -2,7 +2,7 @@ package mesf;
 
 import static org.junit.Assert.assertEquals;
 import mef.framework.helpers.BaseTest;
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 import mesf.entity.EntityMgr;
 
 import org.junit.Before;
@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class ObjManagerTests extends BaseMesfTest 
 {
-	public static class Scooter extends BaseObject
+	public static class Scooter extends BaseEntity
 	{
 		private int a;
 		private int b;
@@ -39,7 +39,7 @@ public class ObjManagerTests extends BaseMesfTest
 			this.s = s;
 		}
 		@Override
-		public BaseObject clone() 
+		public BaseEntity clone() 
 		{
 			Scooter copy = new Scooter();
 			copy.setId(getId()); //!
@@ -122,7 +122,7 @@ public class ObjManagerTests extends BaseMesfTest
 		scooter.setA(100);
 		scooter.setB(200);
 
-		String json2 = mgr.renderObject(scooter);
+		String json2 = mgr.renderEntity(scooter);
 //		String s = fix("{'a':100,'b':200,'s':'abc','setList':['a','b']}");
 		String s = fix("{'a':100,'b':200,'s':'abc'}");
 		assertEquals(s, json2);

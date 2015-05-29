@@ -106,21 +106,21 @@ public class CommitMgr
 		}
 	}
 	
-	public long insertObject(IEntityMgr mgr, BaseObject obj)
+	public long insertObject(IEntityMgr mgr, BaseEntity obj)
 	{
 		Stream stream = new Stream();
 		stream.setType(mgr.getTypeName());
 		this.streamDAO.save(stream);
 		
-		Long objectId = stream.getId();
-		obj.setId(objectId);
+		Long entityid = stream.getId();
+		obj.setId(entityid);
 		
 		Commit commit = new Commit();
 		commit.setAction('I');
-		commit.setStreamId(objectId);
+		commit.setStreamId(entityid);
 		String json = "";
 		try {
-			json = mgr.renderObject(obj);
+			json = mgr.renderEntity(obj);
 		} catch (Exception e) {
 			e.printStackTrace();  //!!handle later!!
 		}
@@ -130,11 +130,11 @@ public class CommitMgr
 		Long snapshotId = commit.getId();
 		stream.setSnapshotId(snapshotId);
 		this.streamDAO.update(stream);
-		Logger.logDebug("INS [%d] %d %s", snapshotId, objectId, mgr.getTypeName());
-		return objectId;
+		Logger.logDebug("INS [%d] %d %s", snapshotId, entityid, mgr.getTypeName());
+		return entityid;
 	}
 	
-	public void updateObject(IEntityMgr mgr, BaseObject obj)
+	public void updateObject(IEntityMgr mgr, BaseEntity obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)
@@ -149,7 +149,7 @@ public class CommitMgr
 		commit.setStreamId(objectId);
 		String json = "";
 		try {
-			json = mgr.renderPartialObject(obj);
+			json = mgr.renderPartial(obj);
 		} catch (Exception e) {
 			e.printStackTrace();  //!!handle later!!
 		}
@@ -157,7 +157,7 @@ public class CommitMgr
 		this.dao.save(commit);
 		Logger.logDebug("UPD [%d] %d %s", commit.getId(), objectId, mgr.getTypeName());
 	}
-	public void deleteObject(IEntityMgr mgr, BaseObject obj)
+	public void deleteObject(IEntityMgr mgr, BaseEntity obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)

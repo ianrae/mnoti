@@ -1,6 +1,6 @@
 package mesf.entity;
 
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 
 
 //used by commands
@@ -13,13 +13,13 @@ public class EntityHydrater
 		this.objcache = objcache;
 	}
 	
-	public BaseObject loadObject(String type, Long objectId, EntityLoader oloader) throws Exception
+	public BaseEntity loadObject(String type, Long objectId, EntityLoader oloader) throws Exception
 	{
 		//objcache should be immutable objects, so for our commands make a copy
-		BaseObject obj = objcache.loadObject(type, objectId, oloader);
+		BaseEntity obj = objcache.loadObject(type, objectId, oloader);
 		if (obj != null)
 		{
-			BaseObject clone = obj.clone();
+			BaseEntity clone = obj.clone();
 			return clone;
 		}
 		return null;

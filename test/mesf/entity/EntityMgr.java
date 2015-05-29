@@ -3,7 +3,7 @@ package mesf.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-public class EntityMgr<T extends BaseObject> implements IEntityMgr
+public class EntityMgr<T extends BaseEntity> implements IEntityMgr
 {
 	private Class<?> clazz;
 
@@ -55,7 +55,7 @@ public class EntityMgr<T extends BaseObject> implements IEntityMgr
 	}
 
 	@Override
-	public String renderObject(BaseObject obj) throws Exception 
+	public String renderEntity(BaseEntity obj) throws Exception 
 	{
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleFilterProvider dummy = new SimpleFilterProvider();
@@ -75,20 +75,20 @@ public class EntityMgr<T extends BaseObject> implements IEntityMgr
 	}
 
 	@Override
-	public String renderPartialObject(BaseObject obj) throws Exception 
+	public String renderPartial(BaseEntity obj) throws Exception 
 	{
 		return this.renderSetList((T) obj);
 	}
 
 	@Override
-	public BaseObject rehydrate(String json) throws Exception 
+	public BaseEntity rehydrate(String json) throws Exception 
 	{
-		BaseObject obj = this.createFromJson(json);
+		BaseEntity obj = this.createFromJson(json);
 		return obj;
 	}
 
 	@Override
-	public void mergeHydrate(BaseObject obj, String json) throws Exception 
+	public void mergeHydrate(BaseEntity obj, String json) throws Exception 
 	{
 		mergeJson((T) obj, json);
 	}

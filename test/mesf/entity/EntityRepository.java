@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 import mesf.core.ICommitObserver;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
@@ -15,7 +15,7 @@ import org.mef.framework.sfx.SfxTrail;
 
 public class EntityRepository implements ICommitObserver
 {
-	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
+	Map<Long, BaseEntity> map = new HashMap<>(); //!!needs to be thread-safe
 	Map<Long, Long> whenMap = new HashMap<>(); 
 	private IStreamDAO streamDAO;
 	private EntityManagerRegistry registry;
@@ -35,9 +35,9 @@ public class EntityRepository implements ICommitObserver
 		Logger.log(trail.getTrail());
 	}
 
-	public synchronized BaseObject loadObject(String type, Long objectId, EntityLoader oloader) throws Exception
+	public synchronized BaseEntity loadObject(String type, Long objectId, EntityLoader oloader) throws Exception
 	{
-		BaseObject obj = map.get(objectId);
+		BaseEntity obj = map.get(objectId);
 		Long startId = null;
 		if (obj != null)
 		{
@@ -54,7 +54,7 @@ public class EntityRepository implements ICommitObserver
 		obj = doLoadObject(type, objectId, oloader, startId, obj);
 		return obj;
 	}
-	private BaseObject doLoadObject(String type, Long objectId, EntityLoader oloader, Long startId, BaseObject obj) throws Exception
+	private BaseEntity doLoadObject(String type, Long objectId, EntityLoader oloader, Long startId, BaseEntity obj) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)
@@ -99,7 +99,7 @@ public class EntityRepository implements ICommitObserver
 	public synchronized void observe(Stream stream, Commit commit) 
 	{
 		Long objectId = stream.getId();
-		BaseObject obj = map.get(objectId);
+		BaseEntity obj = map.get(objectId);
 
 		IEntityMgr mgr = registry.findByType(stream.getType());
 		try {
@@ -109,7 +109,7 @@ public class EntityRepository implements ICommitObserver
 			e.printStackTrace();
 		}
 	}
-	private BaseObject doObserve(Long objectId, Commit commit, IEntityMgr mgr, BaseObject obj) throws Exception
+	private BaseEntity doObserve(Long objectId, Commit commit, IEntityMgr mgr, BaseEntity obj) throws Exception
 	{
 		this.trail.add(commit.getId().toString()); //remove later!!
 
@@ -142,9 +142,9 @@ public class EntityRepository implements ICommitObserver
 		return obj;
 	}
 
-	public synchronized BaseObject getIfLoaded(Long objectId) 
+	public synchronized BaseEntity getIfLoaded(Long objectId) 
 	{
-		BaseObject obj = map.get(objectId);
+		BaseEntity obj = map.get(objectId);
 		return obj;
 	}
 }

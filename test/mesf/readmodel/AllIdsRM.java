@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import mesf.UserTests;
 import mesf.UserTests.User;
-import mesf.core.BaseObject;
+import mesf.core.BaseEntity;
 import mesf.core.MContext;
 import mesf.core.Projector;
 import mesf.persistence.Commit;
@@ -69,7 +69,7 @@ public class AllIdsRM<T> extends ReadModel
 		List<T> L = new ArrayList<>();
 		for(Long id : map.keySet())
 		{
-			BaseObject obj = mtx.loadObject(clazz, id);
+			BaseEntity obj = mtx.loadObject(clazz, id);
 			L.add((T) obj);
 		}
 		return L;
