@@ -1,11 +1,13 @@
 package mesf.readmodel;
 
 import mesf.core.ICommitObserver;
+import mesf.core.IEventObserver;
+import mesf.persistence.Event;
 import mesf.core.MContext;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 
-public abstract class ReadModel implements ICommitObserver, IReadModel
+public abstract class ReadModel implements ICommitObserver, IEventObserver, IReadModel
 {
 	public long lastCommitId;
 	public long lastEventId;
@@ -37,6 +39,18 @@ public abstract class ReadModel implements ICommitObserver, IReadModel
 	{
 		this.lastEventId = id;
 	}
+	
+	@Override
+	public boolean willAcceptEvent(Event event) 
+	{
+		return false;
+	}
+
+	@Override
+	public void observeEvent(Event event) 
+	{
+	}
+	
 	
 	@Override
 	public abstract void freshen(MContext mtx);

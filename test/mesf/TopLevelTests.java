@@ -18,6 +18,7 @@ import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
+import mesf.persistence.Event;
 import mesf.persistence.IEventDAO;
 import mesf.persistence.MockEventDAO;
 import mesf.persistence.PersistenceContext;
@@ -79,7 +80,6 @@ public class TopLevelTests extends BaseMesfTest
 			// TODO Auto-generated method stub
 			
 		}
-		
 	}
 	
 	public static class MyPerm extends Permanent

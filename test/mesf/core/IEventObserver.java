@@ -6,6 +6,6 @@ import mesf.persistence.Stream;
 
 public interface IEventObserver
 {
-	boolean willAccept(Event event);
-	void observe(Event event);
+	boolean willAcceptEvent(Event event);
+	void observeEvent(Event event);
 }

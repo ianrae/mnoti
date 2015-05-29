@@ -54,7 +54,7 @@ public class EventProjector
 	{
 		for(IEventObserver observer : observerL)
 		{
-			observer.observe(event);
+			observer.observeEvent(event);
 		}
 	}
 
