@@ -98,24 +98,24 @@ public class MethodInvoker
 				return null;
 			}
 			
-//			if (ex instanceof NotLoggedInException)
-//			{
-//				reply.setDestination(Reply.FOWARD_NOT_AUTHENTICATED);
-//				return reply;
-//			}
-//			else if (ex instanceof NotAuthorizedException)
-//			{
-//				reply.setDestination(Reply.FOWARD_NOT_AUTHORIZED);
-//				return reply;
-//			}
-//			else
-//			{
+			if (ex instanceof NotLoggedInException)
+			{
+				reply.setDestination(Reply.FOWARD_NOT_AUTHENTICATED);
+				return reply;
+			}
+			else if (ex instanceof NotAuthorizedException)
+			{
+				reply.setDestination(Reply.FOWARD_NOT_AUTHORIZED);
+				return reply;
+			}
+			else
+			{
 //				this.addError(String.format("PRESENTER EXCEPTION: " + ex.getMessage()));
 				Logger.log(String.format("PRESENTER EXCEPTION: " + ex.getMessage()));
 				reply.setFailed(true);
 				reply.setDestination(Reply.FOWARD_ERROR);
 				
 				return null;
-//			}
+			}
 		}
 	}

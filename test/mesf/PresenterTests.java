@@ -1,22 +1,21 @@
 package mesf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import mef.framework.helpers.BaseTest;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
-import mesf.cmd.ICommand;
-import mesf.cmd.ObjectCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
 import mesf.core.IObjectMgr;
 import mesf.core.MContext;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
-import mesf.core.Permanent;
 import mesf.log.Logger;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
@@ -24,10 +23,10 @@ import mesf.persistence.MockCommitDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.presenter.MethodInvoker;
+import mesf.presenter.NotAuthorizedException;
+import mesf.presenter.NotLoggedInException;
 import mesf.presenter.Reply;
 import mesf.presenter.Request;
-import mesf.readmodel.AllIdsRM;
-import mesf.cmd.CommandProcessor;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public class PresenterTests extends BaseMesfTest
 		{
 			this.mtx = mtx;
 		}
-		public long insertObject(ICommand cmd, BaseObject obj)
+		public long insertObject(BaseObject obj)
 		{
 			String type = this.getObjectType(obj);
 			IObjectMgr mgr = mtx.getRegistry().findByType(type);
@@ -68,12 +67,23 @@ public class PresenterTests extends BaseMesfTest
 		}
 	}
 	
+	public static class InterceptorContext
+	{
+		public boolean haltProcessing;
+	}
+	
+	public interface IReqquestInterceptor
+	{
+		void process(Request request, InterceptorContext itx);
+	}
+	
 	
 	public static abstract class Presenter //extends CommandProcessor
 	{
 		protected Reply baseReply;
 		protected MContext mtx;
 		protected CommitWriter commitWriter;
+		protected List<IReqquestInterceptor> interceptL = new ArrayList<>();
 		
 		public Presenter(MContext mtx)
 		{
@@ -85,11 +95,37 @@ public class PresenterTests extends BaseMesfTest
 		
 		public Reply process(Request request) 
 		{
+			Reply reply = null;
+			try
+			{
+				reply = doProcess(request);
+			}
+			catch(NotLoggedInException ex)
+			{
+				baseReply.setDestination(Reply.FOWARD_NOT_AUTHENTICATED);
+			}
+			catch(NotAuthorizedException ex)
+			{
+				baseReply.setDestination(Reply.FOWARD_NOT_AUTHORIZED);
+			}
+			catch(Exception ex)
+			{
+				ex.printStackTrace();
+//				this.addErrorException(e, "formatter");
+				baseReply.setFailed(true);
+				baseReply.setDestination(Reply.FOWARD_ERROR);
+			}
+			return reply;
+		}
+		
+		private Reply doProcess(Request request) 
+		{
 			this.baseReply = this.createReply();
 			String methodName = getMethodName(request);
 			Logger.log(String.format("[MEF] %s.%s ", this.getClass().getSimpleName(), methodName));
-		
-			doBeforeAction(request);
+
+			processInterceptors(request);
+			beforeRequest(request);
 			if (baseReply.getDestination() != Reply.VIEW_NONE)
 			{
 				return baseReply;
@@ -97,11 +133,24 @@ public class PresenterTests extends BaseMesfTest
 			
 			MethodInvoker invoker = new MethodInvoker(this, methodName, Request.class);
 			invoker.call(request, baseReply);			
-			doAfterAction(request); //always do it
+			afterRequest(request); //always do it
 			
 			return baseReply;
 		}
 		
+		private void processInterceptors(Request request) 
+		{
+			InterceptorContext itx = new InterceptorContext();
+			for(IReqquestInterceptor interceptor : this.interceptL)
+			{
+				interceptor.process(request, itx);
+				if (itx.haltProcessing)
+				{
+					return;
+				}
+			}
+		}
+
 		private String getMethodName(Request request) 
 		{
 //			String methodName = request.getClass().getName();
@@ -120,43 +169,14 @@ public class PresenterTests extends BaseMesfTest
 			return methodName;
 		}
 		
-		
-		protected void doBeforeAction(Request request)
-		{
-			try 
-			{
-				beforeRequest(request);
-			}
-			catch (Exception e) 
-			{
-//				this.addErrorException(e, "formatter");
-				baseReply.setFailed(true);
-				baseReply.setDestination(Reply.FOWARD_ERROR);
-			}
-		}
-		protected void doAfterAction(Request request)
-		{
-			try 
-			{
-				afterRequest(request);
-			}
-			catch (Exception e) 
-			{
-//				this.addErrorException(e, "formatter");
-				baseReply.setFailed(true);
-				baseReply.setDestination(Reply.FOWARD_ERROR);
-			}
-		}
-		
 		protected void beforeRequest(Request request)
 		{}
 		protected void afterRequest(Request request)
 		{}
 		
-		
-		protected void insertObject(ICommand cmd, BaseObject obj)
+		protected void insertObject(BaseObject obj)
 		{
-			this.commitWriter.insertObject(cmd, obj);
+			this.commitWriter.insertObject(obj);
 		}
 	}
 	
@@ -173,7 +193,6 @@ public class PresenterTests extends BaseMesfTest
 			public String s;
 		}
 		
-		
 		private MyReply reply = new MyReply();
 		public SfxTrail trail = new SfxTrail();
 		
@@ -181,7 +200,6 @@ public class PresenterTests extends BaseMesfTest
 		{
 			super(mtx);
 		}
-		
 		protected Reply createReply()
 		{
 			return reply;
@@ -203,7 +221,7 @@ public class PresenterTests extends BaseMesfTest
 			scooter.setB(10);
 			scooter.setS(cmd.s);
 			
-			insertObject(cmd, scooter);
+			insertObject(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		
@@ -255,71 +273,38 @@ public class PresenterTests extends BaseMesfTest
 			assertEquals(i+1, id); 
 		}
 		
-//		MContext mtx = perm.createMContext();
-//		mtx.acquire(perm.readModel1.getClass());
-//		List<User> L = perm.readModel1.queryAll(mtx);
-//		assertEquals(5, L.size());
-//		for(User u : L)
-//		{
-//			assertNotNull(u);
-//			log(u.getId().toString());
-//		}
-//		
-//		log("again..");
-//		n = 1; 
-//		for(int i = 0; i < n; i++)
-//		{
-//			log(String.format("%d..	", i));
-//			mtx = perm.createMContext();
-//			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
-//			cmd.a = 101+i;
-//			cmd.s = String.format("bob%d", i+1);
-//			CommandProcessor proc = mtx.findProc(User.class);
-//			proc.process(cmd);
-//		}
-//		
-//		mtx = perm.createMContext();
-//		mtx.acquire(perm.readModel1.getClass());
-//		L = perm.readModel1.queryAll(mtx);
-//		assertEquals(6, L.size());
-//		for(User u : L)
-//		{
-//			assertNotNull(u);
-//			log(u.getId().toString());
-//		}
-//		
-//		
-//		log("del..");
-//		n = 1; 
-//		for(int i = 0; i < n; i++)
-//		{
-//			log(String.format("%d..	", i));
-//			mtx = perm.createMContext();
-//			MyUserProc.DeleteCmd cmd = new MyUserProc.DeleteCmd();
-//			cmd.objectId = 4;
-//			CommandProcessor proc = mtx.findProc(User.class);
-//			proc.process(cmd);
-//		}
-//		
-//		mtx = perm.createMContext();
-//		mtx.acquire(perm.readModel1.getClass());
-//		L = perm.readModel1.queryAll(mtx);
-//		assertEquals(5, L.size());
-//		for(User u : L)
-//		{
-//			assertNotNull(u);
-//			log(u.getId().toString());
-//		}
-//		
-//		perm.readModel1.freshen(mtx);
+	}
+	
+	private static class MyIntercept implements IReqquestInterceptor
+	{
+		public SfxTrail trail;
+
+		@Override
+		public void process(Request request, InterceptorContext itx) 
+		{
+			trail.add("MYINTERCEPT");
+		}
+		
+		
 	}
 
-	
-//	private void chkUserStr(MyPerm perm, long objectId, String string) 
-//	{
-//		User scooter = (User) perm.loadObjectFromRepo(objectId);
-//		assertEquals(string, scooter.getS());
-//	}
+	@Test
+	public void testFullChain() throws Exception
+	{
+		MyUserPerm perm = this.createPerm();
+		
+		MContext mtx = perm.createMContext();
+		MyPres pres = new MyPres(mtx);
+		MyPres.InsertCmd cmd = pres.new InsertCmd();
+		cmd.a = 101;
+		cmd.s = String.format("bob");
+		
+		Reply reply = pres.process(cmd);
+		
+		long id = perm.createMContext().getMaxId();
+		assertEquals(1, id); 
+		assertEquals("before;index;after", pres.trail.getTrail());
+	}
 
 
 	//-----------------------
