@@ -134,14 +134,10 @@ public class PresenterTests extends BaseMesfTest
 			{
 				return baseReply;
 			}
-			beforeRequest(request);
-			if (baseReply.getDestination() != Reply.VIEW_NONE)
-			{
-				return baseReply;
-			}
 			
 			MethodInvoker invoker = new MethodInvoker(this, methodName, Request.class);
 			invoker.call(request, baseReply);			
+			
 			afterRequest(request); //always do it
 			
 			return baseReply;
@@ -157,6 +153,11 @@ public class PresenterTests extends BaseMesfTest
 				{
 					return false; //halt
 				}
+			}
+			beforeRequest(request, itx);
+			if (itx.haltProcessing)
+			{
+				return false; //halt
 			}
 			return true; //continue
 		}
@@ -179,7 +180,7 @@ public class PresenterTests extends BaseMesfTest
 			return methodName;
 		}
 		
-		protected void beforeRequest(Request request)
+		protected void beforeRequest(Request request, InterceptorContext itx)
 		{}
 		protected void afterRequest(Request request)
 		{}
@@ -235,7 +236,7 @@ public class PresenterTests extends BaseMesfTest
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		
-		protected void beforeRequest(Request request)
+		protected void beforeRequest(Request request, InterceptorContext itx)
 		{
 			trail.add("before");
 		}
