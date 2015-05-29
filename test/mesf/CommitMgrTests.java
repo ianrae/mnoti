@@ -153,9 +153,9 @@ public class CommitMgrTests extends BaseMesfTest
 			deleteObject(scooter);
 		}
 
-		private Scooter loadTheObject(long objectId) throws Exception 
+		private Scooter loadTheObject(long entityId) throws Exception 
 		{
-			Scooter scooter = (Scooter) mtx.loadObject(Scooter.class, objectId);
+			Scooter scooter = (Scooter) mtx.loadObject(Scooter.class, entityId);
 			return scooter;
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 

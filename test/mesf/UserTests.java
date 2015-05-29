@@ -124,7 +124,7 @@ public class UserTests extends BaseMesfTest
 
 		private void doDeleteCmd(DeleteCmd cmd) throws Exception 
 		{
-			User scooter = loadTheObject(cmd.getEntityId());
+			User scooter = loadEntity(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -133,14 +133,14 @@ public class UserTests extends BaseMesfTest
 			deleteObject(scooter);
 		}
 
-		private User loadTheObject(long objectId) throws Exception 
+		private User loadEntity(long entityId) throws Exception 
 		{
-			User scooter = (User) mtx.loadObject(User.class, objectId);
+			User scooter = (User) mtx.loadObject(User.class, entityId);
 			return scooter;
 		}
 		private void doUpdateCmd(UpdateCmd cmd) throws Exception 
 		{
-			User scooter = loadTheObject(cmd.getEntityId());
+			User scooter = loadEntity(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -260,9 +260,9 @@ public class UserTests extends BaseMesfTest
 	}
 
 	
-//	private void chkUserStr(MyPerm perm, long objectId, String string) 
+//	private void chkUserStr(MyPerm perm, long entityId, String string) 
 //	{
-//		User scooter = (User) perm.loadObjectFromRepo(objectId);
+//		User scooter = (User) perm.loadObjectFromRepo(entityId);
 //		assertEquals(string, scooter.getS());
 //	}
 

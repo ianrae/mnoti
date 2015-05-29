@@ -12,7 +12,7 @@ public class Request implements ICommand
 //	private Map<String, String> map;
 //	private IFormBinder binder;
 //	public AuthUser authUser; //null means not authenticated
-	protected long objectId = 0L;
+	protected long entityId = 0L;
 	
 	public Request()
 	{}
@@ -20,7 +20,7 @@ public class Request implements ICommand
 	@Override
 	public long getEntityId() 
 	{
-		return objectId;
+		return entityId;
 	}
 	
 //	public void setParameters(Map<String, String> map)
