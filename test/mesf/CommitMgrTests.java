@@ -21,7 +21,7 @@ import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectMgr;
 import mesf.core.ObjectRepository;
 import mesf.persistence.Stream;
-import mesf.core.ObjectLoader;
+import mesf.core.EntityLoader;
 import mesf.core.StreamCache;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
@@ -259,7 +259,7 @@ public class CommitMgrTests extends BaseMesfTest
 	public void testReadModelCache() throws Exception
 	{
 		CommitMgr mgr = createCommitMgr();
-		ObjectLoader oloader = mgr.createObjectLoader();
+		EntityLoader oloader = mgr.createObjectLoader();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
 		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);

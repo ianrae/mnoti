@@ -4,10 +4,10 @@ import mesf.core.BaseObject;
 import mesf.core.CommitMgr;
 import mesf.core.IObjectMgr;
 import mesf.core.MContext;
-import mesf.core.ObjectHydrater;
+import mesf.core.EntityHydrater;
 import mesf.core.ObjectManagerRegistry;
 import mesf.core.ObjectRepository;
-import mesf.core.ObjectLoader;
+import mesf.core.EntityLoader;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
 

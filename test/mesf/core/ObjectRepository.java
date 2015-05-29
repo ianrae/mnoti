@@ -33,7 +33,7 @@ public class ObjectRepository implements ICommitObserver
 		Logger.log(trail.getTrail());
 	}
 
-	public synchronized BaseObject loadObject(String type, Long objectId, ObjectLoader oloader) throws Exception
+	public synchronized BaseObject loadObject(String type, Long objectId, EntityLoader oloader) throws Exception
 	{
 		BaseObject obj = map.get(objectId);
 		Long startId = null;
@@ -52,7 +52,7 @@ public class ObjectRepository implements ICommitObserver
 		obj = doLoadObject(type, objectId, oloader, startId, obj);
 		return obj;
 	}
-	private BaseObject doLoadObject(String type, Long objectId, ObjectLoader oloader, Long startId, BaseObject obj) throws Exception
+	private BaseObject doLoadObject(String type, Long objectId, EntityLoader oloader, Long startId, BaseObject obj) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)

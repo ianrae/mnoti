@@ -8,13 +8,13 @@ import mesf.persistence.ICommitDAO;
 import mesf.persistence.Stream;
 
 
-public class ObjectLoader
+public class EntityLoader
 {
 	private ICommitDAO dao;
 	private StreamCache strcache;
 	private long maxId; //per current epoch
 
-	public ObjectLoader(ICommitDAO dao, StreamCache strcache, long maxId)
+	public EntityLoader(ICommitDAO dao, StreamCache strcache, long maxId)
 	{
 		this.dao = dao;
 		this.strcache = strcache;

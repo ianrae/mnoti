@@ -191,9 +191,9 @@ public class CommitMgr
 		}
 	}
 
-	public ObjectLoader createObjectLoader() 
+	public EntityLoader createObjectLoader() 
 	{
-		ObjectLoader oloader = new ObjectLoader(dao, strcache, this.maxId);
+		EntityLoader oloader = new EntityLoader(dao, strcache, this.maxId);
 		return oloader;
 	}
 }

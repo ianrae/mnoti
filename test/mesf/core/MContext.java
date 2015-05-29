@@ -11,9 +11,9 @@ public class MContext
 {
 	protected CommitMgr commitMgr;
 	protected ObjectRepository objcache;
-	protected ObjectHydrater hydrater;
+	protected EntityHydrater hydrater;
 	protected ObjectManagerRegistry registry;
-	protected ObjectLoader oloader;
+	protected EntityLoader oloader;
 
 	private ReadModelRepository readmodelMgr;
 	private ReadModelLoader vloader;
@@ -27,7 +27,7 @@ public class MContext
 		this.commitMgr = commitMgr;
 		this.registry = registry;
 		this.objcache = objcache;
-		this.hydrater = new ObjectHydrater(objcache);
+		this.hydrater = new EntityHydrater(objcache);
 		this.oloader = commitMgr.createObjectLoader();
 		this.readmodelMgr = readmodelMgr;
 		this.vloader = vloader;
@@ -53,7 +53,7 @@ public class MContext
 		return objcache;
 	}
 
-	public ObjectHydrater getHydrater() {
+	public EntityHydrater getHydrater() {
 		return hydrater;
 	}
 
@@ -61,7 +61,7 @@ public class MContext
 		return registry;
 	}
 
-	public ObjectLoader getOloader() {
+	public EntityLoader getOloader() {
 		return oloader;
 	}
 
