@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class BaseEvent
 {
-	private Long id;
+	private Long entityId;
 
 	@JsonIgnore
-	public Long getId() {
-		return id;
+	public Long getEntityId() {
+		return entityId;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setEntityId(Long id) {
+		this.entityId = id;
 	}
 
 	public abstract BaseEvent clone();

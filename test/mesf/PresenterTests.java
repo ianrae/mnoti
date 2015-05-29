@@ -16,7 +16,10 @@ import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.entity.IEntityMgr;
+import mesf.event.BaseEvent;
+import mesf.event.IEventMgr;
 import mesf.log.Logger;
+import mesf.persistence.Commit;
 import mesf.persistence.Event;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventDAO;
@@ -25,6 +28,7 @@ import mesf.persistence.MockCommitDAO;
 import mesf.persistence.MockEventDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
+import mesf.persistence.Stream;
 import mesf.presenter.MethodInvoker;
 import mesf.presenter.NotAuthorizedException;
 import mesf.presenter.NotLoggedInException;
@@ -77,12 +81,19 @@ public class PresenterTests extends BaseMesfTest
 		{
 			this.mtx = mtx;
 		}
-		public void insertEvent(Event event)
+		public void insertEvent(IEventMgr mgr, BaseEvent event)
 		{
-			mtx.getEventDAO().save(event); //later need real event types!
+			Event record = new Event();
+			record.setStreamId(event.getEntityId());
+			
+			record.setEventName(mgr.getTypeName());
+			this.mtx.getEventDAO().save(record);
+			
+			Logger.logDebug("EV [%d] %d %s", record.getId(), event.getEntityId(), record.getEventName());
 		}
 		
-		public String getEntityType(BaseEntity obj)
+		
+		public String getEntityType(BaseEvent obj)
 		{
 			String type = mtx.getRegistry().findTypeForClass(obj.getClass());
 			return type;
