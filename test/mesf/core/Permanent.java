@@ -24,6 +24,7 @@ public class Permanent
 	private CommitCache commitCache;
 	private ProcRegistry procRegistry;
 	private PersistenceContext persistenceCtx;
+	private EventCache eventCache;
 	
 	/*
 	 * tbls: commit, stream
@@ -42,6 +43,7 @@ public class Permanent
 		this.readmodelRepo = new ReadModelRepository(strcache);
 		commitCache = new CommitCache(persistenceCtx.getDao());
 		this.procRegistry = procRegistry;
+		this.eventCache = new EventCache(persistenceCtx.getEventDAO());
 	}
 	
 	public void start()
@@ -55,8 +57,21 @@ public class Permanent
 		Long maxId = persistenceCtx.getDao().findMaxId();
 		MContext mtx = createMContext();
 		projector.run(mtx, obsL, maxId);
+		
+		projectEvents();
 	}
 	
+	private void projectEvents()
+	{
+		EventProjector projector = new EventProjector(this.eventCache);
+		
+		List<IEventObserver> obsL = new ArrayList<>();
+		//way to dadd!!
+				
+		Long maxId = persistenceCtx.getDao().findMaxId();
+		MContext mtx = createMContext();
+		projector.run(mtx, obsL, maxId);
+	}
 
 	public MContext createMContext() 
 	{
