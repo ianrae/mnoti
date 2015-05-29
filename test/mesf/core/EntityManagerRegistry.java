@@ -3,11 +3,11 @@ package mesf.core;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectManagerRegistry
+public class EntityManagerRegistry
 {
 	Map<Class, IObjectMgr> map = new HashMap<>();
 	
-	public ObjectManagerRegistry()
+	public EntityManagerRegistry()
 	{
 		
 	}

@@ -14,8 +14,8 @@ import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
 import mesf.core.IObjectMgr;
 import mesf.core.MContext;
-import mesf.core.ObjectManagerRegistry;
-import mesf.core.ObjectMgr;
+import mesf.core.EntityManagerRegistry;
+import mesf.core.EntityMgr;
 import mesf.log.Logger;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
@@ -341,8 +341,8 @@ public class PresenterTests extends BaseMesfTest
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		
-		ObjectManagerRegistry registry = new ObjectManagerRegistry();
-		registry.register(User.class, new ObjectMgr<User>(User.class));
+		EntityManagerRegistry registry = new EntityManagerRegistry();
+		registry.register(User.class, new EntityMgr<User>(User.class));
 		
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(User.class, MyUserProc.class);

@@ -9,11 +9,11 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-public class ObjectMgr<T extends BaseObject> implements IObjectMgr
+public class EntityMgr<T extends BaseObject> implements IObjectMgr
 {
 	private Class<?> clazz;
 
-	public ObjectMgr(Class<?> clazz)
+	public EntityMgr(Class<?> clazz)
 	{
 		this.clazz = clazz;
 	}

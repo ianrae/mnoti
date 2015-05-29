@@ -3,7 +3,7 @@ package mesf;
 import static org.junit.Assert.assertEquals;
 import mef.framework.helpers.BaseTest;
 import mesf.core.BaseObject;
-import mesf.core.ObjectMgr;
+import mesf.core.EntityMgr;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class ObjManagerTests extends BaseMesfTest
 		log("sdf");
 		String json = "{'a':15,'b':26,'s':'abc'}";
 
-		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
+		EntityMgr<Scooter> mgr = new EntityMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		chkScooter(scooter, 15,26,"abc");
 
@@ -71,7 +71,7 @@ public class ObjManagerTests extends BaseMesfTest
 	{
 		log("sdf");
 		String json = "{'a':15,'s':'def'}";
-		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
+		EntityMgr<Scooter> mgr = new EntityMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		assertEquals(15, scooter.a);
 		assertEquals(0, scooter.b);
@@ -83,7 +83,7 @@ public class ObjManagerTests extends BaseMesfTest
 	{
 		log("sdf");
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
+		EntityMgr<Scooter> mgr = new EntityMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		chkScooter(scooter, 15,26,"abc");
 
@@ -97,7 +97,7 @@ public class ObjManagerTests extends BaseMesfTest
 	{
 		log("sdf");
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
+		EntityMgr<Scooter> mgr = new EntityMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		chkScooter(scooter, 15,26,"abc");
 
@@ -114,7 +114,7 @@ public class ObjManagerTests extends BaseMesfTest
 	public void testRender() throws Exception
 	{
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		ObjectMgr<Scooter> mgr = new ObjectMgr(Scooter.class);
+		EntityMgr<Scooter> mgr = new EntityMgr(Scooter.class);
 		Scooter scooter = mgr.createFromJson(fix(json));
 		chkScooter(scooter, 15,26,"abc");
 

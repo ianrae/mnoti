@@ -11,17 +11,17 @@ import mesf.persistence.Stream;
 
 import org.mef.framework.sfx.SfxTrail;
 
-public class ObjectRepository implements ICommitObserver
+public class EntityRepository implements ICommitObserver
 {
 	Map<Long, BaseObject> map = new HashMap<>(); //!!needs to be thread-safe
 	Map<Long, Long> whenMap = new HashMap<>(); 
 	private IStreamDAO streamDAO;
-	private ObjectManagerRegistry registry;
+	private EntityManagerRegistry registry;
 	private long numHits;
 	private long numMisses;
 	private SfxTrail trail = new SfxTrail();
 
-	public ObjectRepository(IStreamDAO streamDAO, ObjectManagerRegistry registry)
+	public EntityRepository(IStreamDAO streamDAO, EntityManagerRegistry registry)
 	{
 		this.streamDAO = streamDAO;
 		this.registry = registry;

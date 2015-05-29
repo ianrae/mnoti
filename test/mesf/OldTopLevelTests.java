@@ -14,9 +14,9 @@ import mesf.cmd.ICommand;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.MContext;
-import mesf.core.ObjectManagerRegistry;
-import mesf.core.ObjectMgr;
-import mesf.core.ObjectRepository;
+import mesf.core.EntityManagerRegistry;
+import mesf.core.EntityMgr;
+import mesf.core.EntityRepository;
 import mesf.core.StreamCache;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
@@ -34,10 +34,10 @@ public class OldTopLevelTests extends BaseMesfTest
 	{
 		protected CommandProcessor proc;
 		protected CommitMgr commitMgr;
-		protected ObjectRepository objcache;
-		protected ObjectManagerRegistry registry;
+		protected EntityRepository objcache;
+		protected EntityManagerRegistry registry;
 
-		public TopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectRepository objcache)
+		public TopLevel(CommitMgr commitMgr, EntityManagerRegistry registry, IStreamDAO streamDAO, EntityRepository objcache)
 		{
 			this.commitMgr = commitMgr;
 			this.registry = registry;
@@ -60,7 +60,7 @@ public class OldTopLevelTests extends BaseMesfTest
 	public static class MyTopLevel extends TopLevel
 	{
 
-		public MyTopLevel(CommitMgr commitMgr, ObjectManagerRegistry registry, IStreamDAO streamDAO, ObjectRepository objcache)
+		public MyTopLevel(CommitMgr commitMgr, EntityManagerRegistry registry, IStreamDAO streamDAO, EntityRepository objcache)
 		{
 			super(commitMgr, registry, streamDAO, objcache);
 		}
@@ -86,7 +86,7 @@ public class OldTopLevelTests extends BaseMesfTest
 	}
 	
 	long maxId = 0L;
-	ObjectManagerRegistry registry;
+	EntityManagerRegistry registry;
 	
 	@Test
 	public void test() throws Exception
@@ -96,9 +96,9 @@ public class OldTopLevelTests extends BaseMesfTest
 		IStreamDAO streamDAO = new MockStreamDAO();
 		CommitCache cache = new CommitCache(dao);
 		
-		registry = new ObjectManagerRegistry();
-		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectRepository objcache = new ObjectRepository(streamDAO, registry);
+		registry = new EntityManagerRegistry();
+		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
+		EntityRepository objcache = new EntityRepository(streamDAO, registry);
 		maxId = 0L;
 		
 		MyTopLevel toplevel = createTopLevel(dao, streamDAO, cache, objcache);
@@ -149,7 +149,7 @@ public class OldTopLevelTests extends BaseMesfTest
 //		commitMgr.dump();
 	}
 
-	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, ObjectRepository objcache)
+	private MyTopLevel createTopLevel(ICommitDAO dao, IStreamDAO streamDAO, CommitCache cache, EntityRepository objcache)
 	{
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO);
 		CommitMgr commitMgr = new CommitMgr(persistenceCtx, cache,  new StreamCache(streamDAO));

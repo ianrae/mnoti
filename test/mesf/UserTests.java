@@ -12,8 +12,8 @@ import mesf.cmd.BaseCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
 import mesf.core.MContext;
-import mesf.core.ObjectManagerRegistry;
-import mesf.core.ObjectMgr;
+import mesf.core.EntityManagerRegistry;
+import mesf.core.EntityMgr;
 import mesf.core.Permanent;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
@@ -173,7 +173,7 @@ public class UserTests extends BaseMesfTest
 	{
 		public UsersRM readModel1;
 		
-		public MyUserPerm(PersistenceContext persistenceCtx, ObjectManagerRegistry registry, ProcRegistry procRegistry) 
+		public MyUserPerm(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry) 
 		{
 			super(persistenceCtx, registry, procRegistry);
 			
@@ -274,8 +274,8 @@ public class UserTests extends BaseMesfTest
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
 		
-		ObjectManagerRegistry registry = new ObjectManagerRegistry();
-		registry.register(User.class, new ObjectMgr<User>(User.class));
+		EntityManagerRegistry registry = new EntityManagerRegistry();
+		registry.register(User.class, new EntityMgr<User>(User.class));
 		
 		ProcRegistry procRegistry = new ProcRegistry();
 		procRegistry.register(User.class, MyUserProc.class);

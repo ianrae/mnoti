@@ -14,8 +14,8 @@ import mesf.readmodel.ReadModelRepository;
 
 public class Permanent
 {
-	protected ObjectManagerRegistry registry;
-	protected ObjectRepository objectRepo;
+	protected EntityManagerRegistry registry;
+	protected EntityRepository objectRepo;
 	protected ReadModelRepository readmodelRepo;
 	protected StreamCache strcache;
 	private CommitCache commitCache;
@@ -29,12 +29,12 @@ public class Permanent
 	 * proc
 	 */
 
-	public Permanent(PersistenceContext persistenceCtx, ObjectManagerRegistry registry, ProcRegistry procRegistry)
+	public Permanent(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry)
 	{
 		this.persistenceCtx = persistenceCtx;
 		this.registry = registry;
 		this.strcache = new StreamCache(persistenceCtx.getStreamDAO());
-		ObjectRepository objcache = new ObjectRepository(persistenceCtx.getStreamDAO(), registry);	
+		EntityRepository objcache = new EntityRepository(persistenceCtx.getStreamDAO(), registry);	
 		this.objectRepo = objcache;
 		this.readmodelRepo = new ReadModelRepository(strcache);
 		commitCache = new CommitCache(persistenceCtx.getDao());

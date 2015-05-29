@@ -10,9 +10,9 @@ import mesf.readmodel.ReadModelRepository;
 public class MContext 
 {
 	protected CommitMgr commitMgr;
-	protected ObjectRepository objcache;
+	protected EntityRepository objcache;
 	protected EntityHydrater hydrater;
-	protected ObjectManagerRegistry registry;
+	protected EntityManagerRegistry registry;
 	protected EntityLoader oloader;
 
 	private ReadModelRepository readmodelMgr;
@@ -21,7 +21,7 @@ public class MContext
 	private CommitCache commitCache;
 	private StreamCache strcache;
 
-	public MContext(CommitMgr commitMgr, ObjectManagerRegistry registry, ObjectRepository objcache, 
+	public MContext(CommitMgr commitMgr, EntityManagerRegistry registry, EntityRepository objcache, 
 			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache)
 	{
 		this.commitMgr = commitMgr;
@@ -49,7 +49,7 @@ public class MContext
 		return commitMgr;
 	}
 
-	public ObjectRepository getObjcache() {
+	public EntityRepository getObjcache() {
 		return objcache;
 	}
 
@@ -57,7 +57,7 @@ public class MContext
 		return hydrater;
 	}
 
-	public ObjectManagerRegistry getRegistry() {
+	public EntityManagerRegistry getRegistry() {
 		return registry;
 	}
 

@@ -17,9 +17,9 @@ import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
-import mesf.core.ObjectManagerRegistry;
-import mesf.core.ObjectMgr;
-import mesf.core.ObjectRepository;
+import mesf.core.EntityManagerRegistry;
+import mesf.core.EntityMgr;
+import mesf.core.EntityRepository;
 import mesf.persistence.Stream;
 import mesf.core.EntityLoader;
 import mesf.core.StreamCache;
@@ -216,7 +216,7 @@ public class CommitMgrTests extends BaseMesfTest
 		CommitMgr mgr = createCommitMgr();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
+		EntityMgr<Scooter> omgr = new EntityMgr(Scooter.class);
 		Scooter scooter = omgr.createFromJson(fix(json));		
 
 		mgr.writeNoOp();
@@ -262,7 +262,7 @@ public class CommitMgrTests extends BaseMesfTest
 		EntityLoader oloader = mgr.createObjectLoader();
 		
 		String json = "{'a':15,'b':26,'s':'abc'}";
-		ObjectMgr<Scooter> omgr = new ObjectMgr(Scooter.class);
+		EntityMgr<Scooter> omgr = new EntityMgr(Scooter.class);
 		Scooter scooter = omgr.createFromJson(fix(json));		
 
 		mgr.writeNoOp();
@@ -279,9 +279,9 @@ public class CommitMgrTests extends BaseMesfTest
 		oloader = mgr.createObjectLoader();
 		
 		mgr.dump();
-		ObjectManagerRegistry registry = new ObjectManagerRegistry();
-		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectRepository objcache = new ObjectRepository(streamDAO, registry);
+		EntityManagerRegistry registry = new EntityManagerRegistry();
+		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
+		EntityRepository objcache = new EntityRepository(streamDAO, registry);
 		
 		BaseObject obj = objcache.loadObject("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj.getId().longValue());
@@ -314,9 +314,9 @@ public class CommitMgrTests extends BaseMesfTest
 	{
 		CommitMgr commitMgr = createCommitMgr();
 
-		ObjectManagerRegistry registry = new ObjectManagerRegistry();
-		registry.register(Scooter.class, new ObjectMgr<Scooter>(Scooter.class));
-		ObjectRepository objcache = new ObjectRepository(streamDAO, registry);
+		EntityManagerRegistry registry = new EntityManagerRegistry();
+		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
+		EntityRepository objcache = new EntityRepository(streamDAO, registry);
 		
 		MContext mtx = new MContext(commitMgr, registry, objcache, null, null, null, null);
 		MyCmdProc proc = new MyCmdProc();
