@@ -18,7 +18,7 @@ public class Request implements ICommand
 	{}
 
 	@Override
-	public long getObjectId() 
+	public long getEntityId() 
 	{
 		return objectId;
 	}

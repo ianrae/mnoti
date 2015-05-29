@@ -1,8 +1,9 @@
-package mesf.core;
+package mesf.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import mesf.core.StreamCache;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.Stream;

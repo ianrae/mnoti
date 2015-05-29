@@ -2,6 +2,8 @@ package mesf.core;
 
 import java.util.List;
 
+import mesf.entity.EntityLoader;
+import mesf.entity.IEntityMgr;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;

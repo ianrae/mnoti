@@ -1,9 +1,11 @@
-package mesf.core;
+package mesf.entity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mesf.core.BaseObject;
+import mesf.core.ICommitObserver;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.IStreamDAO;

@@ -14,10 +14,10 @@ import mesf.cmd.ICommand;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.MContext;
-import mesf.core.EntityManagerRegistry;
-import mesf.core.EntityMgr;
-import mesf.core.EntityRepository;
 import mesf.core.StreamCache;
+import mesf.entity.EntityManagerRegistry;
+import mesf.entity.EntityMgr;
+import mesf.entity.EntityRepository;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
@@ -112,35 +112,35 @@ public class OldTopLevelTests extends BaseMesfTest
 		log(String.format("2nd: %d", maxId));
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		toplevel.process(ucmd);
 		
 		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("3rd: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		toplevel.process(ucmd);
 		
 		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("4th: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again2";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		toplevel.process(ucmd);
 		
 		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("5th: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again3";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		toplevel.process(ucmd);
 		
 		toplevel = createTopLevel(dao, streamDAO, cache, objcache);
 		log(String.format("6th: %d", maxId));
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "again4";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		toplevel.process(ucmd);
 		
 		

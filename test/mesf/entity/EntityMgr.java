@@ -1,7 +1,9 @@
-package mesf.core;
+package mesf.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import mesf.core.BaseObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;

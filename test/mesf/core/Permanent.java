@@ -5,6 +5,8 @@ import java.util.List;
 
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ProcRegistry;
+import mesf.entity.EntityManagerRegistry;
+import mesf.entity.EntityRepository;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.PersistenceContext;

@@ -12,9 +12,9 @@ import mesf.cmd.BaseCommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
 import mesf.core.MContext;
-import mesf.core.EntityManagerRegistry;
-import mesf.core.EntityMgr;
 import mesf.core.Permanent;
+import mesf.entity.EntityManagerRegistry;
+import mesf.entity.EntityMgr;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
@@ -124,7 +124,7 @@ public class UserTests extends BaseMesfTest
 
 		private void doDeleteCmd(DeleteCmd cmd) throws Exception 
 		{
-			User scooter = loadTheObject(cmd.getObjectId());
+			User scooter = loadTheObject(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -140,7 +140,7 @@ public class UserTests extends BaseMesfTest
 		}
 		private void doUpdateCmd(UpdateCmd cmd) throws Exception 
 		{
-			User scooter = loadTheObject(cmd.getObjectId());
+			User scooter = loadTheObject(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -197,7 +197,7 @@ public class UserTests extends BaseMesfTest
 			cmd.s = String.format("bob%d", i+1);
 			CommandProcessor proc = mtx.findProc(User.class);
 			proc.process(cmd);
-			assertEquals(i+1, cmd.objectId); //!! we set this in proc (only on insert)
+			assertEquals(i+1, cmd.entityId); //!! we set this in proc (only on insert)
 		}
 		
 		MContext mtx = perm.createMContext();
@@ -241,7 +241,7 @@ public class UserTests extends BaseMesfTest
 			log(String.format("%d..	", i));
 			mtx = perm.createMContext();
 			MyUserProc.DeleteCmd cmd = new MyUserProc.DeleteCmd();
-			cmd.objectId = 4;
+			cmd.entityId = 4;
 			CommandProcessor proc = mtx.findProc(User.class);
 			proc.process(cmd);
 		}

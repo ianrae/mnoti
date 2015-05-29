@@ -1,4 +1,4 @@
-package mesf.core;
+package mesf.entity;
 
 import java.util.HashMap;
 import java.util.Map;

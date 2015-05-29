@@ -15,9 +15,9 @@ import mesf.cmd.ICommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.CommitMgr;
 import mesf.core.MContext;
-import mesf.core.EntityManagerRegistry;
-import mesf.core.EntityMgr;
 import mesf.core.Permanent;
+import mesf.entity.EntityManagerRegistry;
+import mesf.entity.EntityMgr;
 import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
 import mesf.persistence.Commit;
@@ -119,30 +119,30 @@ public class TopLevelTests extends BaseMesfTest
 		CommandProcessor proc = mtx.findProc(Scooter.class);
 		proc.process(cmd);
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
-		assertEquals(1L, cmd.objectId); //!! we set this in proc (only on insert)
+		assertEquals(1L, cmd.entityId); //!! we set this in proc (only on insert)
 		
 		log(String.format("2nd"));
 		mtx = perm.createMContext();
 		proc = mtx.findProc(Scooter.class);
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		proc.process(ucmd);
 		
 		//we don't have an event bus. so cmd processing does not update objcache
 		//do this for two reasons
 		// -so objects don't change partially way through a web request
 		// -objcache is synchronized so is perf issue
-		chkScooterStr(perm, ucmd.objectId, "bob");
+		chkScooterStr(perm, ucmd.entityId, "bob");
 		
 		log(String.format("2nd"));
 		mtx = perm.createMContext();
 		proc = mtx.findProc(Scooter.class);
 		ucmd = new UpdateScooterCmd();
 		ucmd.s = "more2";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		proc.process(ucmd);
-		chkScooterStr(perm, ucmd.objectId, "more");
+		chkScooterStr(perm, ucmd.entityId, "more");
 		
 		assertEquals(0, perm.readModel1.size()); //haven't done yet
 		assertEquals(3, dao.size());

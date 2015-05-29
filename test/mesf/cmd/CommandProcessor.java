@@ -2,12 +2,12 @@ package mesf.cmd;
 
 import mesf.core.BaseObject;
 import mesf.core.CommitMgr;
-import mesf.core.IEntityMgr;
 import mesf.core.MContext;
-import mesf.core.EntityHydrater;
-import mesf.core.EntityManagerRegistry;
-import mesf.core.EntityRepository;
-import mesf.core.EntityLoader;
+import mesf.entity.EntityHydrater;
+import mesf.entity.EntityLoader;
+import mesf.entity.EntityManagerRegistry;
+import mesf.entity.EntityRepository;
+import mesf.entity.IEntityMgr;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
 
@@ -32,7 +32,7 @@ public abstract class CommandProcessor
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
 		//!break rules here and we modify command. Since controller needs to know id of newly created object
-		cmd.objectId = mtx.getCommitMgr().insertObject(mgr, obj);
+		cmd.entityId = mtx.getCommitMgr().insertObject(mgr, obj);
 	}
 	public void updateObject(BaseObject obj)
 	{

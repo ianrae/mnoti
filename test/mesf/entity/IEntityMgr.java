@@ -1,4 +1,6 @@
-package mesf.core;
+package mesf.entity;
+
+import mesf.core.BaseObject;
 
 
 public interface IEntityMgr

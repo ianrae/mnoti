@@ -2,11 +2,11 @@ package mesf.cmd;
 
 public class BaseCommand implements ICommand
 {
-	public long objectId;
+	public long entityId;
 
 	@Override
-	public long getObjectId() 
+	public long getEntityId() 
 	{
-		return objectId; //x
+		return entityId; //x
 	}
 }

@@ -17,12 +17,12 @@ import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
-import mesf.core.EntityManagerRegistry;
-import mesf.core.EntityMgr;
-import mesf.core.EntityRepository;
 import mesf.persistence.Stream;
-import mesf.core.EntityLoader;
 import mesf.core.StreamCache;
+import mesf.entity.EntityLoader;
+import mesf.entity.EntityManagerRegistry;
+import mesf.entity.EntityMgr;
+import mesf.entity.EntityRepository;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
@@ -144,7 +144,7 @@ public class CommitMgrTests extends BaseMesfTest
 
 		private void doDeleteScooterCmd(DeleteScooterCmd cmd) throws Exception 
 		{
-			Scooter scooter = loadTheObject(cmd.getObjectId());
+			Scooter scooter = loadTheObject(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -160,7 +160,7 @@ public class CommitMgrTests extends BaseMesfTest
 		}
 		private void doUpdateScooterCmd(UpdateScooterCmd cmd) throws Exception 
 		{
-			Scooter scooter = loadTheObject(cmd.getObjectId());
+			Scooter scooter = loadTheObject(cmd.getEntityId());
 			if (scooter == null)
 			{
 				return; //!!
@@ -328,11 +328,11 @@ public class CommitMgrTests extends BaseMesfTest
 		
 		UpdateScooterCmd ucmd = new UpdateScooterCmd();
 		ucmd.s = "more";
-		ucmd.objectId = 1L;
+		ucmd.entityId = 1L;
 		proc.process(ucmd);
 		
 		DeleteScooterCmd dcmd = new DeleteScooterCmd();
-		dcmd.objectId = 1L;
+		dcmd.entityId = 1L;
 		proc.process(dcmd);
 		
 		long oldMaxId = commitMgr.getMaxId();
