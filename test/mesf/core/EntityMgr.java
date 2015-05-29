@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-public class EntityMgr<T extends BaseObject> implements IObjectMgr
+public class EntityMgr<T extends BaseObject> implements IEntityMgr
 {
 	private Class<?> clazz;
 

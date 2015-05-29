@@ -5,21 +5,21 @@ import java.util.Map;
 
 public class EntityManagerRegistry
 {
-	Map<Class, IObjectMgr> map = new HashMap<>();
+	Map<Class, IEntityMgr> map = new HashMap<>();
 	
 	public EntityManagerRegistry()
 	{
 		
 	}
-	public void register(Class clazz, IObjectMgr mgr)
+	public void register(Class clazz, IEntityMgr mgr)
 	{
 		map.put(clazz, mgr);
 	}
-	public IObjectMgr findByType(String type) 
+	public IEntityMgr findByType(String type) 
 	{
 		for(Class clazz : map.keySet())
 		{
-			IObjectMgr mgr = map.get(clazz);
+			IEntityMgr mgr = map.get(clazz);
 			if (mgr.getTypeName().equals(type))
 			{
 				return mgr;
@@ -34,7 +34,7 @@ public class EntityManagerRegistry
 		{
 			if (clazz == targetClazz)
 			{
-				IObjectMgr mgr = map.get(clazz);
+				IEntityMgr mgr = map.get(clazz);
 				return mgr.getTypeName();
 			}
 		}

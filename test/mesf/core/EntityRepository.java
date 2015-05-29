@@ -63,7 +63,7 @@ public class EntityRepository implements ICommitObserver
 		{
 			L = oloader.loadPartialStream(objectId, startId);
 		}
-		IObjectMgr mgr = registry.findByType(type);
+		IEntityMgr mgr = registry.findByType(type);
 
 		for(Commit commit : L)
 		{
@@ -99,7 +99,7 @@ public class EntityRepository implements ICommitObserver
 		Long objectId = stream.getId();
 		BaseObject obj = map.get(objectId);
 
-		IObjectMgr mgr = registry.findByType(stream.getType());
+		IEntityMgr mgr = registry.findByType(stream.getType());
 		try {
 			obj = doObserve(objectId, commit, mgr, obj);
 		} catch (Exception e) {
@@ -107,7 +107,7 @@ public class EntityRepository implements ICommitObserver
 			e.printStackTrace();
 		}
 	}
-	private BaseObject doObserve(Long objectId, Commit commit, IObjectMgr mgr, BaseObject obj) throws Exception
+	private BaseObject doObserve(Long objectId, Commit commit, IEntityMgr mgr, BaseObject obj) throws Exception
 	{
 		this.trail.add(commit.getId().toString()); //remove later!!
 

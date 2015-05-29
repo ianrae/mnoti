@@ -1,7 +1,7 @@
 package mesf.core;
 
 
-public interface IObjectMgr
+public interface IEntityMgr
 {
 	String getTypeName();
 	String renderObject(BaseObject obj) throws Exception ;

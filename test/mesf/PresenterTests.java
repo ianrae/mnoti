@@ -12,7 +12,7 @@ import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
 import mesf.cmd.ProcRegistry;
 import mesf.core.BaseObject;
-import mesf.core.IObjectMgr;
+import mesf.core.IEntityMgr;
 import mesf.core.MContext;
 import mesf.core.EntityManagerRegistry;
 import mesf.core.EntityMgr;
@@ -55,7 +55,7 @@ public class PresenterTests extends BaseMesfTest
 		public long insertObject(BaseObject obj)
 		{
 			String type = this.getObjectType(obj);
-			IObjectMgr mgr = mtx.getRegistry().findByType(type);
+			IEntityMgr mgr = mtx.getRegistry().findByType(type);
 			
 			return mtx.getCommitMgr().insertObject(mgr, obj);
 		}

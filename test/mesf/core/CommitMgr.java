@@ -104,7 +104,7 @@ public class CommitMgr
 		}
 	}
 	
-	public long insertObject(IObjectMgr mgr, BaseObject obj)
+	public long insertObject(IEntityMgr mgr, BaseObject obj)
 	{
 		Stream stream = new Stream();
 		stream.setType(mgr.getTypeName());
@@ -132,7 +132,7 @@ public class CommitMgr
 		return objectId;
 	}
 	
-	public void updateObject(IObjectMgr mgr, BaseObject obj)
+	public void updateObject(IEntityMgr mgr, BaseObject obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)
@@ -155,7 +155,7 @@ public class CommitMgr
 		this.dao.save(commit);
 		Logger.logDebug("UPD [%d] %d %s", commit.getId(), objectId, mgr.getTypeName());
 	}
-	public void deleteObject(IObjectMgr mgr, BaseObject obj)
+	public void deleteObject(IEntityMgr mgr, BaseObject obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)
