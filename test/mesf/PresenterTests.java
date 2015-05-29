@@ -17,6 +17,7 @@ import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.entity.IEntityMgr;
 import mesf.log.Logger;
+import mesf.persistence.Event;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventDAO;
 import mesf.persistence.IStreamDAO;
@@ -60,6 +61,25 @@ public class PresenterTests extends BaseMesfTest
 			IEntityMgr mgr = mtx.getRegistry().findByType(type);
 			
 			return mtx.getCommitMgr().insertEntity(mgr, obj);
+		}
+		
+		public String getEntityType(BaseEntity obj)
+		{
+			String type = mtx.getRegistry().findTypeForClass(obj.getClass());
+			return type;
+		}
+	}
+	
+	public static class EventWriter 
+	{
+		private MContext mtx;
+		public EventWriter(MContext mtx)
+		{
+			this.mtx = mtx;
+		}
+		public void insertEvent(Event event)
+		{
+			mtx.getEventDAO().save(event); //later need real event types!
 		}
 		
 		public String getEntityType(BaseEntity obj)

@@ -8,6 +8,8 @@ import mesf.entity.EntityHydrater;
 import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityRepository;
+import mesf.persistence.IEventDAO;
+import mesf.persistence.PersistenceContext;
 import mesf.readmodel.IReadModel;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
@@ -25,9 +27,10 @@ public class MContext
 	private ProcRegistry procRegistry;
 	private CommitCache commitCache;
 	private StreamCache strcache;
+	private PersistenceContext persistenceCtx;
 
 	public MContext(CommitMgr commitMgr, EntityManagerRegistry registry, EntityRepository objcache, 
-			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache)
+			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache, PersistenceContext persistenceCtx)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;
@@ -38,6 +41,12 @@ public class MContext
 		this.vloader = vloader;
 		this.commitCache = commitCache;
 		this.strcache = strcache;
+		this.persistenceCtx = persistenceCtx;
+	}
+	
+	public IEventDAO getEventDAO()
+	{
+		return this.persistenceCtx.getEventDAO();
 	}
 	
 	//is optional
