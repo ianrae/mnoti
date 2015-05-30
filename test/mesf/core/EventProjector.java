@@ -3,7 +3,7 @@ package mesf.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import mesf.event.BaseEvent;
+import mesf.event.Event;
 import mesf.event.BaseEventRehydrator;
 import mesf.log.Logger;
 import mesf.persistence.EventRecord;
@@ -41,7 +41,7 @@ public class EventProjector
 		for(EventRecord event : L)	
 		{
 			BaseEventRehydrator hydrator = new BaseEventRehydrator(mtx);
-			BaseEvent ev = hydrator.rehyrdateIfType(event, event.getEventName());
+			Event ev = hydrator.rehyrdateIfType(event, event.getEventName());
 			if (ev == null)
 			{
 				Logger.log("oops null");
@@ -62,7 +62,7 @@ public class EventProjector
 		}
 	}
 	
-	private void doObserve(BaseEvent event, List<IEventObserver> observerL)
+	private void doObserve(Event event, List<IEventObserver> observerL)
 	{
 		for(IEventObserver observer : observerL)
 		{

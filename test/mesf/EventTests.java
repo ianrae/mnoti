@@ -1,7 +1,7 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-import mesf.event.BaseEvent;
+import mesf.event.Event;
 import mesf.event.EventMgr;
 
 import org.junit.Before;
@@ -27,7 +27,7 @@ public class EventTests extends BaseMesfTest
 //		}
 //	}
 
-	public static class ScooterAddedEvent extends BaseEvent
+	public static class ScooterAddedEvent extends Event
 	{
 //		@JsonProperty private int z;
 		private int z;

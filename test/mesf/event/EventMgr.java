@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-public class EventMgr<T extends BaseEvent> implements IEventMgr
+public class EventMgr<T extends Event> implements IEventMgr
 {
 	private Class<?> clazz;
 
@@ -23,7 +23,7 @@ public class EventMgr<T extends BaseEvent> implements IEventMgr
 	}
 
 	@Override
-	public String renderEntity(BaseEvent obj) throws Exception 
+	public String renderEntity(Event obj) throws Exception 
 	{
 		ObjectMapper mapper = new ObjectMapper();
 //		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);		
@@ -44,9 +44,9 @@ public class EventMgr<T extends BaseEvent> implements IEventMgr
 	}
 
 	@Override
-	public BaseEvent rehydrate(String json) throws Exception 
+	public Event rehydrate(String json) throws Exception 
 	{
-		BaseEvent obj = this.createFromJson(json);
+		Event obj = this.createFromJson(json);
 		return obj;
 	}
 }

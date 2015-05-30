@@ -12,7 +12,7 @@ public class BaseEventRehydrator
 		this.mtx = mtx;
 	}
 
-	public BaseEvent rehyrdateIfType(EventRecord event, String eventName) 
+	public Event rehyrdateIfType(EventRecord event, String eventName) 
 	{
 		//note we receive raw event db objects. for speed.
 		//only hydrate into BaseEvent objects as needed
@@ -21,7 +21,7 @@ public class BaseEventRehydrator
 		{
 			IEventMgr mm = mtx.getEventRegistry().findByType(event.getEventName());
 			try {
-				BaseEvent eee = mm.rehydrate(event.getJson());
+				Event eee = mm.rehydrate(event.getJson());
 				return eee;
 			} catch (Exception e) {
 				e.printStackTrace();

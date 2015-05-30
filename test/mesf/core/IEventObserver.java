@@ -1,12 +1,12 @@
 package mesf.core;
 
-import mesf.event.BaseEvent;
+import mesf.event.Event;
 import mesf.persistence.EventRecord;
 import mesf.persistence.Stream;
 
 
 public interface IEventObserver
 {
-	boolean willAcceptEvent(BaseEvent event);
-	void observeEvent(BaseEvent event);
+	boolean willAcceptEvent(Event event);
+	void observeEvent(Event event);
 }

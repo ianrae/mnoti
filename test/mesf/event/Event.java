@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 //immutable
-public abstract class BaseEvent
+public abstract class Event
 {
 //	@JsonProperty private final Long entityId;
 	protected long entityId;
 
-	public BaseEvent()
+	public Event()
 	{
 		entityId = 0L;
 	}
-	public BaseEvent(long entityid)
+	public Event(long entityid)
 	{
 		this.entityId = entityid;
 	}

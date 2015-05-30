@@ -19,7 +19,7 @@ import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.entity.IEntityMgr;
-import mesf.event.BaseEvent;
+import mesf.event.Event;
 import mesf.event.BaseEventRehydrator;
 import mesf.event.EventManagerRegistry;
 import mesf.event.EventMgr;
@@ -89,7 +89,7 @@ public class PresenterTests extends BaseMesfTest
 		{
 			this.mtx = mtx;
 		}
-		public void insertEvent(BaseEvent event)
+		public void insertEvent(Event event)
 		{
 			String type = this.getEventType(event);
 			IEventMgr mgr = mtx.getEventRegistry().findByType(type);
@@ -112,7 +112,7 @@ public class PresenterTests extends BaseMesfTest
 		}
 		
 		
-		public String getEventType(BaseEvent obj)
+		public String getEventType(Event obj)
 		{
 			String type = mtx.getEventRegistry().findTypeForClass(obj.getClass());
 			return type;
@@ -243,7 +243,7 @@ public class PresenterTests extends BaseMesfTest
 		{
 			this.commitWriter.insertEntity(obj);
 		}
-		protected void insertEvent(BaseEvent ev)
+		protected void insertEvent(Event ev)
 		{
 			this.eventWriter.insertEvent(ev);
 		}
@@ -254,7 +254,7 @@ public class PresenterTests extends BaseMesfTest
 		public int a;
 	}
 	
-	public static class UserAddedEvent extends BaseEvent
+	public static class UserAddedEvent extends Event
 	{
 		public UserAddedEvent()
 		{}
@@ -322,13 +322,13 @@ public class PresenterTests extends BaseMesfTest
 		public BaseEventRehydrator mmtx;
 		
 		@Override
-		public boolean willAcceptEvent(BaseEvent event) 
+		public boolean willAcceptEvent(Event event) 
 		{
 			return true;
 		}
 
 		@Override
-		public void observeEvent(BaseEvent event) 
+		public void observeEvent(Event event) 
 		{
 			if (event instanceof UserAddedEvent)
 			{
