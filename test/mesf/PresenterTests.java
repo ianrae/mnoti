@@ -48,7 +48,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mef.framework.sfx.SfxTrail;
 import org.mef.twixt.StringValue;
+import org.mef.twixt.Value;
 import org.mef.twixt.binder.TwixtForm;
+import org.mef.twixt.validate.ValContext;
+import org.mef.twixt.validate.Validator;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete
@@ -75,6 +78,21 @@ public class PresenterTests extends BaseMesfTest
 		public UserTwixt()
 		{
 			s = new StringValue();
+			s.setValidator(new MyValidator());
+		}
+		private class MyValidator implements Validator
+		{
+
+			@Override
+			public void validate(ValContext valctx, Value obj) 
+			{
+				StringValue val = (StringValue) obj;
+				String s = val.get();
+				if (! s.contains("a"))
+				{
+					valctx.addError("sdfdfs");
+				}
+			}
 		}
 	}
 	
@@ -148,9 +166,13 @@ public class PresenterTests extends BaseMesfTest
 				User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
 				twixt.copyTo(scooter);
 				updateObject(scooter);
+				reply.setDestination(Reply.VIEW_INDEX);
+			}
+			else
+			{
+				reply.setDestination(Reply.VIEW_EDIT);
 			}
 			
-			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		
 		protected void beforeRequest(Request request, InterceptorContext itx)
@@ -251,18 +273,45 @@ public class PresenterTests extends BaseMesfTest
 			
 			mtx = perm.createMContext();
 			pres = new MyPres(mtx);
-			LocalMockBinder<UserTwixt> binder = new LocalMockBinder<UserTwixt>(UserTwixt.class, buildMap());
+			LocalMockBinder<UserTwixt> binder = new LocalMockBinder<UserTwixt>(UserTwixt.class, buildMap(true));
 			
 			MyPres.UpdateCmd ucmd = new MyPres.UpdateCmd(1L, binder);
 			reply = pres.process(ucmd);
 		}
 	}
 	
+	@Test
+	public void testValFail() throws Exception
+	{
+		MyUserPerm perm = this.createPerm();
+		
+		MContext mtx = perm.createMContext();
+		MyPres pres = new MyPres(mtx);
+		MyPres.InsertCmd cmd = pres.new InsertCmd();
+		cmd.a = 101;
+		cmd.s = String.format("bob%d", 1);
+		Reply reply = pres.process(cmd);
+		
+		mtx = perm.createMContext();
+		pres = new MyPres(mtx);
+		LocalMockBinder<UserTwixt> binder = new LocalMockBinder<UserTwixt>(UserTwixt.class, buildMap(false));
+		
+		MyPres.UpdateCmd ucmd = new MyPres.UpdateCmd(1L, binder);
+		reply = pres.process(ucmd);
+		assertEquals(Reply.VIEW_EDIT, reply.getDestination());
+	}
 	
-	private Map<String,String> buildMap()
+	private Map<String,String> buildMap(boolean okValues)
 	{
 		Map<String,String> map = new TreeMap<String,String>();
-		map.put("s", "abc");
+		if (okValues)
+		{
+			map.put("s", "abc");
+		}
+		else
+		{
+			map.put("s", "bb");
+		}
 		
 		return map;
 	}
