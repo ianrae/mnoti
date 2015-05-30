@@ -3,12 +3,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
-import mesf.fluent.FluentException;
-
 import org.apache.commons.lang.NotImplementedException;
-//import org.mef.framework.entities.Entity;
-//import org.mef.framework.fluent.FluentException;
 
 //Whole idea is we don't need a fully emulated sql db like H2.
 //(a)we are dealing with objects (which can be assumed to be fully eagerly loaded)
@@ -121,7 +116,8 @@ public class EntityDB<T>
 				break;
 				
 			default:
-				throw new FluentException(String.format("Unsupported match type: %d", matchType));
+//				throw new FluentException(String.format("Unsupported match type: %d", matchType));
+				throw new RuntimeException(String.format("Unsupported match type: %d", matchType));
 			}
 			
 			return isMatch;

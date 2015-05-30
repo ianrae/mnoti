@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mesf.entitydb.EntityDB;
-import mesf.fluent.QueryContext;
 
 
 public class MockStreamDAO implements IStreamDAO
 	{
 		protected List<Stream> _L = new ArrayList<Stream>();
 		protected EntityDB<Stream> _entityDB = new EntityDB<Stream>();
-		public QueryContext<Stream> queryctx; 
 
 //		@Override
 //		public void init(SfxContext ctx)

@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mesf.entitydb.EntityDB;
-import mesf.fluent.QueryContext;
 
 
 public class MockEventRecordDAO implements IEventRecordDAO
 	{
 		protected List<EventRecord> _L = new ArrayList<EventRecord>();
 		protected EntityDB<EventRecord> _entityDB = new EntityDB<EventRecord>();
-		public QueryContext<EventRecord> queryctx; 
 
 //		@Override
 //		public void init(SfxContext ctx)

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mesf.entitydb.EntityDB;
-import mesf.fluent.QueryContext;
+//import mesf.fluent.QueryContext;
 
 
 public class MockCommitDAO implements ICommitDAO
 	{
 		protected List<Commit> _L = new ArrayList<Commit>();
 		protected EntityDB<Commit> _entityDB = new EntityDB<Commit>();
-		public QueryContext<Commit> queryctx; 
+//		public QueryContext<Commit> queryctx; 
 
 //		@Override
 //		public void init(SfxContext ctx)
