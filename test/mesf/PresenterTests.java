@@ -368,6 +368,8 @@ public class PresenterTests extends BaseMesfTest
 			
 			long id = perm.createMContext().getMaxId();
 			assertEquals(i+1, id); 
+			
+			eventSub.freshen(perm.createMContext()); //run event publishing 
 		}
 	}
 	
@@ -420,6 +422,8 @@ public class PresenterTests extends BaseMesfTest
 		assertEquals(expectedMaxId, id); 
 	}
 
+	private MyEventSub eventSub;
+	
 	//-----------------------
 	private MyUserPerm createPerm() throws Exception
 	{
@@ -440,7 +444,8 @@ public class PresenterTests extends BaseMesfTest
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
 		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry, evReg);
 		
-		perm.registerReadModel(new MyEventSub());
+		eventSub = new MyEventSub();
+		perm.registerReadModel(eventSub);
 		perm.start();
 		return perm;
 	}		

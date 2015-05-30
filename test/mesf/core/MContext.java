@@ -31,7 +31,8 @@ public class MContext
 	private PersistenceContext persistenceCtx;
 	private EventManagerRegistry evReg;
 	private EventCache eventCache;
-
+	private long maxEventId;
+	
 	public MContext(CommitMgr commitMgr, EntityManagerRegistry registry, EventManagerRegistry evReg, EntityRepository objcache, 
 			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache, EventCache eventCache, PersistenceContext persistenceCtx)
 	{
@@ -125,6 +126,18 @@ public class MContext
 	public EventProjector createEventProjector() 
 	{
 		return new EventProjector(eventCache);
+	}
+
+	public long getEventMaxId() 
+	{
+		if (maxEventId != 0L)
+		{
+			return maxEventId;
+		}
+		
+		IEventDAO evdao = this.persistenceCtx.getEventDAO();
+		maxEventId = evdao.findMaxId();
+		return maxEventId;
 	}
 	
 }

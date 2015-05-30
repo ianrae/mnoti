@@ -85,6 +85,8 @@ public class Permanent
 		MContext mtx = new MContext(mgr, registry, this.eventRegistry, this.entityRepo, this.readmodelRepo, vloader, 
 				this.commitCache, this.strcache, this.eventCache, persistenceCtx);
 		mtx.setProcRegistry(procRegistry);
+		
+		mtx.getEventMaxId(); //freshen event's maxid
 		return mtx;
 	}
 	

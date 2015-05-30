@@ -18,11 +18,11 @@ public class EventProjector
 	
 	public void run(MContext mtx, IEventObserver observer, long startId)
 	{
-		if (startId >= mtx.getMaxId())
+		if (startId >= mtx.getEventMaxId())
 		{
 			return; //nothing to do
 		}
-		cache.clearLastSegment(mtx.getMaxId());
+		cache.clearLastSegment(mtx.getEventMaxId());
 		List<IEventObserver> obsL = new ArrayList<>();
 		obsL.add(observer);
 		run(mtx, obsL, startId);
@@ -34,10 +34,10 @@ public class EventProjector
 		{
 			startIndex--; //yuck!!
 		}
-		List<Event> L = cache.loadRange(startIndex, mtx.getMaxId() - startIndex);
-		for(Event commit : L)	
+		List<Event> L = cache.loadRange(startIndex, mtx.getEventMaxId() - startIndex);
+		for(Event event : L)	
 		{
-			doObserve(commit, observerL);
+			doObserve(event, observerL);
 		}
 		
 		for(IEventObserver observer : observerL)
@@ -45,7 +45,7 @@ public class EventProjector
 			if (observer instanceof IReadModel)
 			{
 				IReadModel rm = (IReadModel) observer;
-				rm.setLastEventId(mtx.getMaxId());
+				rm.setLastEventId(mtx.getEventMaxId());
 			}
 		}
 	}
