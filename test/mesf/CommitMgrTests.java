@@ -321,7 +321,7 @@ public class CommitMgrTests extends BaseMesfTest
 		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
 		EntityRepository objcache = new EntityRepository(streamDAO, registry);
 		
-		MContext mtx = new MContext(commitMgr, registry, objcache, null, null, null, null, null);
+		MContext mtx = new MContext(commitMgr, registry, null, objcache, null, null, null, null, null);
 		MyCmdProc proc = new MyCmdProc();
 		proc.setMContext(mtx);
 		InsertScooterCmd cmd = new InsertScooterCmd();

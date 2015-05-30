@@ -18,6 +18,7 @@ import mesf.entity.EntityMgr;
 import mesf.entity.IEntityMgr;
 import mesf.event.BaseEvent;
 import mesf.event.EventManagerRegistry;
+import mesf.event.EventMgr;
 import mesf.event.IEventMgr;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
@@ -82,8 +83,11 @@ public class PresenterTests extends BaseMesfTest
 		{
 			this.mtx = mtx;
 		}
-		public void insertEvent(IEventMgr mgr, BaseEvent event)
+		public void insertEvent(BaseEvent event)
 		{
+			String type = this.getEventType(event);
+			IEventMgr mgr = mtx.getEventRegistry().findByType(type);
+			
 			Event record = new Event();
 			record.setStreamId(event.getEntityId());
 			
@@ -94,9 +98,9 @@ public class PresenterTests extends BaseMesfTest
 		}
 		
 		
-		public String getEntityType(BaseEvent obj)
+		public String getEventType(BaseEvent obj)
 		{
-			String type = mtx.getRegistry().findTypeForClass(obj.getClass());
+			String type = mtx.getEventRegistry().findTypeForClass(obj.getClass());
 			return type;
 		}
 	}
@@ -117,12 +121,14 @@ public class PresenterTests extends BaseMesfTest
 		protected Reply baseReply;
 		protected MContext mtx;
 		protected CommitWriter commitWriter;
+		protected EventWriter eventWriter;
 		protected List<IReqquestInterceptor> interceptL = new ArrayList<>();
 		
 		public Presenter(MContext mtx)
 		{
 			this.mtx = mtx;
 			this.commitWriter = new CommitWriter(mtx);
+			this.eventWriter = new EventWriter(mtx);
 		}
 		
 		public void addInterceptor(IReqquestInterceptor intercept)
@@ -223,11 +229,30 @@ public class PresenterTests extends BaseMesfTest
 		{
 			this.commitWriter.insertEntity(obj);
 		}
+		protected void insertEvent(BaseEvent ev)
+		{
+			this.eventWriter.insertEvent(ev);
+		}
 	}
 	
 	public static class MyReply extends Reply
 	{
 		public int a;
+	}
+	
+	public static class UserAddedEvent extends BaseEvent
+	{
+		public UserAddedEvent(long entityid)
+		{
+			this.setEntityId(entityid);
+		}
+		@Override
+		public BaseEvent clone() 
+		{
+			UserAddedEvent copy = new UserAddedEvent(0L);
+			copy.setEntityId(getEntityId()); //!
+			return copy;
+		}
 	}
 	
 	public static class MyPres extends Presenter
@@ -267,6 +292,7 @@ public class PresenterTests extends BaseMesfTest
 			scooter.setS(cmd.s);
 			
 			insertObject(scooter);
+			insertEvent(new UserAddedEvent(scooter.getId()));
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		
@@ -383,6 +409,7 @@ public class PresenterTests extends BaseMesfTest
 		procRegistry.register(User.class, MyUserProc.class);
 		
 		EventManagerRegistry evReg = new EventManagerRegistry();
+		evReg.register(UserAddedEvent.class, new EventMgr<UserAddedEvent>(UserAddedEvent.class));
 		
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
 		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry, evReg);
