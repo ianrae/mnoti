@@ -244,7 +244,7 @@ public class PresenterTests extends BaseMesfTest
 	{
 		public UserAddedEvent(long entityid)
 		{
-			super(entityid);
+			//super(entityid);
 		}
 	}
 	

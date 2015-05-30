@@ -1,18 +1,24 @@
 package mesf.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 //immutable
 public abstract class BaseEvent
 {
-	private final Long entityId;
-	
-	public BaseEvent(long entityid)
-	{
-		this.entityId = entityid;
-	}
+//	@JsonProperty private final Long entityId;
+	private Long entityId;
 
-//	@JsonIgnore
+	public BaseEvent()
+	{
+		entityId = 0L;
+	}
+//	public BaseEvent(long entityid)
+//	{
+//		this.entityId = entityid;
+//	}
+
+	//@JsonIgnore
 	public Long getEntityId() {
 		return entityId;
 	}
