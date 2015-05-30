@@ -314,11 +314,38 @@ public class PresenterTests extends BaseMesfTest
 		}
 	}
 	
+	public static class BaseEventRehydrator
+	{
+		public MContext mtx;
+		
+		public BaseEventRehydrator(MContext mtx) 
+		{
+			this.mtx = mtx;
+		}
+
+		public BaseEvent rehyrdateIfType(Event event, String eventName) 
+		{
+			//note we receive raw event db objects. for speed.
+			//only hydrate into BaseEvent objects as needed
+			
+			if (event.getEventName().equals(eventName))
+			{
+				IEventMgr mm = mtx.getEventRegistry().findByType(event.getEventName());
+				try {
+					BaseEvent eee = mm.rehydrate(event.getJson());
+					return eee;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			return null;
+		}
+	}
 	public static class MyEventSub extends ReadModel
 	{
 		public SfxTrail trail = new SfxTrail();
 		
-		public MContext mmtx;
+		public BaseEventRehydrator mmtx;
 		
 		@Override
 		public boolean willAcceptEvent(Event event) 
@@ -332,18 +359,12 @@ public class PresenterTests extends BaseMesfTest
 			//note we receive raw event db objects. for speed.
 			//only hydrate into BaseEvent objects as needed
 			
-			if (event.getEventName().equals("useraddedevent"))
+			UserAddedEvent exxx = (UserAddedEvent) mmtx.rehyrdateIfType(event, "useraddedevent");
+			Logger.log("a2");
+			BaseEvent other = mmtx.rehyrdateIfType(event, "nosuchevent");
+			if (other == null)
 			{
-				Logger.log("woohoo");
-				IEventMgr mm = mmtx.getEventRegistry().findByType(event.getEventName());
-				try {
-					BaseEvent eee = mm.rehydrate(event.getJson());
-					Logger.log("aa");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Logger.log("aa");
+				Logger.log("other is NULL");
 			}
 		}
 
@@ -393,8 +414,9 @@ public class PresenterTests extends BaseMesfTest
 			long id = perm.createMContext().getMaxId();
 			assertEquals(i+1, id); 
 			
-			eventSub.mmtx = perm.createMContext();
-			eventSub.freshen(eventSub.mmtx); //run event publishing 
+			MContext mmtx = perm.createMContext();
+			eventSub.mmtx = new BaseEventRehydrator(mmtx);
+			eventSub.freshen(mmtx); //run event publishing 
 		}
 	}
 	
