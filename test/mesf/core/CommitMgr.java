@@ -131,7 +131,7 @@ public class CommitMgr
 		Long snapshotId = commit.getId();
 		stream.setSnapshotId(snapshotId);
 		this.streamDAO.update(stream);
-		Logger.logDebug("INS [%d] %d %s", snapshotId, entityid, mgr.getTypeName());
+		Logger.logDebug("INS [%d] %d %s - %s", snapshotId, entityid, mgr.getTypeName(), commit.getJson());
 		return entityid;
 	}
 	
@@ -156,7 +156,7 @@ public class CommitMgr
 		}
 		commit.setJson(json);
 		this.dao.save(commit);
-		Logger.logDebug("UPD [%d] %d %s", commit.getId(), entityId, mgr.getTypeName());
+		Logger.logDebug("UPD [%d] %d %s - %s", commit.getId(), entityId, mgr.getTypeName(), commit.getJson());
 	}
 	public void deleteEntity(IEntityMgr mgr, BaseEntity obj)
 	{

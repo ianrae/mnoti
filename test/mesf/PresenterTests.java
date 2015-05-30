@@ -45,8 +45,10 @@ import mesf.core.IEventObserver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mef.framework.sfx.SfxTrail;
+import org.mef.twixt.StringValue;
 import org.mef.twixt.binder.IFormBinder;
 import org.mef.twixt.binder.MockTwixtBinder;
+import org.mef.twixt.binder.TwixtForm;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete
@@ -64,6 +66,16 @@ public class PresenterTests extends BaseMesfTest
 	public static class MyReply extends Reply
 	{
 		public int a;
+	}
+	
+	public static class UserTwixt extends TwixtForm
+	{
+		public StringValue s;
+		
+		public UserTwixt()
+		{
+			s = new StringValue();
+		}
 	}
 	
 	public static class UserAddedEvent extends Event
@@ -129,9 +141,15 @@ public class PresenterTests extends BaseMesfTest
 			Logger.log("update");
 			trail.add("update");
 			
-			User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
+			if (cmd.getFormBinder().bind())
+			{
+				UserTwixt twixt = (UserTwixt) cmd.getFormBinder().get();
+				Logger.log("twixt a=%s", twixt.s);
+				User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
+				twixt.copyTo(scooter);
+				updateObject(scooter);
+			}
 			
-			updateObject(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		
@@ -233,7 +251,7 @@ public class PresenterTests extends BaseMesfTest
 			
 			mtx = perm.createMContext();
 			pres = new MyPres(mtx);
-			MockTwixtBinder<CarTwixt> binder = new MockTwixtBinder<CarTwixt>(CarTwixt.class, buildMap());
+			MockTwixtBinder<UserTwixt> binder = new MockTwixtBinder<UserTwixt>(UserTwixt.class, buildMap());
 			
 			MyPres.UpdateCmd ucmd = new MyPres.UpdateCmd(1L, binder);
 			reply = pres.process(ucmd);
@@ -244,8 +262,7 @@ public class PresenterTests extends BaseMesfTest
 	private Map<String,String> buildMap()
 	{
 		Map<String,String> map = new TreeMap<String,String>();
-		map.put("a", "abc");
-		map.put("b", "def");
+		map.put("s", "abc");
 		
 		return map;
 	}
