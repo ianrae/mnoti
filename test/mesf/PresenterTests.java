@@ -244,14 +244,7 @@ public class PresenterTests extends BaseMesfTest
 	{
 		public UserAddedEvent(long entityid)
 		{
-			this.setEntityId(entityid);
-		}
-		@Override
-		public BaseEvent clone() 
-		{
-			UserAddedEvent copy = new UserAddedEvent(0L);
-			copy.setEntityId(getEntityId()); //!
-			return copy;
+			super(entityid);
 		}
 	}
 	

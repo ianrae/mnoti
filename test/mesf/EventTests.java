@@ -11,17 +11,13 @@ public class EventTests extends BaseMesfTest
 {
 	public static class ScooterAddedEvent extends BaseEvent
 	{
-		private int z;
+		private final int z;
 
-		@Override
-		public BaseEvent clone()
+		public ScooterAddedEvent(long eventid, int z)
 		{
-			ScooterAddedEvent copy = new ScooterAddedEvent();
-			copy.setEntityId(getEntityId()); //!
-			copy.z = this.z;
-			return copy;
+			super(eventid);
+			this.z = z;
 		}
-
 		public int getZ() {
 			return z;
 		}
