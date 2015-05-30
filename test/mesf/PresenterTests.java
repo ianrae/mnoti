@@ -9,7 +9,6 @@ import java.util.TreeMap;
 
 import mef.framework.helpers.FactoryGirl;
 import mef.framework.helpers.LocalMockBinder;
-import mesf.TwixtFormTests.CarTwixt;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
@@ -18,23 +17,14 @@ import mesf.core.EventProjector;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
-import mesf.core.Projector;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.event.Event;
-import mesf.event.BaseEventRehydrator;
 import mesf.event.EventManagerRegistry;
 import mesf.event.EventMgr;
 import mesf.log.Logger;
-import mesf.persistence.Commit;
-import mesf.persistence.ICommitDAO;
-import mesf.persistence.IEventRecordDAO;
-import mesf.persistence.IStreamDAO;
-import mesf.persistence.MockCommitDAO;
-import mesf.persistence.MockEventRecordDAO;
-import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
-import mesf.persistence.Stream;
+import mesf.presenter.BindingIntercept;
 import mesf.presenter.IFormBinder;
 import mesf.presenter.IReqquestInterceptor;
 import mesf.presenter.InterceptorContext;
@@ -42,7 +32,6 @@ import mesf.presenter.Presenter;
 import mesf.presenter.Reply;
 import mesf.presenter.Request;
 import mesf.readmodel.ReadModel;
-import mesf.core.IEventObserver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +40,6 @@ import org.mef.twixt.StringValue;
 import org.mef.twixt.Value;
 import org.mef.twixt.binder.TwixtForm;
 import org.mef.twixt.validate.ValContext;
-import org.mef.twixt.validate.Validator;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete
@@ -78,22 +66,29 @@ public class PresenterTests extends BaseMesfTest
 		public UserTwixt()
 		{
 			s = new StringValue();
-			s.setValidator(new MyValidator());
-		}
-		private class MyValidator implements Validator
-		{
-
-			@Override
-			public void validate(ValContext valctx, Value obj) 
-			{
+			
+			s.setValidator( (ValContext valctx, Value obj) -> {
 				StringValue val = (StringValue) obj;
-				String s = val.get();
-				if (! s.contains("a"))
+				if (! val.get().contains("a"))
 				{
 					valctx.addError("sdfdfs");
 				}
-			}
+			});
 		}
+//		private class MyValidator implements Validator
+//		{
+//
+//			@Override
+//			public void validate(ValContext valctx, Value obj) 
+//			{
+//				StringValue val = (StringValue) obj;
+//				String s = val.get();
+//				if (! s.contains("a"))
+//				{
+//					valctx.addError("sdfdfs");
+//				}
+//			}
+//		}
 	}
 
 	public static class UserAddedEvent extends Event
@@ -350,33 +345,6 @@ public class PresenterTests extends BaseMesfTest
 			}
 		}
 	}
-	private static class BindingIntercept implements IReqquestInterceptor
-	{
-		private int failureDestination;
-		public BindingIntercept(int failureDestination)
-		{
-			this.failureDestination = failureDestination;
-		}
-
-		@Override
-		public void process(Request request, Reply reply, InterceptorContext itx) 
-		{
-			if (request.getFormBinder() == null)
-			{
-				return;
-			}
-
-			if (! request.getFormBinder().bind())
-			{
-				//propogate validation errors
-				//set reply to VIEW_EDIT -pass in ctor Boundary.creatPres(new FormBinder<User>(VIEW_EDIT);
-				//nice then onUpdate only called if valid
-				reply.setDestination(failureDestination);
-				itx.haltProcessing = true;
-			}		
-		}
-	}
-
 	public static class UserInitializer implements IDomainIntializer
 	{
 
