@@ -2,7 +2,7 @@ package mesf.readmodel;
 
 import mesf.core.ICommitObserver;
 import mesf.core.IEventObserver;
-import mesf.persistence.Event;
+import mesf.persistence.EventRecord;
 import mesf.core.MContext;
 import mesf.event.BaseEvent;
 import mesf.persistence.Commit;

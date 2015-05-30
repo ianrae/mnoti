@@ -26,7 +26,7 @@ import mesf.event.EventMgr;
 import mesf.event.IEventMgr;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
-import mesf.persistence.Event;
+import mesf.persistence.EventRecord;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventDAO;
 import mesf.persistence.IStreamDAO;
@@ -94,7 +94,7 @@ public class PresenterTests extends BaseMesfTest
 			String type = this.getEventType(event);
 			IEventMgr mgr = mtx.getEventRegistry().findByType(type);
 			
-			Event record = new Event();
+			EventRecord record = new EventRecord();
 			record.setStreamId(event.getEntityId());
 			
 			record.setEventName(mgr.getTypeName());

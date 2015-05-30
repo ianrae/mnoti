@@ -19,7 +19,7 @@ import mesf.core.Permanent;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.event.EventManagerRegistry;
-import mesf.persistence.Event;
+import mesf.persistence.EventRecord;
 import mesf.persistence.IEventDAO;
 import mesf.persistence.MockEventDAO;
 import mesf.persistence.PersistenceContext;

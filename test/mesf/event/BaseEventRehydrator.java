@@ -1,7 +1,7 @@
 package mesf.event;
 
 import mesf.core.MContext;
-import mesf.persistence.Event;
+import mesf.persistence.EventRecord;
 
 public class BaseEventRehydrator
 {
@@ -12,7 +12,7 @@ public class BaseEventRehydrator
 		this.mtx = mtx;
 	}
 
-	public BaseEvent rehyrdateIfType(Event event, String eventName) 
+	public BaseEvent rehyrdateIfType(EventRecord event, String eventName) 
 	{
 		//note we receive raw event db objects. for speed.
 		//only hydrate into BaseEvent objects as needed

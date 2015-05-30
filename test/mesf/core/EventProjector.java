@@ -6,7 +6,7 @@ import java.util.List;
 import mesf.event.BaseEvent;
 import mesf.event.BaseEventRehydrator;
 import mesf.log.Logger;
-import mesf.persistence.Event;
+import mesf.persistence.EventRecord;
 import mesf.persistence.Stream;
 import mesf.readmodel.IReadModel;
 
@@ -37,8 +37,8 @@ public class EventProjector
 		{
 			startIndex--; //yuck!!
 		}
-		List<Event> L = cache.loadRange(startIndex, mtx.getEventMaxId() - startIndex);
-		for(Event event : L)	
+		List<EventRecord> L = cache.loadRange(startIndex, mtx.getEventMaxId() - startIndex);
+		for(EventRecord event : L)	
 		{
 			BaseEventRehydrator hydrator = new BaseEventRehydrator(mtx);
 			BaseEvent ev = hydrator.rehyrdateIfType(event, event.getEventName());

@@ -1,7 +1,7 @@
 package mesf.core;
 
 import mesf.event.BaseEvent;
-import mesf.persistence.Event;
+import mesf.persistence.EventRecord;
 import mesf.persistence.Stream;
 
 

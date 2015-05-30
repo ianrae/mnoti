@@ -1,6 +1,6 @@
 package mesf.persistence;
 
-public class Event 
+public class EventRecord 
 {
 	private Long id;
 	private Long streamId;

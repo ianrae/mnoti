@@ -11,14 +11,14 @@ import org.mef.framework.sfx.SfxContext;
 
 public class MockEventDAO implements IEventDAO
 	{
-		protected List<Event> _L = new ArrayList<Event>();
-		protected EntityDB<Event> _entityDB = new EntityDB<Event>();
-		public QueryContext<Event> queryctx; 
+		protected List<EventRecord> _L = new ArrayList<EventRecord>();
+		protected EntityDB<EventRecord> _entityDB = new EntityDB<EventRecord>();
+		public QueryContext<EventRecord> queryctx; 
 
 		@Override
 		public void init(SfxContext ctx)
 		{
-			this.queryctx = new QueryContext<Event>(ctx, Event.class);
+			this.queryctx = new QueryContext<EventRecord>(ctx, EventRecord.class);
 
 //			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
 //			EntityDBQueryProcessor<ObjectEvent> proc = new EntityDBQueryProcessor<ObjectEvent>(ctx, _L);
@@ -26,10 +26,10 @@ public class MockEventDAO implements IEventDAO
 		}
 
 		@Override
-		public Query1<Event> query() 
+		public Query1<EventRecord> query() 
 		{
 			queryctx.queryL = new ArrayList<QStep>();
-			return new Query1<Event>(queryctx);
+			return new Query1<EventRecord>(queryctx);
 		}
 
 
@@ -40,9 +40,9 @@ public class MockEventDAO implements IEventDAO
 		}
 
 		@Override
-		public Event findById(long id) 
+		public EventRecord findById(long id) 
 		{
-			Event entity = this.findActualById(id);
+			EventRecord entity = this.findActualById(id);
 			if (entity != null)
 			{
 				return entity; //!!new ObjectEvent(entity); //return copy
@@ -50,9 +50,9 @@ public class MockEventDAO implements IEventDAO
 			return null; //not found
 		}
 
-		protected Event findActualById(long id) 
+		protected EventRecord findActualById(long id) 
 		{
-			for(Event entity : _L)
+			for(EventRecord entity : _L)
 			{
 				if (entity.getId() == id)
 				{
@@ -63,7 +63,7 @@ public class MockEventDAO implements IEventDAO
 		}
 
 		@Override
-		public List<Event> all() 
+		public List<EventRecord> all() 
 		{
 			return _L; //ret copy??!!
 		}
@@ -71,7 +71,7 @@ public class MockEventDAO implements IEventDAO
 		@Override
 		public void delete(long id) 
 		{
-			Event entity = this.findActualById(id);
+			EventRecord entity = this.findActualById(id);
 			if (entity != null)
 			{
 				_L.remove(entity);
@@ -79,7 +79,7 @@ public class MockEventDAO implements IEventDAO
 		}
 
 		@Override
-		public void save(Event entity) 
+		public void save(EventRecord entity) 
 		{
 			if (entity.getId() == null)
 			{
@@ -107,7 +107,7 @@ public class MockEventDAO implements IEventDAO
 		private Long nextAvailIdNumber() 
 		{
 			long used = 0;
-			for(Event entity : _L)
+			for(EventRecord entity : _L)
 			{
 				if (entity.getId() > used)
 				{
@@ -118,7 +118,7 @@ public class MockEventDAO implements IEventDAO
 		}
 
 		@Override
-		public void update(Event entity) 
+		public void update(EventRecord entity) 
 		{
 			this.delete(entity.getId());
 			this.save(entity);
@@ -127,21 +127,21 @@ public class MockEventDAO implements IEventDAO
 		@Override
 		public Long findMaxId() 
 		{
-			List<Event> L = all();
+			List<EventRecord> L = all();
 			if (L.size() == 0)
 			{
 				return 0L;
 			}
-			Event commit = L.get(L.size() - 1);
+			EventRecord commit = L.get(L.size() - 1);
 			return commit.getId();
 		}
 
 		@Override
-		public List<Event> loadRange(long startId, long n) 
+		public List<EventRecord> loadRange(long startId, long n) 
 		{
-			List<Event> resultL = new ArrayList<>();
+			List<EventRecord> resultL = new ArrayList<>();
 			
-			for(Event entity : _L)
+			for(EventRecord entity : _L)
 			{
 				if (entity.getId() >= startId)
 				{
@@ -156,11 +156,11 @@ public class MockEventDAO implements IEventDAO
 		}
 
 		@Override
-		public List<Event> loadStream(long startId, long streamId) 
+		public List<EventRecord> loadStream(long startId, long streamId) 
 		{
-			List<Event> resultL = new ArrayList<>();
+			List<EventRecord> resultL = new ArrayList<>();
 			
-			for(Event entity : _L)
+			for(EventRecord entity : _L)
 			{
 				if (entity.getId() >= startId)
 				{
