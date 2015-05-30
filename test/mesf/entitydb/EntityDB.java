@@ -1,14 +1,14 @@
 package mesf.entitydb;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import mesf.fluent.FluentException;
+
 import org.apache.commons.lang.NotImplementedException;
-import org.mef.framework.entities.Entity;
-import org.mef.framework.fluent.FluentException;
+//import org.mef.framework.entities.Entity;
+//import org.mef.framework.fluent.FluentException;
 
 //Whole idea is we don't need a fully emulated sql db like H2.
 //(a)we are dealing with objects (which can be assumed to be fully eagerly loaded)
@@ -32,7 +32,7 @@ public class EntityDB<T>
 			matcherMap.put(Integer.class, new IntegerValueMatcher());
 			matcherMap.put(Long.class, new LongValueMatcher());
 			matcherMap.put(Boolean.class, new BooleanValueMatcher());
-			matcherMap.put(Entity.class, new EntityValueMatcher());
+//			matcherMap.put(Entity.class, new EntityValueMatcher());
 			
 			helper = new EntityDBPropertyHelper<T>();
 		}
@@ -181,17 +181,17 @@ public class EntityDB<T>
 			}
 			return null;
 		}
-		public T findFirstMatchEntity(List<T> L, String fieldName, Entity valueToMatch) 
-		{
-			for(T f : L)
-			{
-				if (isMatchObject(f, fieldName, valueToMatch, Entity.class, IValueMatcher.EXACT))
-				{
-					return f;
-				}
-			}
-			return null;
-		}
+//		public T findFirstMatchEntity(List<T> L, String fieldName, Entity valueToMatch) 
+//		{
+//			for(T f : L)
+//			{
+//				if (isMatchObject(f, fieldName, valueToMatch, Entity.class, IValueMatcher.EXACT))
+//				{
+//					return f;
+//				}
+//			}
+//			return null;
+//		}
 		
 
 		public List<T> findMatches(List<T> L, String fieldName, String valueToMatch)
@@ -212,19 +212,19 @@ public class EntityDB<T>
 			}
 			return resultL;
 		}
-		public List<T> findMatchesEntity(List<T> L, String fieldName, Entity valueToMatch)
-		{
-			List<T> resultL = new ArrayList<T>();
-			
-			for(T f : L)
-			{
-				if (isMatchObject(f, fieldName, valueToMatch, Entity.class, IValueMatcher.EXACT))
-				{
-					resultL.add(f);
-				}
-			}
-			return resultL;
-		}
+//		public List<T> findMatchesEntity(List<T> L, String fieldName, Entity valueToMatch)
+//		{
+//			List<T> resultL = new ArrayList<T>();
+//			
+//			for(T f : L)
+//			{
+//				if (isMatchObject(f, fieldName, valueToMatch, Entity.class, IValueMatcher.EXACT))
+//				{
+//					resultL.add(f);
+//				}
+//			}
+//			return resultL;
+//		}
 		public List<T> findMatches(List<T> L, String fieldName, Integer valueToMatch)
 		{
 			List<T> resultL = new ArrayList<T>();

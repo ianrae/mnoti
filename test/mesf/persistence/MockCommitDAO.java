@@ -3,11 +3,9 @@ package mesf.persistence;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mef.framework.entitydb.EntityDB;
-import org.mef.framework.fluent.QStep;
-import org.mef.framework.fluent.Query1;
-import org.mef.framework.fluent.QueryContext;
-import org.mef.framework.sfx.SfxContext;
+import mesf.entitydb.EntityDB;
+import mesf.fluent.QueryContext;
+
 
 public class MockCommitDAO implements ICommitDAO
 	{

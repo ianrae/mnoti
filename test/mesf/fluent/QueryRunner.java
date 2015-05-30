@@ -1,13 +1,6 @@
 package mesf.fluent;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.mef.framework.dao.IDAO;
-import org.mef.framework.entities.Entity;
-import org.mef.framework.sfx.SfxBaseObj;
-import org.mef.framework.sfx.SfxContext;
 
 
 public class QueryRunner<T> 
@@ -82,7 +75,7 @@ public class QueryRunner<T>
 		otherProc.start(actionL);
 		otherProc.processAction(0, action);
 
-		Entity entity = (Entity) otherProc.findAny();
+//		Entity entity = (Entity) otherProc.findAny();
 
 		//so we have found the address object that matches addr.street
 		//adjust the action so now we look for it
@@ -90,7 +83,7 @@ public class QueryRunner<T>
 		QueryAction newAction = new QueryAction();
 		newAction.action = action.action;
 		newAction.fieldName = sav1;
-		newAction.obj = entity;
+		newAction.obj = null; //!!fix later entity;
 		newAction.op = action.op;
 		return newAction;
 	}

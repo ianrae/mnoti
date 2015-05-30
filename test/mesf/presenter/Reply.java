@@ -1,6 +1,6 @@
 package mesf.presenter;
 
-import org.mef.framework.auth2.AuthUser;
+import mesf.auth.AuthUser;
 
 public class Reply 
 {
@@ -34,7 +34,6 @@ public class Reply
 	public static final int FOWARD_NOT_SSL = 111;
 
 	public AuthUser authUser; //null means not authenticated
-//	public String json; //used by json formatter (see IReplyFormatter)
 	
 	public Reply()
 	{

@@ -2,7 +2,6 @@ package mesf.persistence;
 
 import java.util.List;
 
-//import org.mef.framework.fluent.Query1;
 
 public interface ICommitDAO  extends IDAO
 {
