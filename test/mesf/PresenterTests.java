@@ -97,6 +97,14 @@ public class PresenterTests extends BaseMesfTest
 			record.setStreamId(event.getEntityId());
 			
 			record.setEventName(mgr.getTypeName());
+			String json = null;
+			try {
+				json = mgr.renderEntity(event);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			record.setJson(json);
 			this.mtx.getEventDAO().save(record);
 			
 			Logger.logDebug("EV [%d] %d %s", record.getId(), event.getEntityId(), record.getEventName());
@@ -247,6 +255,8 @@ public class PresenterTests extends BaseMesfTest
 	
 	public static class UserAddedEvent extends BaseEvent
 	{
+		public UserAddedEvent()
+		{}
 		public UserAddedEvent(long entityid)
 		{
 			super(entityid);
@@ -308,6 +318,8 @@ public class PresenterTests extends BaseMesfTest
 	{
 		public SfxTrail trail = new SfxTrail();
 		
+		public MContext mmtx;
+		
 		@Override
 		public boolean willAcceptEvent(Event event) 
 		{
@@ -317,9 +329,20 @@ public class PresenterTests extends BaseMesfTest
 		@Override
 		public void observeEvent(Event event) 
 		{
+			//note we receive raw event db objects. for speed.
+			//only hydrate into BaseEvent objects as needed
+			
 			if (event.getEventName().equals("useraddedevent"))
 			{
 				Logger.log("woohoo");
+				IEventMgr mm = mmtx.getEventRegistry().findByType(event.getEventName());
+				try {
+					BaseEvent eee = mm.rehydrate(event.getJson());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Logger.log("aa");
 			}
 		}
 
@@ -369,7 +392,8 @@ public class PresenterTests extends BaseMesfTest
 			long id = perm.createMContext().getMaxId();
 			assertEquals(i+1, id); 
 			
-			eventSub.freshen(perm.createMContext()); //run event publishing 
+			eventSub.mmtx = perm.createMContext();
+			eventSub.freshen(eventSub.mmtx); //run event publishing 
 		}
 	}
 	
