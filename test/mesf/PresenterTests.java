@@ -11,7 +11,10 @@ import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
 import mesf.cmd.ProcRegistry;
+import mesf.core.EventProjector;
 import mesf.core.MContext;
+import mesf.core.Permanent;
+import mesf.core.Projector;
 import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
@@ -36,6 +39,8 @@ import mesf.presenter.NotAuthorizedException;
 import mesf.presenter.NotLoggedInException;
 import mesf.presenter.Reply;
 import mesf.presenter.Request;
+import mesf.readmodel.ReadModel;
+import mesf.core.IEventObserver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -244,7 +249,7 @@ public class PresenterTests extends BaseMesfTest
 	{
 		public UserAddedEvent(long entityid)
 		{
-			//super(entityid);
+			super(entityid);
 		}
 	}
 	
@@ -297,6 +302,34 @@ public class PresenterTests extends BaseMesfTest
 		{
 			trail.add("after");
 		}
+	}
+	
+	public static class MyEventSub extends ReadModel
+	{
+		public SfxTrail trail = new SfxTrail();
+		
+		@Override
+		public boolean willAcceptEvent(Event event) 
+		{
+			return true;
+		}
+
+		@Override
+		public void observeEvent(Event event) 
+		{
+			if (event.getEventName().equals("useraddedevent"))
+			{
+				Logger.log("woohoo");
+			}
+		}
+
+		@Override
+		public void freshen(MContext mtx) 
+		{
+			EventProjector projector = mtx.createEventProjector();
+			projector.run(mtx, this, this.lastEventId);
+		}
+		
 	}
 	
 	@Test
@@ -406,6 +439,8 @@ public class PresenterTests extends BaseMesfTest
 		
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
 		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry, evReg);
+		
+		perm.registerReadModel(new MyEventSub());
 		perm.start();
 		return perm;
 	}		

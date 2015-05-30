@@ -30,9 +30,10 @@ public class MContext
 	private StreamCache strcache;
 	private PersistenceContext persistenceCtx;
 	private EventManagerRegistry evReg;
+	private EventCache eventCache;
 
 	public MContext(CommitMgr commitMgr, EntityManagerRegistry registry, EventManagerRegistry evReg, EntityRepository objcache, 
-			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache, PersistenceContext persistenceCtx)
+			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache, EventCache eventCache, PersistenceContext persistenceCtx)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;
@@ -44,6 +45,7 @@ public class MContext
 		this.vloader = vloader;
 		this.commitCache = commitCache;
 		this.strcache = strcache;
+		this.eventCache = eventCache;
 		this.persistenceCtx = persistenceCtx;
 	}
 	
@@ -118,6 +120,11 @@ public class MContext
 	public IReadModel acquire(Class clazz)
 	{
 		return readmodelMgr.acquire(this, clazz);
+	}
+
+	public EventProjector createEventProjector() 
+	{
+		return new EventProjector(eventCache);
 	}
 	
 }

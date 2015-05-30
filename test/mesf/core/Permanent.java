@@ -83,7 +83,7 @@ public class Permanent
 		ReadModelLoader vloader = new ReadModelLoader(persistenceCtx, mgr.getMaxId());
 		
 		MContext mtx = new MContext(mgr, registry, this.eventRegistry, this.entityRepo, this.readmodelRepo, vloader, 
-				this.commitCache, this.strcache, persistenceCtx);
+				this.commitCache, this.strcache, this.eventCache, persistenceCtx);
 		mtx.setProcRegistry(procRegistry);
 		return mtx;
 	}
@@ -93,7 +93,7 @@ public class Permanent
 		return entityRepo.getIfLoaded(entityId);
 	}
 	
-	protected void registerReadModel(ReadModel readModel)
+	public void registerReadModel(ReadModel readModel)
 	{
 		readmodelRepo.registerReadModel(readModel);
 	}

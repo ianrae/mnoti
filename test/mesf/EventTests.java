@@ -12,16 +12,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EventTests extends BaseMesfTest
 {
+//	public static class ScooterAddedEvent extends BaseEvent
+//	{
+//		private final int z;
+//
+//		@JsonCreator
+//		public ScooterAddedEvent( @JsonProperty("entityId") long eventid, @JsonProperty("z") int z)
+//		{
+//			super(eventid);
+//			this.z = z;
+//		}
+//		public int getZ() {
+//			return z;
+//		}
+//	}
+
 	public static class ScooterAddedEvent extends BaseEvent
 	{
-		private final int z;
+//		@JsonProperty private int z;
+		private int z;
 
-		@JsonCreator
-		public ScooterAddedEvent( @JsonProperty("entityId") long eventid, @JsonProperty("z") int z)
+		public ScooterAddedEvent()
+		{}
+		public ScooterAddedEvent(long eventId, int z)
 		{
-			super(eventid);
+			super(eventId);
+//			this.entityId = eventId;
 			this.z = z;
 		}
+
 		public int getZ() {
 			return z;
 		}
@@ -40,7 +59,8 @@ public class EventTests extends BaseMesfTest
 		chkScooter(scooter, 15);
 		
 		String json2 = mgr.renderEntity(scooter);
-		String s = fix("{'entityId':0,'z':15}");
+//		String s = fix("{'entityId':0,'z':15}");
+		String s = fix("{'z':15}");
 		assertEquals(s, json2);
 	}
 
