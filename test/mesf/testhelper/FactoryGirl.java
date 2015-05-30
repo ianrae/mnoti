@@ -1,4 +1,4 @@
-package mef.framework.helpers;
+package mesf.testhelper;
 
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventRecordDAO;

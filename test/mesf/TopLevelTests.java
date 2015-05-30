@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
-import mef.framework.helpers.FactoryGirl;
 import mesf.CommitMgrTests.InsertScooterCmd;
 import mesf.CommitMgrTests.MyCmdProc;
 import mesf.CommitMgrTests.UpdateScooterCmd;
@@ -38,6 +37,7 @@ import mesf.persistence.MockStreamDAO;
 import mesf.readmodel.ReadModel;
 import mesf.readmodel.ReadModelLoader;
 import mesf.readmodel.ReadModelRepository;
+import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;

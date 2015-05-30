@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
-import mef.framework.helpers.FactoryGirl;
 import mesf.PresenterTests.UserInitializer;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
@@ -26,6 +25,7 @@ import mesf.persistence.MockEventRecordDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.readmodel.AllIdsRM;
+import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 import java.util.TreeMap;
 
-import mef.framework.helpers.FactoryGirl;
-import mef.framework.helpers.LocalMockBinder;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
@@ -32,6 +30,8 @@ import mesf.presenter.Presenter;
 import mesf.presenter.Reply;
 import mesf.presenter.Request;
 import mesf.readmodel.ReadModel;
+import mesf.testhelper.FactoryGirl;
+import mesf.testhelper.LocalMockBinder;
 
 import org.junit.Before;
 import org.junit.Test;

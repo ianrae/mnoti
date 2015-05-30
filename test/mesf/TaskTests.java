@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 import java.util.TreeMap;
 
-import mef.framework.helpers.FactoryGirl;
-import mef.framework.helpers.LocalMockBinder;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
@@ -22,6 +20,8 @@ import mesf.presenter.InterceptorContext;
 import mesf.presenter.Presenter;
 import mesf.presenter.Reply;
 import mesf.presenter.Request;
+import mesf.testhelper.FactoryGirl;
+import mesf.testhelper.LocalMockBinder;
 
 import org.junit.Before;
 import org.junit.Test;

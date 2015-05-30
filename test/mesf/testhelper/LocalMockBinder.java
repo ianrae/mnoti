@@ -1,4 +1,4 @@
-package mef.framework.helpers;
+package mesf.testhelper;
 
 import java.util.Map;
 
