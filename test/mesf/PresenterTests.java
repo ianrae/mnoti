@@ -3,29 +3,22 @@ package mesf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import mef.framework.helpers.FactoryGirl;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
 import mesf.cmd.ProcRegistry;
-import mesf.core.CommitWriter;
 import mesf.core.EventProjector;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.core.Projector;
-import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.event.Event;
 import mesf.event.BaseEventRehydrator;
 import mesf.event.EventManagerRegistry;
 import mesf.event.EventMgr;
-import mesf.event.EventWriter;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
@@ -36,9 +29,9 @@ import mesf.persistence.MockEventRecordDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
-import mesf.presenter.MethodInvoker;
-import mesf.presenter.NotAuthorizedException;
-import mesf.presenter.NotLoggedInException;
+import mesf.presenter.IReqquestInterceptor;
+import mesf.presenter.InterceptorContext;
+import mesf.presenter.Presenter;
 import mesf.presenter.Reply;
 import mesf.presenter.Request;
 import mesf.readmodel.ReadModel;
@@ -61,136 +54,6 @@ import org.mef.framework.sfx.SfxTrail;
 
 public class PresenterTests extends BaseMesfTest 
 {
-	public static class InterceptorContext
-	{
-		public boolean haltProcessing;
-	}
-	
-	public interface IReqquestInterceptor
-	{
-		void process(Request request, InterceptorContext itx);
-	}
-	
-	
-	public static abstract class Presenter //extends CommandProcessor
-	{
-		protected Reply baseReply;
-		protected MContext mtx;
-		protected CommitWriter commitWriter;
-		protected EventWriter eventWriter;
-		protected List<IReqquestInterceptor> interceptL = new ArrayList<>();
-		
-		public Presenter(MContext mtx)
-		{
-			this.mtx = mtx;
-			this.commitWriter = new CommitWriter(mtx);
-			this.eventWriter = new EventWriter(mtx);
-		}
-		
-		public void addInterceptor(IReqquestInterceptor intercept)
-		{
-			interceptL.add(intercept);
-		}
-		
-		protected abstract Reply createReply();
-		
-		public Reply process(Request request) 
-		{
-			Reply reply = null;
-			try
-			{
-				reply = doProcess(request);
-			}
-			catch(NotLoggedInException ex)
-			{
-				baseReply.setDestination(Reply.FOWARD_NOT_AUTHENTICATED);
-			}
-			catch(NotAuthorizedException ex)
-			{
-				baseReply.setDestination(Reply.FOWARD_NOT_AUTHORIZED);
-			}
-			catch(Exception ex)
-			{
-				ex.printStackTrace();
-				Logger.log("cont-after-except");
-//				this.addErrorException(e, "formatter");
-				baseReply.setFailed(true);
-				baseReply.setDestination(Reply.FOWARD_ERROR);
-			}
-			return reply;
-		}
-		
-		private Reply doProcess(Request request) 
-		{
-			this.baseReply = this.createReply();
-			String methodName = getMethodName(request);
-			Logger.log(String.format("[MEF] %s.%s ", this.getClass().getSimpleName(), methodName));
-
-			if (! processInterceptors(request))
-			{
-				return baseReply;
-			}
-			
-			MethodInvoker invoker = new MethodInvoker(this, methodName, Request.class);
-			invoker.call(request, baseReply);			
-			
-			afterRequest(request); //always do it
-			
-			return baseReply;
-		}
-		
-		private boolean processInterceptors(Request request) 
-		{
-			InterceptorContext itx = new InterceptorContext();
-			for(IReqquestInterceptor interceptor : this.interceptL)
-			{
-				interceptor.process(request, itx);
-				if (itx.haltProcessing)
-				{
-					return false; //halt
-				}
-			}
-			beforeRequest(request, itx);
-			if (itx.haltProcessing)
-			{
-				return false; //halt
-			}
-			return true; //continue
-		}
-
-		private String getMethodName(Request request) 
-		{
-//			String methodName = request.getClass().getName();
-			String methodName = request.getClass().getSimpleName(); //avoid MyPres$InsertCmd
-			int pos = methodName.lastIndexOf('.');
-			if (pos > 0)
-			{
-				methodName = methodName.substring(pos + 1);
-				pos = methodName.indexOf('$');
-				if (pos > 0)
-				{
-					methodName = methodName.substring(pos + 1);
-				}
-			}
-			methodName = "on" + methodName;
-			return methodName;
-		}
-		
-		protected void beforeRequest(Request request, InterceptorContext itx)
-		{}
-		protected void afterRequest(Request request)
-		{}
-		
-		protected void insertObject(BaseEntity obj)
-		{
-			this.commitWriter.insertEntity(obj);
-		}
-		protected void insertEvent(Event ev)
-		{
-			this.eventWriter.insertEvent(ev);
-		}
-	}
-	
 	public static class MyReply extends Reply
 	{
 		public int a;
@@ -333,7 +196,7 @@ public class PresenterTests extends BaseMesfTest
 		public int interceptorType;
 
 		@Override
-		public void process(Request request, InterceptorContext itx) 
+		public void process(Request request, Reply reply, InterceptorContext itx) 
 		{
 			trail.add("MYINTERCEPT");
 			if (interceptorType == 2)
