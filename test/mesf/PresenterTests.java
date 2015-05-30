@@ -3,7 +3,12 @@ package mesf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Map;
+import java.util.TreeMap;
+
 import mef.framework.helpers.FactoryGirl;
+import mesf.TwixtFormTests.CarTwixt;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
@@ -40,6 +45,8 @@ import mesf.core.IEventObserver;
 import org.junit.Before;
 import org.junit.Test;
 import org.mef.framework.sfx.SfxTrail;
+import org.mef.twixt.binder.IFormBinder;
+import org.mef.twixt.binder.MockTwixtBinder;
 
 /*
  * TaskTests and add a UserTaskRM, cascading delete
@@ -76,6 +83,14 @@ public class PresenterTests extends BaseMesfTest
 			public int a;
 			public String s;
 		}
+		public static class UpdateCmd extends Request
+		{
+			public UpdateCmd(long id, IFormBinder binder)
+			{
+				this.entityId = id;
+				this.binder = binder;
+			}
+		}
 		
 		private MyReply reply = new MyReply();
 		public SfxTrail trail = new SfxTrail();
@@ -107,6 +122,16 @@ public class PresenterTests extends BaseMesfTest
 			
 			insertObject(scooter);
 			insertEvent(new UserAddedEvent(scooter.getId()));
+			reply.setDestination(Reply.VIEW_INDEX);
+		}
+		public void onUpdateCmd(UpdateCmd cmd) throws Exception
+		{
+			Logger.log("update");
+			trail.add("update");
+			
+			User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
+			
+			updateObject(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		
@@ -188,6 +213,41 @@ public class PresenterTests extends BaseMesfTest
 			mtx = perm.createMContext();
 			eventSub.freshen(mtx); //run event publishing 
 		}
+	}
+	
+	@Test
+	public void test3() throws Exception
+	{
+		MyUserPerm perm = this.createPerm();
+		
+		int n = 1; 
+		for(int i = 0; i < n; i++)
+		{
+			log(String.format("%d..	", i));
+			MContext mtx = perm.createMContext();
+			MyPres pres = new MyPres(mtx);
+			MyPres.InsertCmd cmd = pres.new InsertCmd();
+			cmd.a = 101+i;
+			cmd.s = String.format("bob%d", i+1);
+			Reply reply = pres.process(cmd);
+			
+			mtx = perm.createMContext();
+			pres = new MyPres(mtx);
+			MockTwixtBinder<CarTwixt> binder = new MockTwixtBinder<CarTwixt>(CarTwixt.class, buildMap());
+			
+			MyPres.UpdateCmd ucmd = new MyPres.UpdateCmd(1L, binder);
+			reply = pres.process(ucmd);
+		}
+	}
+	
+	
+	private Map<String,String> buildMap()
+	{
+		Map<String,String> map = new TreeMap<String,String>();
+		map.put("a", "abc");
+		map.put("b", "def");
+		
+		return map;
 	}
 	
 	private static class MyIntercept implements IReqquestInterceptor
