@@ -106,6 +106,7 @@ public class PresenterTests extends BaseMesfTest
 		}
 	}
 
+
 	public static class MyPres extends Presenter
 	{
 		public class InsertCmd extends Request
@@ -154,27 +155,46 @@ public class PresenterTests extends BaseMesfTest
 			insertEvent(new UserAddedEvent(scooter.getId()));
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
-		public void onUpdateCmd(UpdateCmd cmd) throws Exception
+//		public void onUpdateCmd(UpdateCmd cmd) throws Exception
+//		{
+//			Logger.log("update");
+//			trail.add("update");
+//
+//			if (cmd.getFormBinder().bind())
+//			{
+//				UserTwixt twixt = (UserTwixt) cmd.getFormBinder().get();
+//				Logger.log("twixt a=%s", twixt.s);
+//				User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
+//				twixt.copyTo(scooter);
+//				updateObject(scooter);
+//				reply.setDestination(Reply.VIEW_INDEX);
+//			}
+//			else
+//			{
+//				reply.setDestination(Reply.VIEW_EDIT);
+//			}
+//		}
+
+		public void onUpdateCmd(UpdateCmd cmd) throws Exception 
 		{
 			Logger.log("update");
 			trail.add("update");
-
-			if (cmd.getFormBinder().bind())
-			{
-				UserTwixt twixt = (UserTwixt) cmd.getFormBinder().get();
-				Logger.log("twixt a=%s", twixt.s);
-				User scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
-				twixt.copyTo(scooter);
-				updateObject(scooter);
-				reply.setDestination(Reply.VIEW_INDEX);
-			}
-			else
-			{
-				reply.setDestination(Reply.VIEW_EDIT);
-			}
-
+			//binding fails handled in interceptor
+			UserTwixt twixt = (UserTwixt) cmd.getFormBinder().get();
+			Logger.log("twixt a=%s", twixt.s);
+			User scooter = loadEntity(cmd);
+			twixt.copyTo(scooter);
+			updateObject(scooter);
+			reply.setDestination(Reply.VIEW_INDEX);
 		}
-
+		
+		private User loadEntity(Request cmd) throws Exception
+		{
+			User scooter = null;
+			scooter = (User) mtx.loadEntity(User.class, cmd.getEntityId());
+			return scooter;
+		}
+		
 		protected void beforeRequest(Request request, InterceptorContext itx)
 		{
 			trail.add("before");
@@ -184,7 +204,6 @@ public class PresenterTests extends BaseMesfTest
 			trail.add("after");
 		}
 	}
-
 	public static class MyEventSub extends ReadModel
 	{
 		public SfxTrail trail = new SfxTrail();
@@ -272,7 +291,7 @@ public class PresenterTests extends BaseMesfTest
 			Reply reply = pres.process(cmd);
 
 			mtx = perm.createMContext();
-			pres = new MyPres(mtx);
+			pres = createMyPres(mtx, perm, Reply.VIEW_EDIT);
 			LocalMockBinder<UserTwixt> binder = new LocalMockBinder<UserTwixt>(UserTwixt.class, buildMap(true));
 
 			MyPres.UpdateCmd ucmd = new MyPres.UpdateCmd(1L, binder);
