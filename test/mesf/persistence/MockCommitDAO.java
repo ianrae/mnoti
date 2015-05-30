@@ -15,22 +15,22 @@ public class MockCommitDAO implements ICommitDAO
 		protected EntityDB<Commit> _entityDB = new EntityDB<Commit>();
 		public QueryContext<Commit> queryctx; 
 
-		@Override
-		public void init(SfxContext ctx)
-		{
-			this.queryctx = new QueryContext<Commit>(ctx, Commit.class);
-
-//			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
-//			EntityDBQueryProcessor<ObjectCommit> proc = new EntityDBQueryProcessor<ObjectCommit>(ctx, _L);
-//			registry.registerDao(ObjectCommit.class, proc);
-		}
-
-		@Override
-		public Query1<Commit> query() 
-		{
-			queryctx.queryL = new ArrayList<QStep>();
-			return new Query1<Commit>(queryctx);
-		}
+//		@Override
+//		public void init(SfxContext ctx)
+//		{
+//			this.queryctx = new QueryContext<Commit>(ctx, Commit.class);
+//
+////			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
+////			EntityDBQueryProcessor<ObjectCommit> proc = new EntityDBQueryProcessor<ObjectCommit>(ctx, _L);
+////			registry.registerDao(ObjectCommit.class, proc);
+//		}
+//
+//		@Override
+//		public Query1<Commit> query() 
+//		{
+//			queryctx.queryL = new ArrayList<QStep>();
+//			return new Query1<Commit>(queryctx);
+//		}
 
 
 		@Override

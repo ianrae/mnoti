@@ -15,23 +15,23 @@ public class MockStreamDAO implements IStreamDAO
 		protected EntityDB<Stream> _entityDB = new EntityDB<Stream>();
 		public QueryContext<Stream> queryctx; 
 
-		@Override
-		public void init(SfxContext ctx)
-		{
-			this.queryctx = new QueryContext<Stream>(ctx, Stream.class);
-
-//			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
-//			EntityDBQueryProcessor<ObjectStream> proc = new EntityDBQueryProcessor<ObjectStream>(ctx, _L);
-//			registry.registerDao(ObjectStream.class, proc);
-		}
-
-		@Override
-		public Query1<Stream> query() 
-		{
-			queryctx.queryL = new ArrayList<QStep>();
-			return new Query1<Stream>(queryctx);
-		}
-
+//		@Override
+//		public void init(SfxContext ctx)
+//		{
+//			this.queryctx = new QueryContext<Stream>(ctx, Stream.class);
+//
+////			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
+////			EntityDBQueryProcessor<ObjectStream> proc = new EntityDBQueryProcessor<ObjectStream>(ctx, _L);
+////			registry.registerDao(ObjectStream.class, proc);
+//		}
+//
+//		@Override
+//		public Query1<Stream> query() 
+//		{
+//			queryctx.queryL = new ArrayList<QStep>();
+//			return new Query1<Stream>(queryctx);
+//		}
+//
 
 		@Override
 		public int size() 

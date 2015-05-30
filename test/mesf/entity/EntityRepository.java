@@ -9,8 +9,8 @@ import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.Stream;
+import mesf.util.SfxTrail;
 
-import org.mef.framework.sfx.SfxTrail;
 
 public class EntityRepository implements ICommitObserver
 {

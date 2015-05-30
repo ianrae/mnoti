@@ -15,22 +15,22 @@ public class MockEventRecordDAO implements IEventRecordDAO
 		protected EntityDB<EventRecord> _entityDB = new EntityDB<EventRecord>();
 		public QueryContext<EventRecord> queryctx; 
 
-		@Override
-		public void init(SfxContext ctx)
-		{
-			this.queryctx = new QueryContext<EventRecord>(ctx, EventRecord.class);
-
-//			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
-//			EntityDBQueryProcessor<ObjectEvent> proc = new EntityDBQueryProcessor<ObjectEvent>(ctx, _L);
-//			registry.registerDao(ObjectEvent.class, proc);
-		}
-
-		@Override
-		public Query1<EventRecord> query() 
-		{
-			queryctx.queryL = new ArrayList<QStep>();
-			return new Query1<EventRecord>(queryctx);
-		}
+//		@Override
+//		public void init(SfxContext ctx)
+//		{
+//			this.queryctx = new QueryContext<EventRecord>(ctx, EventRecord.class);
+//
+////			ProcRegistry registry = (ProcRegistry) ctx.getServiceLocator().getInstance(ProcRegistry.class);
+////			EntityDBQueryProcessor<ObjectEvent> proc = new EntityDBQueryProcessor<ObjectEvent>(ctx, _L);
+////			registry.registerDao(ObjectEvent.class, proc);
+//		}
+//
+//		@Override
+//		public Query1<EventRecord> query() 
+//		{
+//			queryctx.queryL = new ArrayList<QStep>();
+//			return new Query1<EventRecord>(queryctx);
+//		}
 
 
 		@Override

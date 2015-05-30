@@ -214,7 +214,6 @@ public class TaskTests extends BaseMesfTest
 
 	public static class TaskInitializer implements IDomainIntializer
 	{
-
 		@Override
 		public void init(Permanent perm)
 		{
