@@ -1,7 +1,9 @@
 package mesf.event;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 public class EventMgr<T extends BaseEvent> implements IEventMgr
@@ -16,6 +18,7 @@ public class EventMgr<T extends BaseEvent> implements IEventMgr
 	public T createFromJson(String json) throws Exception
 	{
 		ObjectMapper mapper = new ObjectMapper();
+//		mapper.disable(DeserializationFeature.FAIL_ON_EMPTY_BEANS);		
 		T scooter = (T) mapper.readValue(json, clazz);	
 		return scooter;
 	}
@@ -24,6 +27,7 @@ public class EventMgr<T extends BaseEvent> implements IEventMgr
 	public String renderEntity(BaseEvent obj) throws Exception 
 	{
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);		
 		SimpleFilterProvider dummy = new SimpleFilterProvider();
 		dummy.setFailOnUnknownId(false);		
 

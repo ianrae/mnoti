@@ -338,6 +338,7 @@ public class PresenterTests extends BaseMesfTest
 				IEventMgr mm = mmtx.getEventRegistry().findByType(event.getEventName());
 				try {
 					BaseEvent eee = mm.rehydrate(event.getJson());
+					Logger.log("aa");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

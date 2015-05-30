@@ -64,6 +64,20 @@ public class EventTests extends BaseMesfTest
 		assertEquals(s, json2);
 	}
 
+	@Test
+	public void testUser() throws Exception 
+	{
+		String json = "{}";
+
+		EventMgr<PresenterTests.UserAddedEvent> mgr = new EventMgr(PresenterTests.UserAddedEvent.class);
+		PresenterTests.UserAddedEvent scooter = mgr.createFromJson(fix(json));
+//		chkScooter(scooter, 15);
+		
+		String json2 = mgr.renderEntity(scooter);
+//		String s = fix("{'entityId':0,'z':15}");
+		String s = fix("{}");
+		assertEquals(s, json2);
+	}
 
 	//-----------------------------
 	private void chkScooter(ScooterAddedEvent scooter, int expectedZ)
