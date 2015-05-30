@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   cache,
 //  "play2-crud" %% "play2-crud" % "0.7.4-SNAPSHOT",
 //  "play2-crud" %% "play2-crud" % "0.7.4-SNAPSHOT" classifier "assets",
-//  "twixt" % "twixt_2.11" % "0.1.0-SNAPSHOT",
+  "twixt" % "twixt_2.11" % "0.1.0-SNAPSHOT",
   "mettle" % "mettle_2.11" % "0.5.0-SNAPSHOT"   
 )
 
