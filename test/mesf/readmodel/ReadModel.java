@@ -4,6 +4,7 @@ import mesf.core.ICommitObserver;
 import mesf.core.IEventObserver;
 import mesf.persistence.Event;
 import mesf.core.MContext;
+import mesf.event.BaseEvent;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 
@@ -41,13 +42,13 @@ public abstract class ReadModel implements ICommitObserver, IEventObserver, IRea
 	}
 	
 	@Override
-	public boolean willAcceptEvent(Event event) 
+	public boolean willAcceptEvent(BaseEvent event) 
 	{
 		return false;
 	}
 
 	@Override
-	public void observeEvent(Event event) 
+	public void observeEvent(BaseEvent event) 
 	{
 	}
 	

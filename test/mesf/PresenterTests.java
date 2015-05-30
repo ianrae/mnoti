@@ -20,6 +20,7 @@ import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.entity.IEntityMgr;
 import mesf.event.BaseEvent;
+import mesf.event.BaseEventRehydrator;
 import mesf.event.EventManagerRegistry;
 import mesf.event.EventMgr;
 import mesf.event.IEventMgr;
@@ -314,33 +315,6 @@ public class PresenterTests extends BaseMesfTest
 		}
 	}
 	
-	public static class BaseEventRehydrator
-	{
-		public MContext mtx;
-		
-		public BaseEventRehydrator(MContext mtx) 
-		{
-			this.mtx = mtx;
-		}
-
-		public BaseEvent rehyrdateIfType(Event event, String eventName) 
-		{
-			//note we receive raw event db objects. for speed.
-			//only hydrate into BaseEvent objects as needed
-			
-			if (event.getEventName().equals(eventName))
-			{
-				IEventMgr mm = mtx.getEventRegistry().findByType(event.getEventName());
-				try {
-					BaseEvent eee = mm.rehydrate(event.getJson());
-					return eee;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			return null;
-		}
-	}
 	public static class MyEventSub extends ReadModel
 	{
 		public SfxTrail trail = new SfxTrail();
@@ -348,23 +322,17 @@ public class PresenterTests extends BaseMesfTest
 		public BaseEventRehydrator mmtx;
 		
 		@Override
-		public boolean willAcceptEvent(Event event) 
+		public boolean willAcceptEvent(BaseEvent event) 
 		{
 			return true;
 		}
 
 		@Override
-		public void observeEvent(Event event) 
+		public void observeEvent(BaseEvent event) 
 		{
-			//note we receive raw event db objects. for speed.
-			//only hydrate into BaseEvent objects as needed
-			
-			UserAddedEvent exxx = (UserAddedEvent) mmtx.rehyrdateIfType(event, "useraddedevent");
-			Logger.log("a2");
-			BaseEvent other = mmtx.rehyrdateIfType(event, "nosuchevent");
-			if (other == null)
+			if (event instanceof UserAddedEvent)
 			{
-				Logger.log("other is NULL");
+				Logger.log("wooohoo");
 			}
 		}
 
