@@ -11,6 +11,7 @@ import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
 import mesf.cmd.ProcRegistry;
+import mesf.core.CommitWriter;
 import mesf.core.EventProjector;
 import mesf.core.MContext;
 import mesf.core.Permanent;
@@ -18,15 +19,13 @@ import mesf.core.Projector;
 import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
-import mesf.entity.IEntityMgr;
 import mesf.event.Event;
 import mesf.event.BaseEventRehydrator;
 import mesf.event.EventManagerRegistry;
 import mesf.event.EventMgr;
-import mesf.event.IEventMgr;
+import mesf.event.EventWriter;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
-import mesf.persistence.EventRecord;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventRecordDAO;
 import mesf.persistence.IStreamDAO;
@@ -60,65 +59,6 @@ import org.mef.framework.sfx.SfxTrail;
 
 public class PresenterTests extends BaseMesfTest 
 {
-	public static class CommitWriter 
-	{
-		private MContext mtx;
-		public CommitWriter(MContext mtx)
-		{
-			this.mtx = mtx;
-		}
-		public long insertEntity(BaseEntity obj)
-		{
-			String type = this.getEntityType(obj);
-			IEntityMgr mgr = mtx.getRegistry().findByType(type);
-			
-			return mtx.getCommitMgr().insertEntity(mgr, obj);
-		}
-		
-		public String getEntityType(BaseEntity obj)
-		{
-			String type = mtx.getRegistry().findTypeForClass(obj.getClass());
-			return type;
-		}
-	}
-	
-	public static class EventWriter 
-	{
-		private MContext mtx;
-		public EventWriter(MContext mtx)
-		{
-			this.mtx = mtx;
-		}
-		public void insertEvent(Event event)
-		{
-			String type = this.getEventType(event);
-			IEventMgr mgr = mtx.getEventRegistry().findByType(type);
-			
-			EventRecord record = new EventRecord();
-			record.setStreamId(event.getEntityId());
-			
-			record.setEventName(mgr.getTypeName());
-			String json = null;
-			try {
-				json = mgr.renderEntity(event);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			record.setJson(json);
-			this.mtx.getEventDAO().save(record);
-			
-			Logger.logDebug("EV [%d] %d %s", record.getId(), event.getEntityId(), record.getEventName());
-		}
-		
-		
-		public String getEventType(Event obj)
-		{
-			String type = mtx.getEventRegistry().findTypeForClass(obj.getClass());
-			return type;
-		}
-	}
-	
 	public static class InterceptorContext
 	{
 		public boolean haltProcessing;
@@ -319,8 +259,6 @@ public class PresenterTests extends BaseMesfTest
 	{
 		public SfxTrail trail = new SfxTrail();
 		
-		public BaseEventRehydrator mmtx;
-		
 		@Override
 		public boolean willAcceptEvent(Event event) 
 		{
@@ -367,7 +305,7 @@ public class PresenterTests extends BaseMesfTest
 	{
 		MyUserPerm perm = this.createPerm();
 		
-		int n = 1; 
+		int n = 2; 
 		for(int i = 0; i < n; i++)
 		{
 			log(String.format("%d..	", i));
@@ -383,7 +321,6 @@ public class PresenterTests extends BaseMesfTest
 			assertEquals(i+1, id); 
 			
 			MContext mmtx = perm.createMContext();
-			eventSub.mmtx = new BaseEventRehydrator(mmtx);
 			eventSub.freshen(mmtx); //run event publishing 
 		}
 	}

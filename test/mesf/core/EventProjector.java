@@ -33,10 +33,10 @@ public class EventProjector
 	public void run(MContext mtx, List<IEventObserver> observerL, long startId)
 	{
 		long startIndex = startId;
-		if (startIndex > 0)
-		{
-			startIndex--; //yuck!!
-		}
+//		if (startIndex > 0)
+//		{
+//			startIndex--; //yuck!!
+//		}
 		List<EventRecord> L = cache.loadRange(startIndex, mtx.getEventMaxId() - startIndex);
 		for(EventRecord event : L)	
 		{
