@@ -35,18 +35,19 @@ public class Permanent
 	 * proc
 	 */
 
-	public Permanent(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry, EventManagerRegistry evReg)
+	public Permanent(PersistenceContext persistenceCtx)
 	{
 		this.persistenceCtx = persistenceCtx;
-		this.registry = registry;
+		this.registry = new EntityManagerRegistry();
+		this.procRegistry = new ProcRegistry();
+		this.eventRegistry = new EventManagerRegistry();
+		
 		this.strcache = new StreamCache(persistenceCtx.getStreamDAO());
 		EntityRepository objcache = new EntityRepository(persistenceCtx.getStreamDAO(), registry);	
 		this.entityRepo = objcache;
 		this.readmodelRepo = new ReadModelRepository(strcache);
 		commitCache = new CommitCache(persistenceCtx.getDao());
-		this.procRegistry = procRegistry;
 		this.eventCache = new EventCache(persistenceCtx.getEventDAO());
-		this.eventRegistry = evReg;
 	}
 	
 	public void start()
@@ -102,5 +103,20 @@ public class Permanent
 	public ReadModelRepository getreadmodelMgr()
 	{
 		return readmodelRepo;
+	}
+
+	public EntityManagerRegistry getEntityManagerRegistry() 
+	{
+		return this.registry;
+	}
+
+	public ProcRegistry getProcRegistry() 
+	{
+		return this.procRegistry;
+	}
+
+	public EventManagerRegistry getEventManagerRegistry() 
+	{
+		return this.eventRegistry;
 	}
 }

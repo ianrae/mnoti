@@ -8,6 +8,7 @@ import java.util.List;
 import javax.persistence.Persistence;
 
 import mef.framework.helpers.BaseTest;
+import mef.framework.helpers.FactoryGirl;
 import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
@@ -187,10 +188,10 @@ public class CommitMgrTests extends BaseMesfTest
 	IStreamDAO streamDAO;
 	private CommitMgr createCommitMgr()
 	{
-		dao = new MockCommitDAO();
-		streamDAO = new MockStreamDAO();
 		IEventRecordDAO eventDAO = new MockEventRecordDAO();
-		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
+		PersistenceContext persistenceCtx = FactoryGirl.createPersistenceContext();
+		this.dao = persistenceCtx.getDao();
+		this.streamDAO = persistenceCtx.getStreamDAO();
 		CommitMgr mgr = new CommitMgr(persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
 		return mgr;
 	}

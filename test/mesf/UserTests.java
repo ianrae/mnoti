@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import mef.framework.helpers.BaseTest;
+import mef.framework.helpers.FactoryGirl;
+import mesf.PresenterTests.UserInitializer;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.BaseCommand;
@@ -176,9 +178,9 @@ public class UserTests extends BaseMesfTest
 	{
 		public UsersRM readModel1;
 		
-		public MyUserPerm(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry, EventManagerRegistry evReg) 
+		public MyUserPerm(PersistenceContext persistenceCtx) 
 		{
-			super(persistenceCtx, registry, procRegistry, evReg);
+			super(persistenceCtx);
 			
 			readModel1 = new UsersRM();
 			registerReadModel(readModel1);
@@ -274,20 +276,12 @@ public class UserTests extends BaseMesfTest
 	private MyUserPerm createPerm() throws Exception
 	{
 		//create long-running objects
-		ICommitDAO dao = new MockCommitDAO();
-		IStreamDAO streamDAO = new MockStreamDAO();
-		IEventRecordDAO eventDAO = new MockEventRecordDAO();
+		PersistenceContext persistenceCtx = FactoryGirl.createPersistenceContext();
+		MyUserPerm perm = new MyUserPerm(persistenceCtx);
 		
-		EntityManagerRegistry registry = new EntityManagerRegistry();
-		registry.register(User.class, new EntityMgr<User>(User.class));
+		UserInitializer userinit = new UserInitializer();
+		userinit.init(perm);;
 		
-		ProcRegistry procRegistry = new ProcRegistry();
-		procRegistry.register(User.class, MyUserProc.class);
-		
-		EventManagerRegistry evReg = new EventManagerRegistry();
-		
-		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
-		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry, evReg);
 		perm.start();
 		return perm;
 	}		

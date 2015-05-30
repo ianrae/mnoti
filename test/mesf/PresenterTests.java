@@ -7,12 +7,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import mef.framework.helpers.FactoryGirl;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
 import mesf.cmd.ProcRegistry;
 import mesf.core.CommitWriter;
 import mesf.core.EventProjector;
+import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.core.Projector;
@@ -340,6 +342,26 @@ public class PresenterTests extends BaseMesfTest
 			}
 		}
 	}
+	
+	public static class UserInitializer implements IDomainIntializer
+	{
+
+		@Override
+		public void init(Permanent perm)
+		{
+			//create long-running objects
+			
+			EntityManagerRegistry registry = perm.getEntityManagerRegistry();
+			registry.register(User.class, new EntityMgr<User>(User.class));
+			
+			ProcRegistry procRegistry = perm.getProcRegistry();
+			procRegistry.register(User.class, MyUserProc.class);
+			
+			EventManagerRegistry evReg = perm.getEventManagerRegistry();
+			evReg.register(UserAddedEvent.class, new EventMgr<UserAddedEvent>(UserAddedEvent.class));
+		}
+		
+	}
 
 	@Test
 	public void testFullChain() throws Exception
@@ -380,21 +402,11 @@ public class PresenterTests extends BaseMesfTest
 	private MyUserPerm createPerm() throws Exception
 	{
 		//create long-running objects
-		ICommitDAO dao = new MockCommitDAO();
-		IStreamDAO streamDAO = new MockStreamDAO();
-		IEventRecordDAO eventDAO = new MockEventRecordDAO();
+		PersistenceContext persistenceCtx = FactoryGirl.createPersistenceContext();
+		MyUserPerm perm = new MyUserPerm(persistenceCtx);
 		
-		EntityManagerRegistry registry = new EntityManagerRegistry();
-		registry.register(User.class, new EntityMgr<User>(User.class));
-		
-		ProcRegistry procRegistry = new ProcRegistry();
-		procRegistry.register(User.class, MyUserProc.class);
-		
-		EventManagerRegistry evReg = new EventManagerRegistry();
-		evReg.register(UserAddedEvent.class, new EventMgr<UserAddedEvent>(UserAddedEvent.class));
-		
-		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
-		MyUserPerm perm = new MyUserPerm(persistenceCtx, registry, procRegistry, evReg);
+		UserInitializer userinit = new UserInitializer();
+		userinit.init(perm);;
 		
 		eventSub = new MyEventSub();
 		perm.registerReadModel(eventSub);

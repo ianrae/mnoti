@@ -6,19 +6,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import mef.framework.helpers.BaseTest;
+import mef.framework.helpers.FactoryGirl;
 import mesf.CommitMgrTests.InsertScooterCmd;
 import mesf.CommitMgrTests.MyCmdProc;
 import mesf.CommitMgrTests.UpdateScooterCmd;
 import mesf.ObjManagerTests.Scooter;
+import mesf.PresenterTests.UserAddedEvent;
+import mesf.UserTests.MyUserProc;
+import mesf.UserTests.User;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.cmd.ProcRegistry;
 import mesf.core.CommitMgr;
+import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.event.EventManagerRegistry;
+import mesf.event.EventMgr;
 import mesf.persistence.EventRecord;
 import mesf.persistence.IEventRecordDAO;
 import mesf.persistence.MockEventRecordDAO;
@@ -83,13 +89,31 @@ public class TopLevelTests extends BaseMesfTest
 		}
 	}
 	
+	
+	public static class ScooterInitializer implements IDomainIntializer
+	{
+
+		@Override
+		public void init(Permanent perm)
+		{
+			//create long-running objects
+			
+			EntityManagerRegistry registry = perm.getEntityManagerRegistry();
+			registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
+			
+			ProcRegistry procRegistry = perm.getProcRegistry();
+			procRegistry.register(Scooter.class, MyCmdProc.class);
+		}
+		
+	}
+	
 	public static class MyPerm extends Permanent
 	{
 		public MyReadModel readModel1;
 		
-		public MyPerm(PersistenceContext persistenceCtx, EntityManagerRegistry registry, ProcRegistry procRegistry, EventManagerRegistry evReg) 
+		public MyPerm(PersistenceContext persistenceCtx) 
 		{
-			super(persistenceCtx, registry, procRegistry, evReg);
+			super(persistenceCtx);//, registry, procRegistry, evReg);
 			
 			readModel1 = new MyReadModel();
 			registerReadModel(readModel1);
@@ -100,20 +124,12 @@ public class TopLevelTests extends BaseMesfTest
 	public void test() throws Exception
 	{
 		//create long-running objects
-		ICommitDAO dao = new MockCommitDAO();
-		IStreamDAO streamDAO = new MockStreamDAO();
-		IEventRecordDAO eventDAO = new MockEventRecordDAO();
+		PersistenceContext persistenceCtx = FactoryGirl.createPersistenceContext();
+		ICommitDAO dao = persistenceCtx.getDao();
 		
-		EntityManagerRegistry registry = new EntityManagerRegistry();
-		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
-		
-		ProcRegistry procRegistry = new ProcRegistry();
-		procRegistry.register(Scooter.class, MyCmdProc.class);
-		
-		EventManagerRegistry evReg = new EventManagerRegistry();
-		
-		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
-		MyPerm perm = new MyPerm(persistenceCtx, registry, procRegistry, evReg);
+		MyPerm perm = new MyPerm(persistenceCtx);
+		ScooterInitializer init = new ScooterInitializer();
+		init.init(perm);
 		perm.start();
 		assertEquals(0, perm.readModel1.size());
 		
