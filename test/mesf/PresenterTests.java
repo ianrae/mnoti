@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import mef.framework.helpers.FactoryGirl;
+import mef.framework.helpers.LocalMockBinder;
 import mesf.TwixtFormTests.CarTwixt;
 import mesf.UserTests.MyUserPerm;
 import mesf.UserTests.MyUserProc;
@@ -34,6 +35,7 @@ import mesf.persistence.MockEventRecordDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
+import mesf.presenter.IFormBinder;
 import mesf.presenter.IReqquestInterceptor;
 import mesf.presenter.InterceptorContext;
 import mesf.presenter.Presenter;
@@ -46,8 +48,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mef.framework.sfx.SfxTrail;
 import org.mef.twixt.StringValue;
-import org.mef.twixt.binder.IFormBinder;
-import org.mef.twixt.binder.MockTwixtBinder;
 import org.mef.twixt.binder.TwixtForm;
 
 /*
@@ -251,7 +251,7 @@ public class PresenterTests extends BaseMesfTest
 			
 			mtx = perm.createMContext();
 			pres = new MyPres(mtx);
-			MockTwixtBinder<UserTwixt> binder = new MockTwixtBinder<UserTwixt>(UserTwixt.class, buildMap());
+			LocalMockBinder<UserTwixt> binder = new LocalMockBinder<UserTwixt>(UserTwixt.class, buildMap());
 			
 			MyPres.UpdateCmd ucmd = new MyPres.UpdateCmd(1L, binder);
 			reply = pres.process(ucmd);
@@ -280,6 +280,26 @@ public class PresenterTests extends BaseMesfTest
 			{
 				itx.haltProcessing = true;
 			}
+		}
+	}
+	private static class BindingIntercept implements IReqquestInterceptor
+	{
+
+		@Override
+		public void process(Request request, Reply reply, InterceptorContext itx) 
+		{
+			if (request.getFormBinder() == null)
+			{
+				return;
+			}
+			
+			if (! request.getFormBinder().bind())
+			{
+				//propogate validation errors
+				//set reply to VIEW_EDIT -pass in ctor Boundary.creatPres(new FormBinder<User>(VIEW_EDIT);
+				//nice then onUpdate only called if valid
+				itx.haltProcessing = true;
+			}		
 		}
 	}
 	

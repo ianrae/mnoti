@@ -5,7 +5,6 @@ import java.util.Map;
 import mesf.auth.AuthUser;
 import mesf.cmd.ICommand;
 
-import org.mef.twixt.binder.IFormBinder;
 
 public class Request implements ICommand 
 {
