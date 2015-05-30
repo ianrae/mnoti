@@ -53,7 +53,6 @@ public class TaskTests extends BaseMesfTest
 			copy.s = this.s;
 			return copy;
 		}
-
 	}
 	
 	
