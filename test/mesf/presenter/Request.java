@@ -2,16 +2,16 @@ package mesf.presenter;
 
 import java.util.Map;
 
+import mesf.auth.AuthUser;
 import mesf.cmd.ICommand;
 
-import org.mef.framework.auth2.AuthUser;
 import org.mef.twixt.binder.IFormBinder;
 
 public class Request implements ICommand 
 {
 //	private Map<String, String> map;
 //	private IFormBinder binder;
-//	public AuthUser authUser; //null means not authenticated
+	public AuthUser authUser; //null means not authenticated
 	protected long entityId = 0L;
 	
 	public Request()

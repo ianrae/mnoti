@@ -322,8 +322,8 @@ public class PresenterTests extends BaseMesfTest
 			long id = perm.createMContext().getMaxId();
 			assertEquals(i+1, id); 
 			
-			MContext mmtx = perm.createMContext();
-			eventSub.freshen(mmtx); //run event publishing 
+			mtx = perm.createMContext();
+			eventSub.freshen(mtx); //run event publishing 
 		}
 	}
 	
@@ -406,7 +406,7 @@ public class PresenterTests extends BaseMesfTest
 		MyUserPerm perm = new MyUserPerm(persistenceCtx);
 		
 		UserInitializer userinit = new UserInitializer();
-		userinit.init(perm);;
+		userinit.init(perm);
 		
 		eventSub = new MyEventSub();
 		perm.registerReadModel(eventSub);
