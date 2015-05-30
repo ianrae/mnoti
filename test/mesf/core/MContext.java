@@ -9,7 +9,7 @@ import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityRepository;
 import mesf.event.EventManagerRegistry;
-import mesf.persistence.IEventDAO;
+import mesf.persistence.IEventRecordDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.readmodel.IReadModel;
 import mesf.readmodel.ReadModelLoader;
@@ -50,7 +50,7 @@ public class MContext
 		this.persistenceCtx = persistenceCtx;
 	}
 	
-	public IEventDAO getEventDAO()
+	public IEventRecordDAO getEventDAO()
 	{
 		return this.persistenceCtx.getEventDAO();
 	}
@@ -135,7 +135,7 @@ public class MContext
 			return maxEventId;
 		}
 		
-		IEventDAO evdao = this.persistenceCtx.getEventDAO();
+		IEventRecordDAO evdao = this.persistenceCtx.getEventDAO();
 		maxEventId = evdao.findMaxId();
 		return maxEventId;
 	}

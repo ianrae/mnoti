@@ -20,8 +20,8 @@ import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.event.EventManagerRegistry;
 import mesf.persistence.EventRecord;
-import mesf.persistence.IEventDAO;
-import mesf.persistence.MockEventDAO;
+import mesf.persistence.IEventRecordDAO;
+import mesf.persistence.MockEventRecordDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
 import mesf.persistence.Commit;
@@ -102,7 +102,7 @@ public class TopLevelTests extends BaseMesfTest
 		//create long-running objects
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		IEventDAO eventDAO = new MockEventDAO();
+		IEventRecordDAO eventDAO = new MockEventRecordDAO();
 		
 		EntityManagerRegistry registry = new EntityManagerRegistry();
 		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));

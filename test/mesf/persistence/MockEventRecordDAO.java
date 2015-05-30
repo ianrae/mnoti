@@ -9,7 +9,7 @@ import org.mef.framework.fluent.Query1;
 import org.mef.framework.fluent.QueryContext;
 import org.mef.framework.sfx.SfxContext;
 
-public class MockEventDAO implements IEventDAO
+public class MockEventRecordDAO implements IEventRecordDAO
 	{
 		protected List<EventRecord> _L = new ArrayList<EventRecord>();
 		protected EntityDB<EventRecord> _entityDB = new EntityDB<EventRecord>();

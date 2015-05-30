@@ -25,10 +25,10 @@ import mesf.entity.EntityMgr;
 import mesf.entity.EntityRepository;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
-import mesf.persistence.IEventDAO;
+import mesf.persistence.IEventRecordDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
-import mesf.persistence.MockEventDAO;
+import mesf.persistence.MockEventRecordDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.readmodel.ReadModelLoader;
@@ -189,7 +189,7 @@ public class CommitMgrTests extends BaseMesfTest
 	{
 		dao = new MockCommitDAO();
 		streamDAO = new MockStreamDAO();
-		IEventDAO eventDAO = new MockEventDAO();
+		IEventRecordDAO eventDAO = new MockEventRecordDAO();
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
 		CommitMgr mgr = new CommitMgr(persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
 		return mgr;

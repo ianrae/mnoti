@@ -5,7 +5,7 @@ import java.util.List;
 import org.mef.framework.dao.IDAO;
 import org.mef.framework.fluent.Query1;
 
-public interface IEventDAO  extends IDAO
+public interface IEventRecordDAO  extends IDAO
 {
 	EventRecord findById(long id);
 	List<EventRecord> all();

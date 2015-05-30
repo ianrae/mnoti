@@ -4,7 +4,7 @@ import java.util.List;
 
 import mesf.log.Logger;
 import mesf.persistence.EventRecord;
-import mesf.persistence.IEventDAO;
+import mesf.persistence.IEventRecordDAO;
 
 //thread-safe long running cache of commit DTOs
 public class EventCache
@@ -28,9 +28,9 @@ public class EventCache
 	}
 	
 	SegmentedCache<EventRecord> segcache;
-	private IEventDAO dao;
+	private IEventRecordDAO dao;
 	
-	public EventCache(IEventDAO dao)
+	public EventCache(IEventRecordDAO dao)
 	{
 		this.dao = dao;
 		segcache = new SegmentedCache<EventRecord>(4, new EventLoader());

@@ -4,9 +4,9 @@ public class PersistenceContext
 {
 	private final IStreamDAO streamDAO;
 	private final ICommitDAO dao;
-	private final IEventDAO eventDAO;
+	private final IEventRecordDAO eventDAO;
 
-	public PersistenceContext(ICommitDAO dao, IStreamDAO streamDAO, IEventDAO eventDAO)
+	public PersistenceContext(ICommitDAO dao, IStreamDAO streamDAO, IEventRecordDAO eventDAO)
 	{
 		this.dao = dao;
 		this.streamDAO = streamDAO;
@@ -21,7 +21,7 @@ public class PersistenceContext
 		return dao;
 	}
 
-	public IEventDAO getEventDAO() {
+	public IEventRecordDAO getEventDAO() {
 		return eventDAO;
 	}
 }

@@ -28,10 +28,10 @@ import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.EventRecord;
 import mesf.persistence.ICommitDAO;
-import mesf.persistence.IEventDAO;
+import mesf.persistence.IEventRecordDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockCommitDAO;
-import mesf.persistence.MockEventDAO;
+import mesf.persistence.MockEventRecordDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.persistence.Stream;
@@ -445,7 +445,7 @@ public class PresenterTests extends BaseMesfTest
 		//create long-running objects
 		ICommitDAO dao = new MockCommitDAO();
 		IStreamDAO streamDAO = new MockStreamDAO();
-		IEventDAO eventDAO = new MockEventDAO();
+		IEventRecordDAO eventDAO = new MockEventRecordDAO();
 		
 		EntityManagerRegistry registry = new EntityManagerRegistry();
 		registry.register(User.class, new EntityMgr<User>(User.class));
