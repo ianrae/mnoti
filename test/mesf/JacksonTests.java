@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashSet;
 import java.util.Set;
 
-import mef.framework.helpers.BaseTest;
-
 import org.junit.Before;
 import org.junit.Test;
 

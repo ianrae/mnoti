@@ -1,7 +1,6 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-import mef.framework.helpers.BaseTest;
 import mesf.entity.BaseEntity;
 import mesf.entity.EntityMgr;
 

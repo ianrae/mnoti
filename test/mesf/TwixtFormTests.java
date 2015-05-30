@@ -1,6 +1,7 @@
 package mesf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,7 +11,6 @@ import mef.framework.helpers.BaseTest;
 import org.junit.Test;
 import org.mef.twixt.StringValue;
 import org.mef.twixt.binder.MockTwixtBinder;
-import org.mef.twixt.binder.TwixtBinder;
 import org.mef.twixt.binder.TwixtForm;
 
 

@@ -1,10 +1,9 @@
 package mesf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import mef.framework.helpers.BaseTest;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.MockCommitDAO;

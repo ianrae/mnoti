@@ -32,10 +32,10 @@ import mesf.presenter.Request;
 import mesf.readmodel.ReadModel;
 import mesf.testhelper.FactoryGirl;
 import mesf.testhelper.LocalMockBinder;
+import mesf.util.SfxTrail;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mef.framework.sfx.SfxTrail;
 import org.mef.twixt.StringValue;
 import org.mef.twixt.Value;
 import org.mef.twixt.binder.TwixtForm;

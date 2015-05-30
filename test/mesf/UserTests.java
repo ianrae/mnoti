@@ -5,24 +5,13 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
-import mef.framework.helpers.BaseTest;
 import mesf.PresenterTests.UserInitializer;
+import mesf.cmd.BaseCommand;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
-import mesf.cmd.BaseCommand;
-import mesf.cmd.ProcRegistry;
 import mesf.core.MContext;
 import mesf.core.Permanent;
 import mesf.entity.BaseEntity;
-import mesf.entity.EntityManagerRegistry;
-import mesf.entity.EntityMgr;
-import mesf.event.EventManagerRegistry;
-import mesf.persistence.ICommitDAO;
-import mesf.persistence.IEventRecordDAO;
-import mesf.persistence.IStreamDAO;
-import mesf.persistence.MockCommitDAO;
-import mesf.persistence.MockEventRecordDAO;
-import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.readmodel.AllIdsRM;
 import mesf.testhelper.FactoryGirl;

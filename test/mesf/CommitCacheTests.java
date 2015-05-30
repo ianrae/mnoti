@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import mef.framework.helpers.BaseTest;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.StreamCache;

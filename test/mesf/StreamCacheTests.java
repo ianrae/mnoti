@@ -1,14 +1,10 @@
 package mesf;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
-
-import mef.framework.helpers.BaseTest;
-import mesf.persistence.Stream;
+import static org.junit.Assert.assertEquals;
 import mesf.core.StreamCache;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockStreamDAO;
+import mesf.persistence.Stream;
 
 import org.junit.Before;
 import org.junit.Test;

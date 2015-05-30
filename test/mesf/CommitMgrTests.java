@@ -1,22 +1,18 @@
 package mesf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Persistence;
-
-import mef.framework.helpers.BaseTest;
 import mesf.ObjManagerTests.Scooter;
+import mesf.cmd.BaseCommand;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
-import mesf.cmd.BaseCommand;
 import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
-import mesf.persistence.Stream;
 import mesf.core.StreamCache;
 import mesf.entity.BaseEntity;
 import mesf.entity.EntityLoader;
@@ -27,12 +23,9 @@ import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventRecordDAO;
 import mesf.persistence.IStreamDAO;
-import mesf.persistence.MockCommitDAO;
 import mesf.persistence.MockEventRecordDAO;
-import mesf.persistence.MockStreamDAO;
 import mesf.persistence.PersistenceContext;
-import mesf.readmodel.ReadModelLoader;
-import mesf.readmodel.ReadModelRepository;
+import mesf.persistence.Stream;
 import mesf.testhelper.FactoryGirl;
 
 import org.junit.Before;
