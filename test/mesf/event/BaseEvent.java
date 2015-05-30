@@ -18,7 +18,8 @@ public abstract class BaseEvent
 		this.entityId = entityid;
 	}
 
-	@JsonIgnore
+	//since is immutable we should serialize entityId
+//	@JsonIgnore
 	public long getEntityId() {
 		return entityId;
 	}
