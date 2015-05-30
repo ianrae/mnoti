@@ -123,6 +123,10 @@ public abstract class Presenter //extends CommandProcessor
 		{
 			this.commitWriter.insertEntity(obj);
 		}
+		protected void updateObject(BaseEntity obj)
+		{
+			this.commitWriter.updateEntity(obj);
+		}
 		protected void insertEvent(Event ev)
 		{
 			this.eventWriter.insertEvent(ev);

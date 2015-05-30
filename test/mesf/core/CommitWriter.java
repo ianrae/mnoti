@@ -17,6 +17,13 @@ public class CommitWriter
 		
 		return mtx.getCommitMgr().insertEntity(mgr, obj);
 	}
+	public void updateEntity(BaseEntity obj)
+	{
+		String type = this.getEntityType(obj);
+		IEntityMgr mgr = mtx.getRegistry().findByType(type);
+		
+		mtx.getCommitMgr().updateEntity(mgr, obj);
+	}
 	
 	public String getEntityType(BaseEntity obj)
 	{

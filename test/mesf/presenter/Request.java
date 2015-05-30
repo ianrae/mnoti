@@ -10,7 +10,8 @@ import org.mef.twixt.binder.IFormBinder;
 public class Request implements ICommand 
 {
 //	private Map<String, String> map;
-//	private IFormBinder binder;
+	@SuppressWarnings("rawtypes")
+	protected IFormBinder binder;
 	public AuthUser authUser; //null means not authenticated
 	protected long entityId = 0L;
 	
@@ -21,6 +22,11 @@ public class Request implements ICommand
 	public long getEntityId() 
 	{
 		return entityId;
+	}
+	
+	public IFormBinder getFormBinder()
+	{
+		return binder;
 	}
 	
 //	public void setParameters(Map<String, String> map)
