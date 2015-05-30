@@ -29,8 +29,15 @@ public class EventWriter
 		}
 		record.setJson(json);
 		this.mtx.getEventDAO().save(record);
-		
 		Logger.logDebug("EV [%d] %d %s", record.getId(), event.getEntityId(), record.getEventName());
+		
+		//if there is an eventbus, send event to it
+		IEventBus bus = mtx.getEventBus();
+		if (bus != null)
+		{
+			bus.eventOccurred(event);
+		}
+		
 	}
 	
 	

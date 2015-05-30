@@ -9,6 +9,7 @@ import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityRepository;
 import mesf.event.EventManagerRegistry;
+import mesf.event.IEventBus;
 import mesf.persistence.IEventRecordDAO;
 import mesf.persistence.PersistenceContext;
 import mesf.readmodel.IReadModel;
@@ -32,9 +33,11 @@ public class MContext
 	private EventManagerRegistry evReg;
 	private EventCache eventCache;
 	private long maxEventId;
+	private IEventBus eventBus;
 	
 	public MContext(CommitMgr commitMgr, EntityManagerRegistry registry, EventManagerRegistry evReg, EntityRepository objcache, 
-			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache, EventCache eventCache, PersistenceContext persistenceCtx)
+			ReadModelRepository readmodelMgr, ReadModelLoader vloader, CommitCache commitCache, StreamCache strcache, EventCache eventCache, 
+			PersistenceContext persistenceCtx, IEventBus eventBus)
 	{
 		this.commitMgr = commitMgr;
 		this.registry = registry;
@@ -48,6 +51,7 @@ public class MContext
 		this.strcache = strcache;
 		this.eventCache = eventCache;
 		this.persistenceCtx = persistenceCtx;
+		this.eventBus = eventBus;
 	}
 	
 	public IEventRecordDAO getEventDAO()
@@ -138,6 +142,10 @@ public class MContext
 		IEventRecordDAO evdao = this.persistenceCtx.getEventDAO();
 		maxEventId = evdao.findMaxId();
 		return maxEventId;
+	}
+
+	public IEventBus getEventBus() {
+		return eventBus;
 	}
 	
 }

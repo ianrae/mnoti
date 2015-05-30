@@ -9,6 +9,7 @@ import mesf.entity.BaseEntity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityRepository;
 import mesf.event.EventManagerRegistry;
+import mesf.event.IEventBus;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.PersistenceContext;
@@ -27,6 +28,7 @@ public class Permanent
 	private PersistenceContext persistenceCtx;
 	private EventCache eventCache;
 	private EventManagerRegistry eventRegistry;
+	private IEventBus eventBus;
 	
 	/*
 	 * tbls: commit, stream
@@ -34,13 +36,18 @@ public class Permanent
 	 * repositories: Entity, Aggregate, ReadModel
 	 * proc
 	 */
-
 	public Permanent(PersistenceContext persistenceCtx)
+	{
+		this(persistenceCtx, null);
+	}
+
+	public Permanent(PersistenceContext persistenceCtx, IEventBus eventBus)
 	{
 		this.persistenceCtx = persistenceCtx;
 		this.registry = new EntityManagerRegistry();
 		this.procRegistry = new ProcRegistry();
 		this.eventRegistry = new EventManagerRegistry();
+		this.eventBus = eventBus;
 		
 		this.strcache = new StreamCache(persistenceCtx.getStreamDAO());
 		EntityRepository objcache = new EntityRepository(persistenceCtx.getStreamDAO(), registry);	
@@ -84,7 +91,7 @@ public class Permanent
 		ReadModelLoader vloader = new ReadModelLoader(persistenceCtx, mgr.getMaxId());
 		
 		MContext mtx = new MContext(mgr, registry, this.eventRegistry, this.entityRepo, this.readmodelRepo, vloader, 
-				this.commitCache, this.strcache, this.eventCache, persistenceCtx);
+				this.commitCache, this.strcache, this.eventCache, persistenceCtx, eventBus);
 		mtx.setProcRegistry(procRegistry);
 		
 		mtx.getEventMaxId(); //freshen event's maxid
