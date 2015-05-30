@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 import java.util.TreeMap;
 
+import mesf.UserTests.User;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
@@ -20,6 +21,7 @@ import mesf.presenter.InterceptorContext;
 import mesf.presenter.Presenter;
 import mesf.presenter.Reply;
 import mesf.presenter.Request;
+import mesf.readmodel.ManyToOneRM;
 import mesf.testhelper.FactoryGirl;
 import mesf.testhelper.LocalMockBinder;
 import mesf.util.SfxTrail;
@@ -76,6 +78,14 @@ public class TaskTests extends BaseMesfTest
 					valctx.addError("sdfdfs");
 				}
 			});
+		}
+	}
+	
+	public static class UserTaskRM extends ManyToOneRM
+	{
+		public UserTaskRM()
+		{
+			super("user", User.class, "task", Task.class, null);
 		}
 	}
 
@@ -172,6 +182,9 @@ public class TaskTests extends BaseMesfTest
 
 			TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(1L, binder);
 			reply = pres.process(ucmd);
+			
+			Map<Long,Long> map = perm.readModel1.queryAll(mtx, 1L);
+//			assertEquals(33, map.size());
 		}
 	}
 
@@ -224,14 +237,14 @@ public class TaskTests extends BaseMesfTest
 	}
 	public static class MyTaskPerm extends Permanent
 	{
-//		public TasksRM readModel1;
+		public UserTaskRM readModel1;
 		
 		public MyTaskPerm(PersistenceContext persistenceCtx) 
 		{
 			super(persistenceCtx);
 			
-//			readModel1 = new UsersRM();
-//			registerReadModel(readModel1);
+			readModel1 = new UserTaskRM();
+			registerReadModel(readModel1);
 		}
 	}
 

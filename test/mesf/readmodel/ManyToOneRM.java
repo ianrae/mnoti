@@ -1,7 +1,5 @@
 package mesf.readmodel;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,14 +8,14 @@ import mesf.core.Projector;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 
-public class ManyToOneRM<T> extends ReadModel
+public class ManyToOneRM extends ReadModel
 {
 	public interface IResolver
 	{
 		Long getForiegnKey(Commit commit);
 	}
 	
-	public Map<Long,List<Long>> map = new TreeMap<>(); //sorted
+	public Map<Long,TreeMap<Long,Long>> map = new TreeMap<>(); //sorted
 	private String type1;
 	private Class clazz1;
 	private String typeMany;
@@ -61,7 +59,7 @@ public class ManyToOneRM<T> extends ReadModel
 			{
 			case 'I':
 			case 'S':
-				map.put(commit.getStreamId(), new ArrayList<Long>());
+				map.put(commit.getStreamId(), new TreeMap<Long,Long>());
 				break;
 			case 'U':
 				break;
@@ -75,17 +73,17 @@ public class ManyToOneRM<T> extends ReadModel
 		else //type many
 		{
 			Long key = resolver.getForiegnKey(commit); //commit is Task, get task.userId
-			List<Long> tmpL = map.get(key);
+			TreeMap<Long,Long> refL = map.get(key);
 			switch(commit.getAction())
 			{
 			case 'I':
 			case 'S':
-				tmpL.add(commit.getStreamId()); 
+				refL.put(commit.getStreamId(), 0L); 
 				break;
 			case 'U':
 				break;
 			case 'D':
-				tmpL.remove(commit.getStreamId()); 
+				refL.remove(commit.getStreamId()); 
 				break;
 			default:
 				break;
@@ -99,9 +97,9 @@ public class ManyToOneRM<T> extends ReadModel
 		projector.run(mtx, this, this.lastCommitId);
 	}
 	
-	public List<Long> queryAll(MContext mtx, Long targetId) throws Exception
+	public Map<Long,Long> queryAll(MContext mtx, Long targetId) throws Exception
 	{
-		List<Long> L = map.get(targetId);
-		return L;
+		TreeMap<Long,Long> refL = map.get(targetId);
+		return refL;
 	}
 }
