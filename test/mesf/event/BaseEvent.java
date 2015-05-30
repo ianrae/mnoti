@@ -12,7 +12,7 @@ public abstract class BaseEvent
 		this.entityId = entityid;
 	}
 
-	@JsonIgnore
+//	@JsonIgnore
 	public Long getEntityId() {
 		return entityId;
 	}

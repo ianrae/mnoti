@@ -7,13 +7,17 @@ import mesf.event.EventMgr;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class EventTests extends BaseMesfTest
 {
 	public static class ScooterAddedEvent extends BaseEvent
 	{
 		private final int z;
 
-		public ScooterAddedEvent(long eventid, int z)
+		@JsonCreator
+		public ScooterAddedEvent( @JsonProperty("entityId") long eventid, @JsonProperty("z") int z)
 		{
 			super(eventid);
 			this.z = z;
@@ -36,7 +40,7 @@ public class EventTests extends BaseMesfTest
 		chkScooter(scooter, 15);
 		
 		String json2 = mgr.renderEntity(scooter);
-		String s = fix("{'z':15}");
+		String s = fix("{'entityId':0,'z':15}");
 		assertEquals(s, json2);
 	}
 
