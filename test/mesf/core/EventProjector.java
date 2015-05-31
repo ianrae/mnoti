@@ -3,6 +3,7 @@ package mesf.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import mesf.cache.EventCache;
 import mesf.event.Event;
 import mesf.event.BaseEventRehydrator;
 import mesf.log.Logger;

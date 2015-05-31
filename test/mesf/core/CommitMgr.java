@@ -2,6 +2,8 @@ package mesf.core;
 
 import java.util.List;
 
+import mesf.cache.CommitCache;
+import mesf.cache.StreamCache;
 import mesf.entity.Entity;
 import mesf.entity.EntityLoader;
 import mesf.entity.IEntityMgr;

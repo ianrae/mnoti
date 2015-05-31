@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import mesf.core.ISegCacheLoader;
-import mesf.core.SegmentedCache;
+import mesf.cache.ISegCacheLoader;
+import mesf.cache.SegmentedCache;
 
 import org.junit.Before;
 import org.junit.Test;

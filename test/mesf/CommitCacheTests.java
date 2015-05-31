@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import mesf.core.CommitCache;
+import mesf.cache.CommitCache;
+import mesf.cache.StreamCache;
 import mesf.core.CommitMgr;
-import mesf.core.StreamCache;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.IEventRecordDAO;

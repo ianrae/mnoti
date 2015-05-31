@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mesf.ObjManagerTests.Scooter;
+import mesf.cache.CommitCache;
+import mesf.cache.StreamCache;
 import mesf.cmd.BaseCommand;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
-import mesf.core.CommitCache;
 import mesf.core.CommitMgr;
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
-import mesf.core.StreamCache;
 import mesf.entity.Entity;
 import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;

@@ -2,7 +2,7 @@ package mesf.entity;
 
 import java.util.List;
 
-import mesf.core.StreamCache;
+import mesf.cache.StreamCache;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
 import mesf.persistence.Stream;

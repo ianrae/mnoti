@@ -1,7 +1,8 @@
-package mesf.core;
+package mesf.cache;
 
 import java.util.List;
 
+import mesf.core.MesfConfig;
 import mesf.log.Logger;
 import mesf.persistence.EventRecord;
 import mesf.persistence.IEventRecordDAO;

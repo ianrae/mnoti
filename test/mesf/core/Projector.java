@@ -3,6 +3,8 @@ package mesf.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import mesf.cache.CommitCache;
+import mesf.cache.StreamCache;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 import mesf.readmodel.IReadModel;

@@ -3,9 +3,9 @@ package mesf.readmodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import mesf.cache.StreamCache;
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
-import mesf.core.StreamCache;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 

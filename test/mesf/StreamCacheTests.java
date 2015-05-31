@@ -1,7 +1,7 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-import mesf.core.StreamCache;
+import mesf.cache.StreamCache;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.MockStreamDAO;
 import mesf.persistence.Stream;
