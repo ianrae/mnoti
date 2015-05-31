@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 import java.util.TreeMap;
 
+import mesf.PresenterTests.UserInitializer;
 import mesf.UserTests.User;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
@@ -89,6 +90,50 @@ public class TaskTests extends BaseMesfTest
 		}
 	}
 
+	public static class TaskInitializer implements IDomainIntializer
+	{
+		private Permanent perm;
+
+		@Override
+		public void init(Permanent perm)
+		{
+			//create long-running objects
+			this.perm = perm;
+			EntityManagerRegistry registry = perm.getEntityManagerRegistry();
+			registry.register(Task.class, new EntityMgr<Task>(Task.class));
+		}
+		
+		TaskPresenter createMyPres(MContext mtx)
+		{
+			TaskPresenter pres = new TaskPresenter(mtx);
+			return pres;
+		}
+		TaskPresenter createMyPres(MContext mtx, int failDestination)
+		{
+			TaskPresenter pres = new TaskPresenter(mtx);
+			pres.addInterceptor(new BindingIntercept(failDestination));
+			return pres;
+		}
+	}
+	public static class MyTaskPerm extends Permanent
+	{
+		public UserTaskRM readModel1;
+		public TaskInitializer taskInit;
+		public UserInitializer userInit;
+		
+		public MyTaskPerm(PersistenceContext persistenceCtx) 
+		{
+			super(persistenceCtx);
+			
+			readModel1 = new UserTaskRM();
+			registerReadModel(readModel1);
+			
+			taskInit = new TaskInitializer();
+			userInit = new UserInitializer();			
+		}
+	}
+
+	
 	public static class TaskPresenter extends Presenter
 	{
 		public static class InsertCmd extends Request
@@ -177,7 +222,7 @@ public class TaskTests extends BaseMesfTest
 			Reply reply = pres.process(cmd);
 
 			mtx = perm.createMContext();
-			pres = createMyPres(mtx, perm, Reply.VIEW_EDIT);
+			pres = perm.taskInit.createMyPres(mtx, Reply.VIEW_EDIT);
 			LocalMockBinder<TaskTwixt> binder = new LocalMockBinder<TaskTwixt>(TaskTwixt.class, buildMap(true));
 
 			TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(1L, binder);
@@ -194,14 +239,14 @@ public class TaskTests extends BaseMesfTest
 		MyTaskPerm perm = this.createPerm();
 
 		MContext mtx = perm.createMContext();
-		TaskPresenter pres = createMyPres(mtx, perm);
+		TaskPresenter pres = perm.taskInit.createMyPres(mtx);
 		TaskPresenter.InsertCmd cmd = new TaskPresenter.InsertCmd();
 		cmd.a = 101;
 		cmd.s = String.format("bob%d", 1);
 		Reply reply = pres.process(cmd);
 
 		mtx = perm.createMContext();
-		pres = createMyPres(mtx, perm, Reply.VIEW_EDIT);
+		pres = perm.taskInit.createMyPres(mtx, Reply.VIEW_EDIT);
 		LocalMockBinder<TaskTwixt> binder = new LocalMockBinder<TaskTwixt>(TaskTwixt.class, buildMap(false));
 
 		TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(1L, binder);
@@ -224,43 +269,9 @@ public class TaskTests extends BaseMesfTest
 		return map;
 	}
 
-	public static class TaskInitializer implements IDomainIntializer
-	{
-		@Override
-		public void init(Permanent perm)
-		{
-			//create long-running objects
-			EntityManagerRegistry registry = perm.getEntityManagerRegistry();
-			registry.register(Task.class, new EntityMgr<Task>(Task.class));
-		}
-
-	}
-	public static class MyTaskPerm extends Permanent
-	{
-		public UserTaskRM readModel1;
-		
-		public MyTaskPerm(PersistenceContext persistenceCtx) 
-		{
-			super(persistenceCtx);
-			
-			readModel1 = new UserTaskRM();
-			registerReadModel(readModel1);
-		}
-	}
-
 
 	//-----------------------
-	TaskPresenter createMyPres(MContext mtx, Permanent perm)
-	{
-		TaskPresenter pres = new TaskPresenter(mtx);
-		return pres;
-	}
-	TaskPresenter createMyPres(MContext mtx, Permanent perm, int failDestination)
-	{
-		TaskPresenter pres = new TaskPresenter(mtx);
-		pres.addInterceptor(new BindingIntercept(failDestination));
-		return pres;
-	}
+
 
 
 	private MyTaskPerm createPerm() throws Exception
@@ -269,8 +280,8 @@ public class TaskTests extends BaseMesfTest
 		PersistenceContext persistenceCtx = FactoryGirl.createPersistenceContext();
 		MyTaskPerm perm = new MyTaskPerm(persistenceCtx);
 
-		TaskInitializer init = new TaskInitializer();
-		init.init(perm);
+		perm.taskInit.init(perm);
+		perm.userInit.init(perm);
 
 //		eventSub = new MyEventSub();
 //		perm.registerReadModel(eventSub);
