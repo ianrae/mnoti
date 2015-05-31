@@ -34,7 +34,7 @@ public class CommitCache
 	{
 		this.dao = dao;
 		int n = MesfConfig.COMMIT_CACHE_CHUNK_SIZE;
-		segcache = new SegmentedCache<Commit>();
+		segcache = new SegmentedGuavaCache<Commit>();
 		segcache.init(n, new CommitLoader());
 	}
 	

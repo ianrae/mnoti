@@ -34,7 +34,7 @@ public class EventCache
 	{
 		this.dao = dao;
 		int n = MesfConfig.EVENT_CACHE_CHUNK_SIZE;
-		segcache = new SegmentedCache<EventRecord>();
+		segcache = new SegmentedGuavaCache<EventRecord>();
 		segcache.init(n, new EventLoader());
 	}
 	

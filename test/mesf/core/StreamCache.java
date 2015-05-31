@@ -32,7 +32,7 @@ public class StreamCache
 	{
 		this.dao = dao;
 		int n = MesfConfig.STREAM_CACHE_CHUNK_SIZE;
-		segcache = new SegmentedCache<Stream>();
+		segcache = new SegmentedGuavaCache<Stream>();
 		segcache.init(n, new StreamTableLoader());
 	}
 	
