@@ -147,8 +147,8 @@ public class PresenterTests extends BaseMesfTest
 			scooter.setB(10);
 			scooter.setS(cmd.s);
 
-			insertObject(scooter);
-			insertEvent(new UserAddedEvent(scooter.getId()));
+			insertEntity(scooter);
+			publishEvent(new UserAddedEvent(scooter.getId()));
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 //		public void onUpdateCmd(UpdateCmd cmd) throws Exception
@@ -180,7 +180,7 @@ public class PresenterTests extends BaseMesfTest
 			Logger.log("twixt a=%s", twixt.s);
 			User scooter = loadEntity(cmd);
 			twixt.copyTo(scooter);
-			updateObject(scooter);
+			updateEntity(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 		

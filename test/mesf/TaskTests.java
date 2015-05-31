@@ -190,7 +190,7 @@ public class TaskTests extends BaseMesfTest
 			scooter.setS(cmd.s);
 			scooter.setUserId(cmd.userId);
 
-			insertObject(scooter);
+			insertEntity(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 
@@ -203,7 +203,7 @@ public class TaskTests extends BaseMesfTest
 			Logger.log("twixt a=%s", twixt.s);
 			Task scooter = loadEntity(cmd);
 			twixt.copyTo(scooter);
-			updateObject(scooter);
+			updateEntity(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
 

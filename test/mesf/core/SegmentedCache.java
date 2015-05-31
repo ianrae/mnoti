@@ -9,7 +9,7 @@ import mesf.log.Logger;
 
 public class SegmentedCache<T>
 {
-	private Map<Long, List<T>> map = new HashMap<>();
+	private Map<Long, List<T>> segmentMap = new HashMap<>();
 	private long segSize;
 	private ISegCacheLoader<T> loader;
 	
@@ -21,13 +21,13 @@ public class SegmentedCache<T>
 	
 	public void putList(long startIndex, List<T> L)
 	{
-		map.put(new Long(startIndex), L);
+		segmentMap.put(new Long(startIndex), L);
 	}
 	
 	public void clearLastSegment(long maxId)
 	{
 		long max = -1;
-		for(Long seg : map.keySet())
+		for(Long seg : segmentMap.keySet())
 		{
 			if (seg > max)
 			{
@@ -41,7 +41,7 @@ public class SegmentedCache<T>
 		if (max >= 0) //found last segment
 		{
 			long startIndex = max;
-			int n = map.get(max).size();
+			int n = segmentMap.get(max).size();
 			
 			if (startIndex + n < maxId)
 			{
@@ -54,7 +54,7 @@ public class SegmentedCache<T>
 				if (missing + n <= this.segSize)
 				{
 					List<T> newL = loader.loadRange(startIndex + n, missing);
-					List<T> L = map.get(max);
+					List<T> L = segmentMap.get(max);
 					L.addAll(newL);
 				}
 			}
@@ -64,14 +64,14 @@ public class SegmentedCache<T>
 	{
 		long seg = (index / segSize) * segSize;
 		
-		List<T> L = map.get(seg);
+		List<T> L = segmentMap.get(seg);
 		
 		if (L == null)
 		{
 			L = loader.loadRange(seg, segSize);
 			if (L != null)
 			{
-				map.put(new Long(seg), L);
+				segmentMap.put(new Long(seg), L);
 			}
 		}
 		

@@ -119,15 +119,15 @@ public abstract class Presenter //extends CommandProcessor
 		protected void afterRequest(Request request)
 		{}
 		
-		protected void insertObject(Entity obj)
+		protected void insertEntity(Entity obj)
 		{
 			this.commitWriter.insertEntity(obj);
 		}
-		protected void updateObject(Entity obj)
+		protected void updateEntity(Entity obj)
 		{
 			this.commitWriter.updateEntity(obj);
 		}
-		protected void insertEvent(Event ev)
+		protected void publishEvent(Event ev)
 		{
 			this.eventWriter.insertEvent(ev);
 		}
