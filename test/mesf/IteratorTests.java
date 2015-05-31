@@ -83,7 +83,8 @@ public class IteratorTests extends BaseMesfTest
 	public void testSeg() 
 	{
 		MyLoader loader = new MyLoader();
-		SegmentedCache<String> cache = new SegmentedCache<String>(4, loader);
+		SegmentedCache<String> cache = new SegmentedCache<String>();
+		cache.init(4, loader);
 		String[] ar = new String[] { "0", "1", "2", "3"};
 		cache.putList(0, Arrays.asList(ar));
 		
@@ -125,7 +126,8 @@ public class IteratorTests extends BaseMesfTest
 	public void testSeg2() 
 	{
 		MyLoader loader = new MyLoader();
-		SegmentedCache<String> cache = new SegmentedCache<String>(4, loader);
+		SegmentedCache<String> cache = new SegmentedCache<String>();
+		cache.init(4, loader);
 		String[] ar = new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 		loader.list = Arrays.asList(ar);
 		

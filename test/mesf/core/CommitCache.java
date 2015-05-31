@@ -27,14 +27,15 @@ public class CommitCache
 		
 	}
 	
-	SegmentedCache<Commit> segcache;
+	ISegmentedCache<Commit> segcache;
 	private ICommitDAO dao;
 	
 	public CommitCache(ICommitDAO dao)
 	{
 		this.dao = dao;
 		int n = MesfConfig.COMMIT_CACHE_CHUNK_SIZE;
-		segcache = new SegmentedCache<Commit>(n, new CommitLoader());
+		segcache = new SegmentedCache<Commit>();
+		segcache.init(n, new CommitLoader());
 	}
 	
 	public synchronized List<Commit> loadRange(long startIndex, long n) 

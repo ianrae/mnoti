@@ -7,23 +7,26 @@ import java.util.Map;
 
 import mesf.log.Logger;
 
-public class SegmentedCache<T>
+public class SegmentedCache<T> implements ISegmentedCache<T>
 {
 	private Map<Long, List<T>> segmentMap = new HashMap<>();
 	private long segSize;
 	private ISegCacheLoader<T> loader;
 	
-	public SegmentedCache(long segSize, ISegCacheLoader<T> loader)
+	@Override
+	public void init(long segSize, ISegCacheLoader<T> loader)
 	{
 		this.segSize = segSize;
 		this.loader = loader;
 	}
 	
+	@Override
 	public void putList(long startIndex, List<T> L)
 	{
 		segmentMap.put(new Long(startIndex), L);
 	}
 	
+	@Override
 	public void clearLastSegment(long maxId)
 	{
 		long max = -1;
@@ -60,6 +63,7 @@ public class SegmentedCache<T>
 			}
 		}
 	}
+	@Override
 	public T getOne(long index)
 	{
 		long seg = (index / segSize) * segSize;
@@ -88,6 +92,7 @@ public class SegmentedCache<T>
 		return null;
 	}
 	
+	@Override
 	public List<T> getRange(long startIndex, long n)
 	{
 		List<T> resultL = new ArrayList<>();
