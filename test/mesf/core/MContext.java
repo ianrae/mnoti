@@ -100,6 +100,17 @@ public class MContext
 		return vloader;
 	}
 	
+	public BaseEntity loadEntitySafe(Class clazz, long entityId) 
+	{
+		BaseEntity entity = null;
+		try {
+			entity = this.loadEntity(clazz, entityId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return entity;
+	}
 	public BaseEntity loadEntity(Class clazz, long entityId) throws Exception 
 	{
 		String type = this.getRegistry().findTypeForClass(clazz);

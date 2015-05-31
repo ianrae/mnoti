@@ -69,8 +69,8 @@ public class TaskTests extends BaseMesfTest
 			this.userId = userId;
 		}
 	}
-	
-	
+
+
 	public static class TaskReply extends Reply
 	{
 		public int a;
@@ -83,7 +83,7 @@ public class TaskTests extends BaseMesfTest
 		public TaskTwixt()
 		{
 			s = new StringValue();
-			
+
 			s.setValidator( (ValContext valctx, Value obj) -> {
 				StringValue val = (StringValue) obj;
 				if (! val.get().contains("a"))
@@ -93,7 +93,7 @@ public class TaskTests extends BaseMesfTest
 			});
 		}
 	}
-	
+
 	public static class UserTaskRM extends ManyToOneRM
 	{
 		public static class UserTaskResolver implements ManyToOneRM.IResolver
@@ -101,17 +101,10 @@ public class TaskTests extends BaseMesfTest
 			@Override
 			public Long getForiegnKey(MContext mtx, Commit commit) 
 			{
-				long userId = 0;
-				try {
-					Task task = (Task) mtx.loadEntity(Task.class, commit.getStreamId());
-					userId = task.userId;
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return userId;
+				Task task = (Task) mtx.loadEntitySafe(Task.class, commit.getStreamId());
+				return task.userId;
 			}
-			
+
 		}
 		public UserTaskRM()
 		{
@@ -131,7 +124,7 @@ public class TaskTests extends BaseMesfTest
 			EntityManagerRegistry registry = perm.getEntityManagerRegistry();
 			registry.register(Task.class, new EntityMgr<Task>(Task.class));
 		}
-		
+
 		TaskPresenter createMyPres(MContext mtx)
 		{
 			TaskPresenter pres = new TaskPresenter(mtx);
@@ -149,20 +142,20 @@ public class TaskTests extends BaseMesfTest
 		public UserTaskRM readModel1;
 		public TaskInitializer taskInit;
 		public UserInitializer userInit;
-		
+
 		public MyTaskPerm(PersistenceContext persistenceCtx) 
 		{
 			super(persistenceCtx);
-			
+
 			readModel1 = new UserTaskRM();
 			registerReadModel(readModel1);
-			
+
 			taskInit = new TaskInitializer();
 			userInit = new UserInitializer();			
 		}
 	}
 
-	
+
 	public static class TaskPresenter extends Presenter
 	{
 		public static class InsertCmd extends Request
@@ -220,14 +213,14 @@ public class TaskTests extends BaseMesfTest
 			updateObject(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
 		}
-		
+
 		private Task loadEntity(Request cmd) throws Exception
 		{
 			Task scooter = null;
 			scooter = (Task) mtx.loadEntity(Task.class, cmd.getEntityId());
 			return scooter;
 		}
-		
+
 		protected void beforeRequest(Request request, InterceptorContext itx)
 		{
 			trail.add("before");
@@ -245,7 +238,7 @@ public class TaskTests extends BaseMesfTest
 		MyTaskPerm perm = this.createPerm();
 
 		createUsers(perm, 4);
-		
+
 		int n = 1; 
 		for(int i = 0; i < n; i++)
 		{
@@ -264,7 +257,7 @@ public class TaskTests extends BaseMesfTest
 
 			TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(4 + 1L, binder);
 			reply = pres.process(ucmd);
-			
+
 			log("acquire..");
 			mtx = perm.createMContext(); //recalc maxid
 			mtx.acquire(perm.readModel1.getClass());
@@ -339,9 +332,9 @@ public class TaskTests extends BaseMesfTest
 		perm.taskInit.init(perm);
 		perm.userInit.init(perm);
 
-//		eventSub = new MyEventSub();
-//		perm.registerReadModel(eventSub);
-//		perm.start();
+		//		eventSub = new MyEventSub();
+		//		perm.registerReadModel(eventSub);
+		//		perm.start();
 		return perm;
 	}		
 
