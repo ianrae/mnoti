@@ -25,7 +25,7 @@ public class Config
 	}
 	
 	
-	public int getIntValue(ConfigItem item) 
+	public static int getIntValue(ConfigItem item) 
 	{
 		initIfNeeded();
 		return theSingleton.getIntValue(item);

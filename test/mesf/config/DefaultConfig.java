@@ -17,7 +17,8 @@ public class DefaultConfig implements IConfig
 	@Override
 	public int getIntValue(ConfigItem item) 
 	{
-		Integer n = intMap.get(item);
+		String key = item.name();
+		Integer n = intMap.get(key);
 		if (n == null)
 		{
 			return Integer.MIN_VALUE;

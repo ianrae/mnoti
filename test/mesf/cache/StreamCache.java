@@ -2,7 +2,8 @@ package mesf.cache;
 
 import java.util.List;
 
-import mesf.core.MesfConfig;
+import mesf.config.Config;
+import mesf.config.IConfig;
 import mesf.log.Logger;
 import mesf.persistence.IStreamDAO;
 import mesf.persistence.Stream;
@@ -32,7 +33,7 @@ public class StreamCache
 	public StreamCache(IStreamDAO dao)
 	{
 		this.dao = dao;
-		int n = MesfConfig.STREAM_CACHE_CHUNK_SIZE;
+		int n = Config.getIntValue(IConfig.ConfigItem.STREAM_CACHE_SEGMENT_SIZE);
 		segcache = new SegmentedGuavaCache<Stream>();
 		segcache.init(n, new StreamTableLoader());
 	}

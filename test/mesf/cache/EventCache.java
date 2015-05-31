@@ -2,7 +2,8 @@ package mesf.cache;
 
 import java.util.List;
 
-import mesf.core.MesfConfig;
+import mesf.config.Config;
+import mesf.config.IConfig;
 import mesf.log.Logger;
 import mesf.persistence.EventRecord;
 import mesf.persistence.IEventRecordDAO;
@@ -34,7 +35,7 @@ public class EventCache
 	public EventCache(IEventRecordDAO dao)
 	{
 		this.dao = dao;
-		int n = MesfConfig.EVENT_CACHE_CHUNK_SIZE;
+		int n = Config.getIntValue(IConfig.ConfigItem.EVENT_CACHE_SEGMENT_SIZE);
 		segcache = new SegmentedGuavaCache<EventRecord>();
 		segcache.init(n, new EventLoader());
 	}

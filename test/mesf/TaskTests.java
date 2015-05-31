@@ -11,7 +11,6 @@ import mesf.UserTests.User;
 import mesf.cmd.CommandProcessor;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
-import mesf.core.MesfConfig;
 import mesf.core.Permanent;
 import mesf.entity.BaseEntity;
 import mesf.entity.Entity;

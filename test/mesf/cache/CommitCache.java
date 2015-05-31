@@ -2,7 +2,8 @@ package mesf.cache;
 
 import java.util.List;
 
-import mesf.core.MesfConfig;
+import mesf.config.Config;
+import mesf.config.IConfig;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.ICommitDAO;
@@ -34,7 +35,7 @@ public class CommitCache
 	public CommitCache(ICommitDAO dao)
 	{
 		this.dao = dao;
-		int n = MesfConfig.COMMIT_CACHE_CHUNK_SIZE;
+		int n = Config.getIntValue(IConfig.ConfigItem.COMMIT_CACHE_SEGMENT_SIZE);
 		segcache = new SegmentedGuavaCache<Commit>();
 		segcache.init(n, new CommitLoader());
 	}
