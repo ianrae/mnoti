@@ -11,6 +11,7 @@ import mesf.cmd.CommandProcessor;
 import mesf.cmd.ICommand;
 import mesf.core.MContext;
 import mesf.core.Permanent;
+import mesf.entity.BaseEntity;
 import mesf.entity.Entity;
 import mesf.persistence.PersistenceContext;
 import mesf.readmodel.AllIdsRM;
@@ -32,7 +33,7 @@ import org.junit.Test;
 
 public class UserTests extends BaseMesfTest 
 {
-	public static class User extends Entity
+	public static class User extends BaseEntity
 	{
 		private int a;
 		private int b;
@@ -59,16 +60,6 @@ public class UserTests extends BaseMesfTest
 		public void setS(String s) {
 			setlist.add("s");
 			this.s = s;
-		}
-		@Override
-		public Entity clone() 
-		{
-			User copy = new User();
-			copy.setId(getId()); //!
-			copy.a = this.a;
-			copy.b = this.b;
-			copy.s = this.s;
-			return copy;
 		}
 
 	}

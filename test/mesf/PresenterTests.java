@@ -42,14 +42,15 @@ import org.mef.twixt.binder.TwixtForm;
 import org.mef.twixt.validate.ValContext;
 
 /*
- * TaskTests and add a UserTaskRM, cascading delete
+ * done TaskTests and add a UserTaskRM, cascading delete
  * presenter, QryCmd
  * guava cache in scache,objcache,commitcache
  * metrics
- * logger and error tracker singletons
+ * done logger and error tracker singletons
  * play 2.4
  * computerDatabase sample
  * snapshots
+ * learn <T> fn trick
  */
 
 public class PresenterTests extends BaseMesfTest 

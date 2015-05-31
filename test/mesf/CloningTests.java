@@ -9,7 +9,6 @@ import java.util.Set;
 
 import mesf.TaskTests.Task;
 import mesf.UserTests.User;
-import mesf.entity.Entity;
 
 import org.junit.Test;
 
@@ -18,18 +17,6 @@ import com.rits.cloning.Cloner;
 
 public class CloningTests extends BaseMesfTest
 {
-	public static class BaseEntity extends Entity
-	{
-		@Override
-		public Entity clone()
-		{
-			Cloner cloner=new Cloner();
-			Entity clone=cloner.deepClone(this);
-			return clone;
-		}
-		
-	}	
-
 	@Test
 	public void test() 
 	{
