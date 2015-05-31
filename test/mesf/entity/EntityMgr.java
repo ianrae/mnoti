@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
-public class EntityMgr<T extends BaseEntity> implements IEntityMgr
+public class EntityMgr<T extends Entity> implements IEntityMgr
 {
 	private Class<?> clazz;
 
@@ -53,7 +53,7 @@ public class EntityMgr<T extends BaseEntity> implements IEntityMgr
 	}
 
 	@Override
-	public String renderEntity(BaseEntity obj) throws Exception 
+	public String renderEntity(Entity obj) throws Exception 
 	{
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleFilterProvider dummy = new SimpleFilterProvider();
@@ -73,20 +73,20 @@ public class EntityMgr<T extends BaseEntity> implements IEntityMgr
 	}
 
 	@Override
-	public String renderPartial(BaseEntity obj) throws Exception 
+	public String renderPartial(Entity obj) throws Exception 
 	{
 		return this.renderSetList((T) obj);
 	}
 
 	@Override
-	public BaseEntity rehydrate(String json) throws Exception 
+	public Entity rehydrate(String json) throws Exception 
 	{
-		BaseEntity obj = this.createFromJson(json);
+		Entity obj = this.createFromJson(json);
 		return obj;
 	}
 
 	@Override
-	public void mergeHydrate(BaseEntity obj, String json) throws Exception 
+	public void mergeHydrate(Entity obj, String json) throws Exception 
 	{
 		mergeJson((T) obj, json);
 	}

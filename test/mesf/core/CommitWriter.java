@@ -1,6 +1,6 @@
 package mesf.core;
 
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.entity.IEntityMgr;
 
 public class CommitWriter 
@@ -10,14 +10,14 @@ public class CommitWriter
 	{
 		this.mtx = mtx;
 	}
-	public long insertEntity(BaseEntity obj)
+	public long insertEntity(Entity obj)
 	{
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
 		return mtx.getCommitMgr().insertEntity(mgr, obj);
 	}
-	public void updateEntity(BaseEntity obj)
+	public void updateEntity(Entity obj)
 	{
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
@@ -25,7 +25,7 @@ public class CommitWriter
 		mtx.getCommitMgr().updateEntity(mgr, obj);
 	}
 	
-	public String getEntityType(BaseEntity obj)
+	public String getEntityType(Entity obj)
 	{
 		String type = mtx.getRegistry().findTypeForClass(obj.getClass());
 		return type;

@@ -9,7 +9,7 @@ import mesf.UserTests;
 import mesf.UserTests.User;
 import mesf.core.MContext;
 import mesf.core.Projector;
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.persistence.Commit;
 import mesf.persistence.Stream;
 
@@ -69,7 +69,7 @@ public class AllIdsRM<T> extends ReadModel
 		List<T> L = new ArrayList<>();
 		for(Long id : map.keySet())
 		{
-			BaseEntity obj = mtx.loadEntity(clazz, id);
+			Entity obj = mtx.loadEntity(clazz, id);
 			L.add((T) obj);
 		}
 		return L;

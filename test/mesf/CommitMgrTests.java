@@ -14,7 +14,7 @@ import mesf.core.CommitMgr;
 import mesf.core.ICommitObserver;
 import mesf.core.MContext;
 import mesf.core.StreamCache;
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
@@ -280,11 +280,11 @@ public class CommitMgrTests extends BaseMesfTest
 		registry.register(Scooter.class, new EntityMgr<Scooter>(Scooter.class));
 		EntityRepository objcache = new EntityRepository(streamDAO, registry);
 		
-		BaseEntity obj = objcache.loadEntity("scooter", scooter.getId(), oloader);
+		Entity obj = objcache.loadEntity("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj.getId().longValue());
 		chkScooter((Scooter) obj, 444, 26, "abc");
 
-		BaseEntity obj2 = objcache.loadEntity("scooter", scooter.getId(), oloader);
+		Entity obj2 = objcache.loadEntity("scooter", scooter.getId(), oloader);
 		assertEquals(1L, obj2.getId().longValue());
 		chkScooter((Scooter) obj2, 444, 26, "abc");
 		

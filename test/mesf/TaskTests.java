@@ -12,7 +12,7 @@ import mesf.cmd.CommandProcessor;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.event.EventManagerRegistry;
@@ -40,7 +40,7 @@ import org.mef.twixt.validate.ValContext;
 
 public class TaskTests extends BaseMesfTest 
 {
-	public static class Task extends BaseEntity
+	public static class Task extends Entity
 	{
 		private String s;
 		private Long userId;
@@ -53,7 +53,7 @@ public class TaskTests extends BaseMesfTest
 			this.s = s;
 		}
 		@Override
-		public BaseEntity clone() 
+		public Entity clone() 
 		{
 			Task copy = new Task();
 			copy.setId(getId()); //!

@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @JsonFilter("myFilter")
-public abstract class BaseEntity
+public abstract class Entity
 {
 	protected Set<String> setlist = new HashSet<String>();
 
@@ -39,6 +39,6 @@ public abstract class BaseEntity
 	}
 	
 	
-	public abstract BaseEntity clone();
+	public abstract Entity clone();
 	
 }

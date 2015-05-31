@@ -15,7 +15,7 @@ import mesf.util.SfxTrail;
 
 public class EntityRepository implements ICommitObserver
 {
-	Map<Long, BaseEntity> map = new HashMap<>(); //!!needs to be thread-safe
+	Map<Long, Entity> map = new HashMap<>(); //!!needs to be thread-safe
 	Map<Long, Long> whenMap = new HashMap<>(); 
 	private IStreamDAO streamDAO;
 	private EntityManagerRegistry registry;
@@ -35,9 +35,9 @@ public class EntityRepository implements ICommitObserver
 		Logger.log(trail.getTrail());
 	}
 
-	public synchronized BaseEntity loadEntity(String type, Long entityId, EntityLoader oloader) throws Exception
+	public synchronized Entity loadEntity(String type, Long entityId, EntityLoader oloader) throws Exception
 	{
-		BaseEntity obj = map.get(entityId);
+		Entity obj = map.get(entityId);
 		Long startId = null;
 		if (obj != null)
 		{
@@ -54,7 +54,7 @@ public class EntityRepository implements ICommitObserver
 		obj = doLoadEntity(type, entityId, oloader, startId, obj);
 		return obj;
 	}
-	private BaseEntity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, BaseEntity obj) throws Exception
+	private Entity doLoadEntity(String type, Long entityId, EntityLoader oloader, Long startId, Entity obj) throws Exception
 	{
 		List<Commit> L = null;
 		if (startId == null)
@@ -99,7 +99,7 @@ public class EntityRepository implements ICommitObserver
 	public synchronized void observe(MContext mtx, Stream stream, Commit commit) 
 	{
 		Long entityId = stream.getId();
-		BaseEntity obj = map.get(entityId);
+		Entity obj = map.get(entityId);
 
 		IEntityMgr mgr = registry.findByType(stream.getType());
 		try {
@@ -109,7 +109,7 @@ public class EntityRepository implements ICommitObserver
 			e.printStackTrace();
 		}
 	}
-	private BaseEntity doObserve(Long entityId, Commit commit, IEntityMgr mgr, BaseEntity obj) throws Exception
+	private Entity doObserve(Long entityId, Commit commit, IEntityMgr mgr, Entity obj) throws Exception
 	{
 		this.trail.add(commit.getId().toString()); //remove later!!
 
@@ -142,9 +142,9 @@ public class EntityRepository implements ICommitObserver
 		return obj;
 	}
 
-	public synchronized BaseEntity getIfLoaded(Long entityId) 
+	public synchronized Entity getIfLoaded(Long entityId) 
 	{
-		BaseEntity obj = map.get(entityId);
+		Entity obj = map.get(entityId);
 		return obj;
 	}
 }

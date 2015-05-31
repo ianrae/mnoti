@@ -5,7 +5,7 @@ import java.util.List;
 
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ProcRegistry;
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityRepository;
 import mesf.event.EventManagerRegistry;
@@ -100,7 +100,7 @@ public class Permanent
 		return mtx;
 	}
 	
-	public BaseEntity loadEntityFromRepo(long entityId) 
+	public Entity loadEntityFromRepo(long entityId) 
 	{
 		return entityRepo.getIfLoaded(entityId);
 	}

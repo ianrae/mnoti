@@ -2,7 +2,7 @@ package mesf.core;
 
 import java.util.List;
 
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.entity.EntityLoader;
 import mesf.entity.IEntityMgr;
 import mesf.log.Logger;
@@ -109,7 +109,7 @@ public class CommitMgr
 		}
 	}
 	
-	public long insertEntity(IEntityMgr mgr, BaseEntity obj)
+	public long insertEntity(IEntityMgr mgr, Entity obj)
 	{
 		Stream stream = new Stream();
 		stream.setType(mgr.getTypeName());
@@ -137,7 +137,7 @@ public class CommitMgr
 		return entityid;
 	}
 	
-	public void updateEntity(IEntityMgr mgr, BaseEntity obj)
+	public void updateEntity(IEntityMgr mgr, Entity obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)
@@ -160,7 +160,7 @@ public class CommitMgr
 		this.dao.save(commit);
 		Logger.logDebug("UPD [%d] %d %s - %s", commit.getId(), entityId, mgr.getTypeName(), commit.getJson());
 	}
-	public void deleteEntity(IEntityMgr mgr, BaseEntity obj)
+	public void deleteEntity(IEntityMgr mgr, Entity obj)
 	{
 //		Stream stream = streamDAO.findById(obj.getId());
 //		if (stream == null)

@@ -12,13 +12,13 @@ public class EntityHydrater
 		this.objcache = objcache;
 	}
 	
-	public BaseEntity loadEntity(String type, Long entityId, EntityLoader oloader) throws Exception
+	public Entity loadEntity(String type, Long entityId, EntityLoader oloader) throws Exception
 	{
 		//objcache should be immutable entities, so for our commands make a copy
-		BaseEntity obj = objcache.loadEntity(type, entityId, oloader);
+		Entity obj = objcache.loadEntity(type, entityId, oloader);
 		if (obj != null)
 		{
-			BaseEntity clone = obj.clone();
+			Entity clone = obj.clone();
 			return clone;
 		}
 		return null;

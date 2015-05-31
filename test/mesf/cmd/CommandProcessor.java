@@ -2,7 +2,7 @@ package mesf.cmd;
 
 import mesf.core.CommitMgr;
 import mesf.core.MContext;
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.entity.EntityHydrater;
 import mesf.entity.EntityLoader;
 import mesf.entity.EntityManagerRegistry;
@@ -26,7 +26,7 @@ public abstract class CommandProcessor
 	
 	public abstract void process(ICommand cmd);
 	
-	public void insertEntity(BaseCommand cmd, BaseEntity obj)
+	public void insertEntity(BaseCommand cmd, Entity obj)
 	{
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
@@ -34,21 +34,21 @@ public abstract class CommandProcessor
 		//!break rules here and we modify command. Since controller needs to know id of newly created entity
 		cmd.entityId = mtx.getCommitMgr().insertEntity(mgr, obj);
 	}
-	public void updateEntity(BaseEntity obj)
+	public void updateEntity(Entity obj)
 	{
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
 		mtx.getCommitMgr().updateEntity(mgr, obj);
 	}
-	public void deleteEntity(BaseEntity obj)
+	public void deleteEntity(Entity obj)
 	{
 		String type = this.getEntityType(obj);
 		IEntityMgr mgr = mtx.getRegistry().findByType(type);
 		
 		mtx.getCommitMgr().deleteEntity(mgr, obj);
 	}
-	public String getEntityType(BaseEntity obj)
+	public String getEntityType(Entity obj)
 	{
 		String type = mtx.getRegistry().findTypeForClass(obj.getClass());
 		return type;

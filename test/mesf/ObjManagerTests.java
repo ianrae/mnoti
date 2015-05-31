@@ -1,7 +1,7 @@
 package mesf;
 
 import static org.junit.Assert.assertEquals;
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.entity.EntityMgr;
 
 import org.junit.Before;
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class ObjManagerTests extends BaseMesfTest 
 {
-	public static class Scooter extends BaseEntity
+	public static class Scooter extends Entity
 	{
 		private int a;
 		private int b;
@@ -38,7 +38,7 @@ public class ObjManagerTests extends BaseMesfTest
 			this.s = s;
 		}
 		@Override
-		public BaseEntity clone() 
+		public Entity clone() 
 		{
 			Scooter copy = new Scooter();
 			copy.setId(getId()); //!

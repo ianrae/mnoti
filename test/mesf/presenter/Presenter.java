@@ -5,7 +5,7 @@ import java.util.List;
 
 import mesf.core.CommitWriter;
 import mesf.core.MContext;
-import mesf.entity.BaseEntity;
+import mesf.entity.Entity;
 import mesf.event.Event;
 import mesf.event.EventWriter;
 import mesf.log.Logger;
@@ -119,11 +119,11 @@ public abstract class Presenter //extends CommandProcessor
 		protected void afterRequest(Request request)
 		{}
 		
-		protected void insertObject(BaseEntity obj)
+		protected void insertObject(Entity obj)
 		{
 			this.commitWriter.insertEntity(obj);
 		}
-		protected void updateObject(BaseEntity obj)
+		protected void updateObject(Entity obj)
 		{
 			this.commitWriter.updateEntity(obj);
 		}
