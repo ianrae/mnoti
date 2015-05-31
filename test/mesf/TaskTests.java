@@ -115,7 +115,7 @@ public class TaskTests extends BaseMesfTest
 		}
 		public UserTaskRM()
 		{
-			super("user", User.class, "task", Task.class, null);
+			super("user", User.class, "task", Task.class, new UserTaskResolver());
 		}
 	}
 
@@ -265,8 +265,13 @@ public class TaskTests extends BaseMesfTest
 			TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(4 + 1L, binder);
 			reply = pres.process(ucmd);
 			
-			Map<Long,Long> map = perm.readModel1.queryAll(mtx, 1L);
-//			assertEquals(33, map.size());
+			log("acquire..");
+			mtx = perm.createMContext(); //recalc maxid
+			mtx.acquire(perm.readModel1.getClass());
+			Map<Long,Long> map = perm.readModel1.queryAll(mtx, 2L);
+			assertEquals(1, map.size());
+			assertEquals(0L, map.get(5L).longValue());
+			assertEquals(null, map.get(4L));
 		}
 	}
 

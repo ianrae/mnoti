@@ -64,7 +64,10 @@ public class Projector
 
 		for(ICommitObserver observer : observerL)
 		{
-			observer.observe(mtx, stream, commit);
+			if (observer.willAccept(stream, commit))
+			{
+				observer.observe(mtx, stream, commit);
+			}
 		}
 	}
 
