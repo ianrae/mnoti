@@ -246,15 +246,21 @@ public class TaskTests extends BaseMesfTest
 			mtx = perm.createMContext();
 			pres = perm.taskInit.createMyPres(mtx, Reply.VIEW_EDIT);
 			LocalMockBinder<TaskTwixt> binder = new LocalMockBinder<TaskTwixt>(TaskTwixt.class, buildMap(true));
-
 			TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(4 + 1L, binder);
 			reply = pres.process(ucmd);
 
-			log("acquire..");
+			mtx = perm.createMContext();
+			pres = perm.taskInit.createMyPres(mtx);
+			cmd = new TaskPresenter.InsertCmd(userId);
+			cmd.a = 101+i;
+			cmd.s = String.format("bob%d", i+1);
+			reply = pres.process(cmd);
+			
 			mtx = perm.createMContext(); //recalc maxid
+			log(String.format("acquire.. max=%d", mtx.getMaxId()));
 			mtx.acquire(perm.readModel1.getClass());
 			Map<Long,Long> map = perm.readModel1.queryAll(mtx, 2L);
-			assertEquals(1, map.size());
+			assertEquals(2, map.size());
 			assertEquals(0L, map.get(5L).longValue());
 			assertEquals(null, map.get(4L));
 		}

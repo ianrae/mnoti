@@ -33,7 +33,8 @@ public class EventCache
 	public EventCache(IEventRecordDAO dao)
 	{
 		this.dao = dao;
-		segcache = new SegmentedCache<EventRecord>(4, new EventLoader());
+		int n = MesfConfig.EVENT_CACHE_CHUNK_SIZE;
+		segcache = new SegmentedCache<EventRecord>(n, new EventLoader());
 	}
 	
 	public synchronized List<EventRecord> loadRange(long startIndex, long n) 

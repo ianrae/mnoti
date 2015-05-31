@@ -1,6 +1,5 @@
 package mesf.core;
 
-import mesf.ObjManagerTests.Scooter;
 import mesf.cmd.CommandProcessor;
 import mesf.cmd.ProcRegistry;
 import mesf.entity.Entity;

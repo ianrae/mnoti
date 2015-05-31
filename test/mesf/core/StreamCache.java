@@ -31,7 +31,8 @@ public class StreamCache
 	public StreamCache(IStreamDAO dao)
 	{
 		this.dao = dao;
-		segcache = new SegmentedCache<Stream>(4, new StreamTableLoader());
+		int n = MesfConfig.STREAM_CACHE_CHUNK_SIZE;
+		segcache = new SegmentedCache<Stream>(n, new StreamTableLoader());
 	}
 	
 	public synchronized long findSnapshotId(long entityId) 
