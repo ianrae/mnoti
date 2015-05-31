@@ -56,7 +56,7 @@ public class CommitMgrTests extends BaseMesfTest
 		}
 
 		@Override
-		public void observe(Stream stream, Commit commit) 
+		public void observe(MContext mtx, Stream stream, Commit commit) 
 		{
 			char action = commit.getAction();
 			if (action == 'I')
@@ -84,13 +84,13 @@ public class CommitMgrTests extends BaseMesfTest
 		}
 
 		@Override
-		public void observe(Stream stream, Commit commit) 
+		public void observe(MContext mtx, Stream stream, Commit commit) 
 		{
 			for(ICommitObserver observer : L)
 			{
 				if (observer.willAccept(stream, commit))
 				{
-					observer.observe(stream, commit);
+					observer.observe(mtx, stream, commit);
 				}
 			}
 		}
@@ -185,7 +185,7 @@ public class CommitMgrTests extends BaseMesfTest
 		PersistenceContext persistenceCtx = FactoryGirl.createPersistenceContext();
 		this.dao = persistenceCtx.getDao();
 		this.streamDAO = persistenceCtx.getStreamDAO();
-		CommitMgr mgr = new CommitMgr(persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
+		CommitMgr mgr = new CommitMgr(null, persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
 		return mgr;
 	}
 	@Test

@@ -40,7 +40,7 @@ public class Projector
 		List<Commit> L = cache.loadRange(startIndex, mtx.getMaxId() - startIndex);
 		for(Commit commit : L)	
 		{
-			doObserve(commit, observerL);
+			doObserve(mtx, commit, observerL);
 		}
 		
 		for(ICommitObserver observer : observerL)
@@ -53,7 +53,7 @@ public class Projector
 		}
 	}
 	
-	private void doObserve(Commit commit, List<ICommitObserver> observerL)
+	private void doObserve(MContext mtx, Commit commit, List<ICommitObserver> observerL)
 	{
 		Long streamId = commit.getStreamId();
 		Stream stream = null;
@@ -64,7 +64,7 @@ public class Projector
 
 		for(ICommitObserver observer : observerL)
 		{
-			observer.observe(stream, commit);
+			observer.observe(mtx, stream, commit);
 		}
 	}
 

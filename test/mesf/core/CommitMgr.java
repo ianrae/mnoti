@@ -20,9 +20,11 @@ public class CommitMgr
 	private long maxId; //per current epoch
 	private CommitCache cache;
 	private StreamCache strcache;
+	private MContext mtx;
 
-	public CommitMgr(PersistenceContext persistenceCtx, CommitCache cache, StreamCache strcache)
+	public CommitMgr(MContext mtx, PersistenceContext persistenceCtx, CommitCache cache, StreamCache strcache)
 	{
+		this.mtx = mtx;
 		this.dao = persistenceCtx.getDao();
 		this.streamDAO = persistenceCtx.getStreamDAO();
 		this.cache = cache;
@@ -189,7 +191,7 @@ public class CommitMgr
 			
 			if (observer.willAccept(stream, commit))
 			{
-				observer.observe(stream, commit);
+				observer.observe(mtx, stream, commit);
 			}
 		}
 	}
@@ -198,5 +200,10 @@ public class CommitMgr
 	{
 		EntityLoader oloader = new EntityLoader(dao, strcache, this.maxId);
 		return oloader;
+	}
+
+	public void setMtx(MContext mtx)
+	{
+		this.mtx = mtx;
 	}
 }

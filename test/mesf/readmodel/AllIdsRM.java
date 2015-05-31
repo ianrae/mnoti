@@ -40,7 +40,7 @@ public class AllIdsRM<T> extends ReadModel
 	}
 
 	@Override
-	public void observe(Stream stream, Commit commit) 
+	public void observe(MContext mtx, Stream stream, Commit commit) 
 	{
 		switch(commit.getAction())
 		{

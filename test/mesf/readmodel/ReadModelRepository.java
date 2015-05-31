@@ -31,13 +31,13 @@ public class ReadModelRepository implements ICommitObserver, IReadModel
 	}
 
 	@Override
-	public void observe(Stream stream, Commit commit) 
+	public void observe(MContext mtx, Stream stream, Commit commit) 
 	{
 		for(ReadModel readModel : this.readModelL)
 		{
 			if (readModel.willAccept(stream, commit))
 			{
-				readModel.observe(stream, commit);
+				readModel.observe(mtx, stream, commit);
 			}
 		}
 	}

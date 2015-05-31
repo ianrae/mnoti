@@ -49,7 +49,7 @@ public class TopLevelTests extends BaseMesfTest
 		}
 
 		@Override
-		public void observe(Stream stream, Commit commit) 
+		public void observe(MContext mtx, Stream stream, Commit commit) 
 		{
 			switch(commit.getAction())
 			{

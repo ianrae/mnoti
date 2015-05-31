@@ -25,7 +25,7 @@ public abstract class ReadModel implements ICommitObserver, IEventObserver, IRea
 	}
 
 	@Override
-	public void observe(Stream stream, Commit commit) 
+	public void observe(MContext mtx, Stream stream, Commit commit) 
 	{
 	}
 

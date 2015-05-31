@@ -28,7 +28,7 @@ public class CommitCacheTests extends BaseMesfTest
 		IStreamDAO streamDAO = new MockStreamDAO();
 		IEventRecordDAO eventDAO = new MockEventRecordDAO();
 		PersistenceContext persistenceCtx = new PersistenceContext(dao, streamDAO, eventDAO);
-		CommitMgr mgr = new CommitMgr(persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
+		CommitMgr mgr = new CommitMgr(null, persistenceCtx, new CommitCache(dao), new StreamCache(streamDAO));
 		int n = 6;
 		for(int i = 0; i < n; i++)
 		{

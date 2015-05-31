@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import mesf.core.ICommitObserver;
+import mesf.core.MContext;
 import mesf.log.Logger;
 import mesf.persistence.Commit;
 import mesf.persistence.IStreamDAO;
@@ -95,7 +96,7 @@ public class EntityRepository implements ICommitObserver
 	}
 
 	@Override
-	public synchronized void observe(Stream stream, Commit commit) 
+	public synchronized void observe(MContext mtx, Stream stream, Commit commit) 
 	{
 		Long entityId = stream.getId();
 		BaseEntity obj = map.get(entityId);

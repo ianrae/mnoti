@@ -86,13 +86,15 @@ public class Permanent
 
 	public MContext createMContext() 
 	{
-		CommitMgr mgr = new CommitMgr(persistenceCtx, commitCache, this.strcache);
+		CommitMgr mgr = new CommitMgr(null, persistenceCtx, commitCache, this.strcache);
 		mgr.getMaxId(); //query db
 		ReadModelLoader vloader = new ReadModelLoader(persistenceCtx, mgr.getMaxId());
 		
 		MContext mtx = new MContext(mgr, registry, this.eventRegistry, this.entityRepo, this.readmodelRepo, vloader, 
 				this.commitCache, this.strcache, this.eventCache, persistenceCtx, eventBus);
 		mtx.setProcRegistry(procRegistry);
+		
+		mgr.setMtx(mtx); //!!yuck
 		
 		mtx.getEventMaxId(); //freshen event's maxid
 		return mtx;

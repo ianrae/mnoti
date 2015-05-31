@@ -12,7 +12,7 @@ public class ManyToOneRM extends ReadModel
 {
 	public interface IResolver
 	{
-		Long getForiegnKey(Commit commit);
+		Long getForiegnKey(MContext mtx, Commit commit);
 	}
 	
 	public Map<Long,TreeMap<Long,Long>> map = new TreeMap<>(); //sorted
@@ -51,7 +51,7 @@ public class ManyToOneRM extends ReadModel
 	}
 
 	@Override
-	public void observe(Stream stream, Commit commit) 
+	public void observe(MContext mtx, Stream stream, Commit commit) 
 	{
 		if (stream.getType().equals(type1))
 		{
@@ -72,7 +72,7 @@ public class ManyToOneRM extends ReadModel
 		}
 		else //type many
 		{
-			Long key = resolver.getForiegnKey(commit); //commit is Task, get task.userId
+			Long key = resolver.getForiegnKey(mtx, commit); //commit is Task, get task.userId
 			TreeMap<Long,Long> refL = map.get(key);
 			switch(commit.getAction())
 			{

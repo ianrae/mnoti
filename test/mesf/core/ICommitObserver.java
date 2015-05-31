@@ -7,5 +7,5 @@ import mesf.persistence.Stream;
 public interface ICommitObserver
 {
 	boolean willAccept(Stream stream, Commit commit);
-	void observe(Stream stream, Commit commit);
+	void observe(MContext mtx, Stream stream, Commit commit);
 }

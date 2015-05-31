@@ -99,10 +99,17 @@ public class TaskTests extends BaseMesfTest
 		public static class UserTaskResolver implements ManyToOneRM.IResolver
 		{
 			@Override
-			public Long getForiegnKey(Commit commit) 
+			public Long getForiegnKey(MContext mtx, Commit commit) 
 			{
-				// TODO Auto-generated method stub
-				return null;
+				long userId = 0;
+				try {
+					Task task = (Task) mtx.loadEntity(Task.class, commit.getStreamId());
+					userId = task.userId;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return userId;
 			}
 			
 		}
