@@ -11,6 +11,7 @@ import mesf.UserTests.User;
 import mesf.cmd.CommandProcessor;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
+import mesf.core.MesfConfig;
 import mesf.core.Permanent;
 import mesf.entity.BaseEntity;
 import mesf.entity.Entity;
@@ -265,6 +266,16 @@ public class TaskTests extends BaseMesfTest
 			assertEquals(null, map.get(4L));
 		}
 	}
+
+//this test changes static vars so may mess up other tests	
+//	@Test
+//	public void testChunk() throws Exception
+//	{
+//		MesfConfig.COMMIT_CACHE_CHUNK_SIZE = 100;
+//		MesfConfig.EVENT_CACHE_CHUNK_SIZE = 100;
+//		MesfConfig.STREAM_CACHE_CHUNK_SIZE = 100;
+//		test3();
+//	}
 
 	private void createUsers(MyTaskPerm perm, int n)
 	{
