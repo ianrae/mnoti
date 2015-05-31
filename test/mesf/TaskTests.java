@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import mesf.PresenterTests.UserInitializer;
+import mesf.UserTests.MyUserProc;
 import mesf.UserTests.User;
+import mesf.cmd.CommandProcessor;
 import mesf.core.IDomainIntializer;
 import mesf.core.MContext;
 import mesf.core.Permanent;
@@ -15,6 +17,7 @@ import mesf.entity.EntityManagerRegistry;
 import mesf.entity.EntityMgr;
 import mesf.event.EventManagerRegistry;
 import mesf.log.Logger;
+import mesf.persistence.Commit;
 import mesf.persistence.PersistenceContext;
 import mesf.presenter.BindingIntercept;
 import mesf.presenter.IFormBinder;
@@ -40,6 +43,7 @@ public class TaskTests extends BaseMesfTest
 	public static class Task extends BaseEntity
 	{
 		private String s;
+		private Long userId;
 
 		public String getS() {
 			return s;
@@ -54,7 +58,15 @@ public class TaskTests extends BaseMesfTest
 			Task copy = new Task();
 			copy.setId(getId()); //!
 			copy.s = this.s;
+			copy.userId = this.userId;
 			return copy;
+		}
+		public Long getUserId() {
+			return userId;
+		}
+		public void setUserId(Long userId) {
+			setlist.add("userId");
+			this.userId = userId;
 		}
 	}
 	
@@ -84,6 +96,16 @@ public class TaskTests extends BaseMesfTest
 	
 	public static class UserTaskRM extends ManyToOneRM
 	{
+		public static class UserTaskResolver implements ManyToOneRM.IResolver
+		{
+			@Override
+			public Long getForiegnKey(Commit commit) 
+			{
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+		}
 		public UserTaskRM()
 		{
 			super("user", User.class, "task", Task.class, null);
@@ -138,8 +160,12 @@ public class TaskTests extends BaseMesfTest
 	{
 		public static class InsertCmd extends Request
 		{
+			public InsertCmd(long userId) {
+				this.userId = userId;
+			}
 			public int a;
 			public String s;
+			public long userId;
 		}
 		public static class UpdateCmd extends Request
 		{
@@ -169,6 +195,7 @@ public class TaskTests extends BaseMesfTest
 
 			Task scooter = new Task();
 			scooter.setS(cmd.s);
+			scooter.setUserId(cmd.userId);
 
 			insertObject(scooter);
 			reply.setDestination(Reply.VIEW_INDEX);
@@ -210,13 +237,16 @@ public class TaskTests extends BaseMesfTest
 	{
 		MyTaskPerm perm = this.createPerm();
 
+		createUsers(perm, 4);
+		
 		int n = 1; 
 		for(int i = 0; i < n; i++)
 		{
 			log(String.format("%d..	", i));
 			MContext mtx = perm.createMContext();
 			TaskPresenter pres = new TaskPresenter(mtx);
-			TaskPresenter.InsertCmd cmd = new TaskPresenter.InsertCmd();
+			long userId = 2;
+			TaskPresenter.InsertCmd cmd = new TaskPresenter.InsertCmd(userId);
 			cmd.a = 101+i;
 			cmd.s = String.format("bob%d", i+1);
 			Reply reply = pres.process(cmd);
@@ -225,11 +255,25 @@ public class TaskTests extends BaseMesfTest
 			pres = perm.taskInit.createMyPres(mtx, Reply.VIEW_EDIT);
 			LocalMockBinder<TaskTwixt> binder = new LocalMockBinder<TaskTwixt>(TaskTwixt.class, buildMap(true));
 
-			TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(1L, binder);
+			TaskPresenter.UpdateCmd ucmd = new TaskPresenter.UpdateCmd(4 + 1L, binder);
 			reply = pres.process(ucmd);
 			
 			Map<Long,Long> map = perm.readModel1.queryAll(mtx, 1L);
 //			assertEquals(33, map.size());
+		}
+	}
+
+	private void createUsers(MyTaskPerm perm, int n)
+	{
+		for(int i = 0; i < n; i++)
+		{
+			log(String.format("user%d..	", i));
+			MContext mtx = perm.createMContext();
+			MyUserProc.InsertCmd cmd = new MyUserProc.InsertCmd();
+			cmd.a = 101+i;
+			cmd.s = String.format("bob%d", i+1);
+			CommandProcessor proc = mtx.findProc(User.class);
+			proc.process(cmd);
 		}
 	}
 
@@ -240,7 +284,7 @@ public class TaskTests extends BaseMesfTest
 
 		MContext mtx = perm.createMContext();
 		TaskPresenter pres = perm.taskInit.createMyPres(mtx);
-		TaskPresenter.InsertCmd cmd = new TaskPresenter.InsertCmd();
+		TaskPresenter.InsertCmd cmd = new TaskPresenter.InsertCmd(1L);
 		cmd.a = 101;
 		cmd.s = String.format("bob%d", 1);
 		Reply reply = pres.process(cmd);
